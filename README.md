@@ -1,5 +1,11 @@
 # roxy-sdk
 
+[![PyPI](https://img.shields.io/pypi/v/roxy-sdk)](https://pypi.org/project/roxy-sdk/)
+[![Python](https://img.shields.io/pypi/pyversions/roxy-sdk)](https://pypi.org/project/roxy-sdk/)
+[![Docs](https://img.shields.io/badge/docs-roxyapi.com-blue)](https://roxyapi.com/docs)
+[![API Reference](https://img.shields.io/badge/api%20reference-roxyapi.com-blue)](https://roxyapi.com/api-reference)
+[![License](https://img.shields.io/github/license/RoxyAPI/sdk-python)](https://github.com/RoxyAPI/sdk-python/blob/main/LICENSE)
+
 Python SDK for [RoxyAPI](https://roxyapi.com). Astrology, tarot, numerology, I Ching, crystals, angel numbers, dream interpretation, and more. One API key, 10 domains, 120+ endpoints.
 
 ## Install
