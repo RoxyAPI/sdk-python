@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "roxy-sdk"
+dynamic = ["version"]
+description = "Python SDK for RoxyAPI. Astrology, tarot, numerology, and more."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27.0",
+]
+authors = [
+    { name = "RoxyAPI", email = "hi@roxyapi.com" },
+]
+keywords = ["astrology", "tarot", "numerology", "api", "sdk", "vedic", "horoscope"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://roxyapi.com"
+Repository = "https://github.com/roxyapi/sdk-python"
+Documentation = "https://roxyapi.com/docs"
+
+[tool.hatch.version]
+path = "src/roxy_sdk/version.py"
+pattern = 'VERSION = "(?P<version>[^"]+)"'
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/roxy_sdk"]
+exclude = ["src/roxy_sdk/_generated"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/roxy_sdk", "AGENTS.md", "README.md", "LICENSE"]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "mypy>=1.9",
+    "ruff>=0.4",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest tests/"
+typecheck = "mypy src/roxy_sdk/factory.py src/roxy_sdk/__init__.py"
+check = "ruff check --fix . && ruff format ."
+lint = "ruff check ."
+build = "hatch build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

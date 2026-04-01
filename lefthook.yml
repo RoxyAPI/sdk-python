@@ -1,0 +1,17 @@
+pre-commit:
+  commands:
+    ruff-check:
+      glob: "*.py"
+      run: ruff check --fix . && ruff format .
+      stage_fixed: true
+    typecheck:
+      run: mypy src/roxy_sdk/factory.py src/roxy_sdk/__init__.py
+
+pre-push:
+  commands:
+    ruff-full:
+      run: ruff check .
+    typecheck:
+      run: mypy src/roxy_sdk/factory.py src/roxy_sdk/__init__.py
+    test:
+      run: python -m pytest tests/test_factory.py -q

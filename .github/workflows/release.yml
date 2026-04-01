@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  # repository_dispatch:
+  #   types: [openapi-updated]
+  # schedule:
+  #   - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'patch | minor | major'
+        required: false
+        default: 'patch'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install tools
+        run: pip install hatch httpx
+
+      - name: Fetch latest spec
+        run: python generate.py
+
+      - name: Check if spec changed
+        id: diff
+        run: |
+          if git diff --quiet specs/openapi.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Lint and typecheck
+        if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          pip install ruff mypy
+          ruff check .
+          mypy src/roxy_sdk/factory.py src/roxy_sdk/__init__.py
+
+      - name: Test
+        if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          pip install -e . pytest pytest-asyncio
+          pytest tests/test_factory.py -v
+
+      - name: Bump version
+        if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          python3 -c "
+          import re
+          bump = '${{ github.event.inputs.version_bump || 'patch' }}'
+          path = 'src/roxy_sdk/version.py'
+          text = open(path).read()
+          ver = re.search(r'VERSION = \"(.+?)\"', text).group(1)
+          parts = [int(x) for x in ver.split('.')]
+          if bump == 'major':   parts[0] += 1; parts[1] = 0; parts[2] = 0
+          elif bump == 'minor': parts[1] += 1; parts[2] = 0
+          else:                 parts[2] += 1
+          new_ver = '.'.join(str(x) for x in parts)
+          open(path, 'w').write(f'VERSION = \"{new_ver}\"\n')
+          open('/tmp/new_version.txt', 'w').write(new_ver)
+          "
+
+      - name: Build
+        if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: hatch build
+
+      - name: Publish to PyPI
+        if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Commit, tag, push
+        if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          VERSION=$(cat /tmp/new_version.txt)
+          git add src/roxy_sdk/version.py specs/openapi.json src/roxy_sdk/factory.py
+          git commit -m "release: v$VERSION"
+          git tag "v$VERSION"
+          git push --follow-tags

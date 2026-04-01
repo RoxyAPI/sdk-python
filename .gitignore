@@ -1,0 +1,36 @@
+# Maintainer-only (not published)
+CLAUDE.md
+TODO.md
+test_import.py
+openapi-python-client.toml
+
+# Generated typed models (excluded from wheel, regenerated locally)
+src/roxy_sdk/_generated/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.so
+
+# Hatch
+.hatch/
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
