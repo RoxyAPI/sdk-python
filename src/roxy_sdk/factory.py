@@ -10,7 +10,6 @@ import httpx
 
 from roxy_sdk.version import VERSION
 
-
 _BASE_URL = "https://roxyapi.com/api/v2"
 
 
@@ -86,7 +85,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/aspects", body, params=params or None)
+        return self._post("/astrology/aspects", body, params=params or None)
 
     async def calculate_aspects_async(self, *, date: str, time: str, timezone: float, planets: list[str] | None = None, aspect_types: list[str] | None = None, lang: str | None = None) -> Any:
         """Calculate planetary aspects - Aspect finder for any date and time (async)"""
@@ -101,27 +100,27 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/aspects", body, params=params or None)
+        return await self._post_async("/astrology/aspects", body, params=params or None)
 
     def calculate_compatibility(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
-        """Compatibility Score - Relationship compatibility analysis with category breakdown"""
+        """Compatibility Score. Relationship compatibility analysis with category breakdown"""
         body: dict[str, Any] = {}
         body["person1"] = person1
         body["person2"] = person2
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/compatibility-score", body, params=params or None)
+        return self._post("/astrology/compatibility-score", body, params=params or None)
 
     async def calculate_compatibility_async(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
-        """Compatibility Score - Relationship compatibility analysis with category breakdown (async)"""
+        """Compatibility Score. Relationship compatibility analysis with category breakdown (async)"""
         body: dict[str, Any] = {}
         body["person1"] = person1
         body["person2"] = person2
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/compatibility-score", body, params=params or None)
+        return await self._post_async("/astrology/compatibility-score", body, params=params or None)
 
     def calculate_houses(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Calculate house cusps - House system calculator with comparison"""
@@ -136,7 +135,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/houses", body, params=params or None)
+        return self._post("/astrology/houses", body, params=params or None)
 
     async def calculate_houses_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Calculate house cusps - House system calculator with comparison (async)"""
@@ -151,7 +150,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/houses", body, params=params or None)
+        return await self._post_async("/astrology/houses", body, params=params or None)
 
     def calculate_synastry(self, *, person1: dict[str, Any], person2: dict[str, Any], house_system: str | None = None, lang: str | None = None) -> Any:
         """Calculate synastry - Relationship compatibility analysis API"""
@@ -163,7 +162,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/synastry", body, params=params or None)
+        return self._post("/astrology/synastry", body, params=params or None)
 
     async def calculate_synastry_async(self, *, person1: dict[str, Any], person2: dict[str, Any], house_system: str | None = None, lang: str | None = None) -> Any:
         """Calculate synastry - Relationship compatibility analysis API (async)"""
@@ -175,7 +174,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/synastry", body, params=params or None)
+        return await self._post_async("/astrology/synastry", body, params=params or None)
 
     def calculate_transit_aspects(self, *, natal_chart: dict[str, Any], transit_date: str | None = None, transit_time: str | None = None, planets: list[str] | None = None, aspect_types: list[str] | None = None, min_strength: float | None = None, lang: str | None = None) -> Any:
         """Transit Aspects - Detailed transit-to-natal aspect analysis with interpretations"""
@@ -194,7 +193,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/transit-aspects", body, params=params or None)
+        return self._post("/astrology/transit-aspects", body, params=params or None)
 
     async def calculate_transit_aspects_async(self, *, natal_chart: dict[str, Any], transit_date: str | None = None, transit_time: str | None = None, planets: list[str] | None = None, aspect_types: list[str] | None = None, min_strength: float | None = None, lang: str | None = None) -> Any:
         """Transit Aspects - Detailed transit-to-natal aspect analysis with interpretations (async)"""
@@ -213,7 +212,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/transit-aspects", body, params=params or None)
+        return await self._post_async("/astrology/transit-aspects", body, params=params or None)
 
     def calculate_transits(self, *, date: str | None = None, time: str | None = None, timezone: float | None = None, natal_chart: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Calculate planetary transits - Current transits with natal chart comparison"""
@@ -229,7 +228,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/transits", body, params=params or None)
+        return self._post("/astrology/transits", body, params=params or None)
 
     async def calculate_transits_async(self, *, date: str | None = None, time: str | None = None, timezone: float | None = None, natal_chart: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Calculate planetary transits - Current transits with natal chart comparison (async)"""
@@ -245,7 +244,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/transits", body, params=params or None)
+        return await self._post_async("/astrology/transits", body, params=params or None)
 
     def generate_composite_chart(self, *, person1: dict[str, Any], person2: dict[str, Any], house_system: str | None = None, lang: str | None = None) -> Any:
         """Composite Chart - Midpoint relationship chart with interpretations"""
@@ -257,7 +256,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/composite-chart", body, params=params or None)
+        return self._post("/astrology/composite-chart", body, params=params or None)
 
     async def generate_composite_chart_async(self, *, person1: dict[str, Any], person2: dict[str, Any], house_system: str | None = None, lang: str | None = None) -> Any:
         """Composite Chart - Midpoint relationship chart with interpretations (async)"""
@@ -269,7 +268,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/composite-chart", body, params=params or None)
+        return await self._post_async("/astrology/composite-chart", body, params=params or None)
 
     def generate_lunar_return(self, *, birth_date: str, birth_time: str, return_date: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Lunar Return Chart - Monthly emotional forecast with Moon cycle chart"""
@@ -285,7 +284,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/lunar-return", body, params=params or None)
+        return self._post("/astrology/lunar-return", body, params=params or None)
 
     async def generate_lunar_return_async(self, *, birth_date: str, birth_time: str, return_date: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Lunar Return Chart - Monthly emotional forecast with Moon cycle chart (async)"""
@@ -301,7 +300,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/lunar-return", body, params=params or None)
+        return await self._post_async("/astrology/lunar-return", body, params=params or None)
 
     def generate_natal_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Generate natal chart - Birth chart calculator API with houses and aspects"""
@@ -316,7 +315,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/natal-chart", body, params=params or None)
+        return self._post("/astrology/natal-chart", body, params=params or None)
 
     async def generate_natal_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Generate natal chart - Birth chart calculator API with houses and aspects (async)"""
@@ -331,7 +330,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/natal-chart", body, params=params or None)
+        return await self._post_async("/astrology/natal-chart", body, params=params or None)
 
     def generate_planetary_return(self, *, birth_date: str, birth_time: str, planet: str, approximate_date: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Planetary Return Chart - Saturn return, Jupiter return, and inner planet cycles"""
@@ -348,7 +347,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/planetary-returns", body, params=params or None)
+        return self._post("/astrology/planetary-returns", body, params=params or None)
 
     async def generate_planetary_return_async(self, *, birth_date: str, birth_time: str, planet: str, approximate_date: str, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Planetary Return Chart - Saturn return, Jupiter return, and inner planet cycles (async)"""
@@ -365,7 +364,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/planetary-returns", body, params=params or None)
+        return await self._post_async("/astrology/planetary-returns", body, params=params or None)
 
     def generate_solar_return(self, *, birth_date: str, birth_time: str, return_year: int, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Solar Return Chart - Annual birthday forecast with relocated chart"""
@@ -381,7 +380,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/solar-return", body, params=params or None)
+        return self._post("/astrology/solar-return", body, params=params or None)
 
     async def generate_solar_return_async(self, *, birth_date: str, birth_time: str, return_year: int, latitude: float, longitude: float, timezone: float, house_system: str | None = None, lang: str | None = None) -> Any:
         """Solar Return Chart - Annual birthday forecast with relocated chart (async)"""
@@ -397,21 +396,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/solar-return", body, params=params or None)
-
-    def get_all_daily_horoscopes(self, *, lang: str | None = None) -> Any:
-        """All zodiac signs daily horoscope - Batch forecast for all 12 signs"""
-        params: dict[str, Any] = {}
-        if lang is not None:
-            params["lang"] = lang
-        return self._get(f"/astrology/horoscope/daily", params=params or None)
-
-    async def get_all_daily_horoscopes_async(self, *, lang: str | None = None) -> Any:
-        """All zodiac signs daily horoscope - Batch forecast for all 12 signs (async)"""
-        params: dict[str, Any] = {}
-        if lang is not None:
-            params["lang"] = lang
-        return await self._get_async(f"/astrology/horoscope/daily", params=params or None)
+        return await self._post_async("/astrology/solar-return", body, params=params or None)
 
     def get_current_moon_phase(self, *, date: str | None = None, time: str | None = None, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get current moon phase - Lunar phase calculator with zodiac sign"""
@@ -424,7 +409,7 @@ class AstrologyDomain(_BaseDomain):
             params["time"] = time
         if timezone is not None:
             params["timezone"] = timezone
-        return self._get(f"/astrology/moon-phase/current", params=params or None)
+        return self._get("/astrology/moon-phase/current", params=params or None)
 
     async def get_current_moon_phase_async(self, *, date: str | None = None, time: str | None = None, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get current moon phase - Lunar phase calculator with zodiac sign (async)"""
@@ -437,31 +422,35 @@ class AstrologyDomain(_BaseDomain):
             params["time"] = time
         if timezone is not None:
             params["timezone"] = timezone
-        return await self._get_async(f"/astrology/moon-phase/current", params=params or None)
+        return await self._get_async("/astrology/moon-phase/current", params=params or None)
 
-    def get_daily_horoscope(self, *, sign: str, lang: str | None = None) -> Any:
-        """Daily horoscope by zodiac sign - Transit-based forecast"""
+    def get_daily_horoscope(self, *, sign: str, date: str | None = None, lang: str | None = None) -> Any:
+        """Daily horoscope by zodiac sign - Transit-based forecast with house activations"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
+        if date is not None:
+            params["date"] = date
         return self._get(f"/astrology/horoscope/{sign}/daily", params=params or None)
 
-    async def get_daily_horoscope_async(self, *, sign: str, lang: str | None = None) -> Any:
-        """Daily horoscope by zodiac sign - Transit-based forecast (async)"""
+    async def get_daily_horoscope_async(self, *, sign: str, date: str | None = None, lang: str | None = None) -> Any:
+        """Daily horoscope by zodiac sign - Transit-based forecast with house activations (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
+        if date is not None:
+            params["date"] = date
         return await self._get_async(f"/astrology/horoscope/{sign}/daily", params=params or None)
 
     def get_monthly_horoscope(self, *, sign: str, lang: str | None = None) -> Any:
-        """Monthly horoscope by zodiac sign - 30-day transit forecast"""
+        """Monthly horoscope by zodiac sign - 30-day transit forecast with key dates"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._get(f"/astrology/horoscope/{sign}/monthly", params=params or None)
 
     async def get_monthly_horoscope_async(self, *, sign: str, lang: str | None = None) -> Any:
-        """Monthly horoscope by zodiac sign - 30-day transit forecast (async)"""
+        """Monthly horoscope by zodiac sign - 30-day transit forecast with key dates (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -506,7 +495,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/astrology/planets", body, params=params or None)
+        return self._post("/astrology/planets", body, params=params or None)
 
     async def get_planetary_positions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float, lang: str | None = None) -> Any:
         """Get planetary positions - Ephemeris calculator for all planets (async)"""
@@ -519,7 +508,7 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/astrology/planets", body, params=params or None)
+        return await self._post_async("/astrology/planets", body, params=params or None)
 
     def get_upcoming_moon_phases(self, *, start_date: str | None = None, count: float | None = None, lang: str | None = None) -> Any:
         """Get upcoming moon phases - Next new moon, full moon, quarters"""
@@ -530,7 +519,7 @@ class AstrologyDomain(_BaseDomain):
             params["startDate"] = start_date
         if count is not None:
             params["count"] = count
-        return self._get(f"/astrology/moon-phase/upcoming", params=params or None)
+        return self._get("/astrology/moon-phase/upcoming", params=params or None)
 
     async def get_upcoming_moon_phases_async(self, *, start_date: str | None = None, count: float | None = None, lang: str | None = None) -> Any:
         """Get upcoming moon phases - Next new moon, full moon, quarters (async)"""
@@ -541,7 +530,7 @@ class AstrologyDomain(_BaseDomain):
             params["startDate"] = start_date
         if count is not None:
             params["count"] = count
-        return await self._get_async(f"/astrology/moon-phase/upcoming", params=params or None)
+        return await self._get_async("/astrology/moon-phase/upcoming", params=params or None)
 
     def get_weekly_horoscope(self, *, sign: str, lang: str | None = None) -> Any:
         """Weekly horoscope by zodiac sign - 7-day transit forecast"""
@@ -576,28 +565,28 @@ class AstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/astrology/planet-meanings", params=params or None)
+        return self._get("/astrology/planet-meanings", params=params or None)
 
     async def list_planet_meanings_async(self, *, lang: str | None = None) -> Any:
         """Get all planet meanings - Complete astrology planet interpretations list (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/astrology/planet-meanings", params=params or None)
+        return await self._get_async("/astrology/planet-meanings", params=params or None)
 
     def list_zodiac_signs(self, *, lang: str | None = None) -> Any:
         """Get all zodiac signs - Complete zodiac signs list with dates and elements"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/astrology/signs", params=params or None)
+        return self._get("/astrology/signs", params=params or None)
 
     async def list_zodiac_signs_async(self, *, lang: str | None = None) -> Any:
         """Get all zodiac signs - Complete zodiac signs list with dates and elements (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/astrology/signs", params=params or None)
+        return await self._get_async("/astrology/signs", params=params or None)
 
 
 class VedicAstrologyDomain(_BaseDomain):
@@ -612,7 +601,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/ashtakavarga", body)
+        return self._post("/vedic-astrology/ashtakavarga", body)
 
     async def calculate_ashtakavarga_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Ashtakavarga (planetary strength) analysis - Ashtakavarga Calculator API (async)"""
@@ -623,7 +612,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/ashtakavarga", body)
+        return await self._post_async("/vedic-astrology/ashtakavarga", body)
 
     def calculate_drishti(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Get planetary aspects (Drishti) - Mutual aspects between all planets"""
@@ -636,7 +625,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/aspects", body)
+        return self._post("/vedic-astrology/aspects", body)
 
     async def calculate_drishti_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Get planetary aspects (Drishti) - Mutual aspects between all planets (async)"""
@@ -649,7 +638,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/aspects", body)
+        return await self._post_async("/vedic-astrology/aspects", body)
 
     def calculate_gun_milan(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
         """Calculate compatibility score - Gun Milan API (Ashtakoot Matching)"""
@@ -659,7 +648,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/vedic-astrology/compatibility", body, params=params or None)
+        return self._post("/vedic-astrology/compatibility", body, params=params or None)
 
     async def calculate_gun_milan_async(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
         """Calculate compatibility score - Gun Milan API (Ashtakoot Matching) (async)"""
@@ -669,7 +658,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/vedic-astrology/compatibility", body, params=params or None)
+        return await self._post_async("/vedic-astrology/compatibility", body, params=params or None)
 
     def calculate_parallels(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, orb: float | None = None) -> Any:
         """Declination Parallels - Planets at same or opposite declination"""
@@ -682,7 +671,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if orb is not None:
             body["orb"] = orb
-        return self._post(f"/vedic-astrology/parallels", body)
+        return self._post("/vedic-astrology/parallels", body)
 
     async def calculate_parallels_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, orb: float | None = None) -> Any:
         """Declination Parallels - Planets at same or opposite declination (async)"""
@@ -695,7 +684,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if orb is not None:
             body["orb"] = orb
-        return await self._post_async(f"/vedic-astrology/parallels", body)
+        return await self._post_async("/vedic-astrology/parallels", body)
 
     def calculate_shadbala(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Shadbala (six-fold planetary strength) analysis - Shadbala Calculator API"""
@@ -706,7 +695,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/shadbala", body)
+        return self._post("/vedic-astrology/shadbala", body)
 
     async def calculate_shadbala_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Shadbala (six-fold planetary strength) analysis - Shadbala Calculator API (async)"""
@@ -717,7 +706,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/shadbala", body)
+        return await self._post_async("/vedic-astrology/shadbala", body)
 
     def calculate_transit(self, *, birth_date: str, birth_time: str, transit_date: str, transit_time: str | None = None, latitude: float, longitude: float, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Transit Analysis - Compare current planets to natal chart (Gochar)"""
@@ -733,7 +722,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/transit", body)
+        return self._post("/vedic-astrology/transit", body)
 
     async def calculate_transit_async(self, *, birth_date: str, birth_time: str, transit_date: str, transit_time: str | None = None, latitude: float, longitude: float, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Transit Analysis - Compare current planets to natal chart (Gochar) (async)"""
@@ -749,7 +738,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/transit", body)
+        return await self._post_async("/vedic-astrology/transit", body)
 
     def check_kalsarpa_dosha(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Check Kalsarpa Dosha - Kalsarpa Yoga Calculator API"""
@@ -760,7 +749,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/dosha/kalsarpa", body)
+        return self._post("/vedic-astrology/dosha/kalsarpa", body)
 
     async def check_kalsarpa_dosha_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Check Kalsarpa Dosha - Kalsarpa Yoga Calculator API (async)"""
@@ -771,7 +760,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/dosha/kalsarpa", body)
+        return await self._post_async("/vedic-astrology/dosha/kalsarpa", body)
 
     def check_manglik_dosha(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Check Manglik Dosha - Mangal Dosha Calculator API"""
@@ -782,7 +771,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/dosha/manglik", body)
+        return self._post("/vedic-astrology/dosha/manglik", body)
 
     async def check_manglik_dosha_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Check Manglik Dosha - Mangal Dosha Calculator API (async)"""
@@ -793,7 +782,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/dosha/manglik", body)
+        return await self._post_async("/vedic-astrology/dosha/manglik", body)
 
     def check_sadhesati(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Check Sadhesati - Sade Sati Calculator API (Saturn Transit)"""
@@ -804,7 +793,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/dosha/sadhesati", body)
+        return self._post("/vedic-astrology/dosha/sadhesati", body)
 
     async def check_sadhesati_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Check Sadhesati - Sade Sati Calculator API (Saturn Transit) (async)"""
@@ -815,7 +804,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/dosha/sadhesati", body)
+        return await self._post_async("/vedic-astrology/dosha/sadhesati", body)
 
     def generate_birth_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get birth chart (D1 Rashi chart) - Kundli Calculator API"""
@@ -829,7 +818,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/vedic-astrology/birth-chart", body, params=params or None)
+        return self._post("/vedic-astrology/birth-chart", body, params=params or None)
 
     async def generate_birth_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get birth chart (D1 Rashi chart) - Kundli Calculator API (async)"""
@@ -843,7 +832,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/vedic-astrology/birth-chart", body, params=params or None)
+        return await self._post_async("/vedic-astrology/birth-chart", body, params=params or None)
 
     def generate_divisional_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, division: int) -> Any:
         """Get divisional chart (Varga) - D2 to D60 Calculator"""
@@ -855,7 +844,7 @@ class VedicAstrologyDomain(_BaseDomain):
         if timezone is not None:
             body["timezone"] = timezone
         body["division"] = division
-        return self._post(f"/vedic-astrology/divisional-chart", body)
+        return self._post("/vedic-astrology/divisional-chart", body)
 
     async def generate_divisional_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, division: int) -> Any:
         """Get divisional chart (Varga) - D2 to D60 Calculator (async)"""
@@ -867,7 +856,7 @@ class VedicAstrologyDomain(_BaseDomain):
         if timezone is not None:
             body["timezone"] = timezone
         body["division"] = division
-        return await self._post_async(f"/vedic-astrology/divisional-chart", body)
+        return await self._post_async("/vedic-astrology/divisional-chart", body)
 
     def generate_kp_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None) -> Any:
         """Generate complete KP birth chart"""
@@ -884,7 +873,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsaValue"] = ayanamsa_value
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/chart", body)
+        return self._post("/vedic-astrology/kp/chart", body)
 
     async def generate_kp_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None) -> Any:
         """Generate complete KP birth chart (async)"""
@@ -901,7 +890,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsaValue"] = ayanamsa_value
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/chart", body)
+        return await self._post_async("/vedic-astrology/kp/chart", body)
 
     def generate_navamsa(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Navamsa chart (D9) - Marriage Compatibility Calculator"""
@@ -912,7 +901,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/navamsa", body)
+        return self._post("/vedic-astrology/navamsa", body)
 
     async def generate_navamsa_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Navamsa chart (D9) - Marriage Compatibility Calculator (async)"""
@@ -923,7 +912,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/navamsa", body)
+        return await self._post_async("/vedic-astrology/navamsa", body)
 
     def get_basic_panchang(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get basic Panchang - Tithi Nakshatra Yoga Karana Calculator"""
@@ -937,7 +926,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/vedic-astrology/panchang/basic", body, params=params or None)
+        return self._post("/vedic-astrology/panchang/basic", body, params=params or None)
 
     async def get_basic_panchang_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get basic Panchang - Tithi Nakshatra Yoga Karana Calculator (async)"""
@@ -951,7 +940,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/vedic-astrology/panchang/basic", body, params=params or None)
+        return await self._post_async("/vedic-astrology/panchang/basic", body, params=params or None)
 
     def get_choghadiya(self, *, date: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Choghadiya - 8 Muhurta divisions of day and night"""
@@ -961,7 +950,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/panchang/choghadiya", body)
+        return self._post("/vedic-astrology/panchang/choghadiya", body)
 
     async def get_choghadiya_async(self, *, date: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Choghadiya - 8 Muhurta divisions of day and night (async)"""
@@ -971,7 +960,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/panchang/choghadiya", body)
+        return await self._post_async("/vedic-astrology/panchang/choghadiya", body)
 
     def get_current_dasha(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get current Mahadasha, Antardasha, Pratyantardasha - Dasha Calculator API"""
@@ -985,7 +974,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/vedic-astrology/dasha/current", body, params=params or None)
+        return self._post("/vedic-astrology/dasha/current", body, params=params or None)
 
     async def get_current_dasha_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get current Mahadasha, Antardasha, Pratyantardasha - Dasha Calculator API (async)"""
@@ -999,7 +988,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/vedic-astrology/dasha/current", body, params=params or None)
+        return await self._post_async("/vedic-astrology/dasha/current", body, params=params or None)
 
     def get_detailed_panchang(self, *, date: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get detailed Panchang with Rahu Kaal, Yamaganda, Gulika"""
@@ -1012,7 +1001,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/vedic-astrology/panchang/detailed", body, params=params or None)
+        return self._post("/vedic-astrology/panchang/detailed", body, params=params or None)
 
     async def get_detailed_panchang_async(self, *, date: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get detailed Panchang with Rahu Kaal, Yamaganda, Gulika (async)"""
@@ -1025,7 +1014,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/vedic-astrology/panchang/detailed", body, params=params or None)
+        return await self._post_async("/vedic-astrology/panchang/detailed", body, params=params or None)
 
     def get_ecliptic_crossings(self, *, year: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Ecliptic Crossings - When planets cross the ecliptic plane"""
@@ -1035,7 +1024,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/ecliptic-crossings", body)
+        return self._post("/vedic-astrology/ecliptic-crossings", body)
 
     async def get_ecliptic_crossings_async(self, *, year: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Ecliptic Crossings - When planets cross the ecliptic plane (async)"""
@@ -1045,7 +1034,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/ecliptic-crossings", body)
+        return await self._post_async("/vedic-astrology/ecliptic-crossings", body)
 
     def get_hora(self, *, date: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Hora - 24 Planetary Hours (12 day + 12 night)"""
@@ -1055,7 +1044,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/panchang/hora", body)
+        return self._post("/vedic-astrology/panchang/hora", body)
 
     async def get_hora_async(self, *, date: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get Hora - 24 Planetary Hours (12 day + 12 night) (async)"""
@@ -1065,21 +1054,21 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/panchang/hora", body)
+        return await self._post_async("/vedic-astrology/panchang/hora", body)
 
     def get_kp_ayanamsa(self, *, date: str | None = None) -> Any:
         """Get KP-Newcomb ayanamsa - Dynamic daily calculation"""
         params: dict[str, Any] = {}
         if date is not None:
             params["date"] = date
-        return self._get(f"/vedic-astrology/kp/ayanamsa", params=params or None)
+        return self._get("/vedic-astrology/kp/ayanamsa", params=params or None)
 
     async def get_kp_ayanamsa_async(self, *, date: str | None = None) -> Any:
         """Get KP-Newcomb ayanamsa - Dynamic daily calculation (async)"""
         params: dict[str, Any] = {}
         if date is not None:
             params["date"] = date
-        return await self._get_async(f"/vedic-astrology/kp/ayanamsa", params=params or None)
+        return await self._get_async("/vedic-astrology/kp/ayanamsa", params=params or None)
 
     def get_kp_cusps(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None) -> Any:
         """Get KP Placidus house cusps with sub-lords"""
@@ -1094,7 +1083,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if ayanamsa_value is not None:
             body["ayanamsaValue"] = ayanamsa_value
-        return self._post(f"/vedic-astrology/kp/cusps", body)
+        return self._post("/vedic-astrology/kp/cusps", body)
 
     async def get_kp_cusps_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None) -> Any:
         """Get KP Placidus house cusps with sub-lords (async)"""
@@ -1109,7 +1098,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if ayanamsa_value is not None:
             body["ayanamsaValue"] = ayanamsa_value
-        return await self._post_async(f"/vedic-astrology/kp/cusps", body)
+        return await self._post_async("/vedic-astrology/kp/cusps", body)
 
     def get_kp_planets(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None) -> Any:
         """Get KP planetary positions with sub-lords"""
@@ -1126,7 +1115,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsaValue"] = ayanamsa_value
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/planets", body)
+        return self._post("/vedic-astrology/kp/planets", body)
 
     async def get_kp_planets_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None) -> Any:
         """Get KP planetary positions with sub-lords (async)"""
@@ -1143,7 +1132,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsaValue"] = ayanamsa_value
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/planets", body)
+        return await self._post_async("/vedic-astrology/kp/planets", body)
 
     def get_kp_planets_interval(self, *, start_datetime: str, end_datetime: str, interval_minutes: float, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Get KP planets at time intervals"""
@@ -1159,7 +1148,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/planets-interval", body)
+        return self._post("/vedic-astrology/kp/planets-interval", body)
 
     async def get_kp_planets_interval_async(self, *, start_datetime: str, end_datetime: str, interval_minutes: float, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Get KP planets at time intervals (async)"""
@@ -1175,7 +1164,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/planets-interval", body)
+        return await self._post_async("/vedic-astrology/kp/planets-interval", body)
 
     def get_kp_rasi_changes(self, *, planet: str, start_date: str, end_date: str, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Find KP rasi ingress times"""
@@ -1189,7 +1178,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/rasi-changes", body)
+        return self._post("/vedic-astrology/kp/rasi-changes", body)
 
     async def get_kp_rasi_changes_async(self, *, planet: str, start_date: str, end_date: str, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Find KP rasi ingress times (async)"""
@@ -1203,7 +1192,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/rasi-changes", body)
+        return await self._post_async("/vedic-astrology/kp/rasi-changes", body)
 
     def get_kp_ruling_interval(self, *, start_datetime: str, end_datetime: str, interval_minutes: int, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Get KP ruling planets with significators at intervals"""
@@ -1219,7 +1208,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/ruling-planets-interval", body)
+        return self._post("/vedic-astrology/kp/ruling-planets-interval", body)
 
     async def get_kp_ruling_interval_async(self, *, start_datetime: str, end_datetime: str, interval_minutes: int, latitude: float, longitude: float, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Get KP ruling planets with significators at intervals (async)"""
@@ -1235,7 +1224,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/ruling-planets-interval", body)
+        return await self._post_async("/vedic-astrology/kp/ruling-planets-interval", body)
 
     def get_kp_ruling_planets(self, *, latitude: float, longitude: float, timezone: float | None = None, datetime: str | None = None, birth_date: str | None = None, birth_time: str | None = None, node_type: str | None = None) -> Any:
         """Get KP ruling planets with optional significators"""
@@ -1252,7 +1241,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["birthTime"] = birth_time
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/ruling-planets", body)
+        return self._post("/vedic-astrology/kp/ruling-planets", body)
 
     async def get_kp_ruling_planets_async(self, *, latitude: float, longitude: float, timezone: float | None = None, datetime: str | None = None, birth_date: str | None = None, birth_time: str | None = None, node_type: str | None = None) -> Any:
         """Get KP ruling planets with optional significators (async)"""
@@ -1269,7 +1258,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["birthTime"] = birth_time
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/ruling-planets", body)
+        return await self._post_async("/vedic-astrology/kp/ruling-planets", body)
 
     def get_kp_sublord_changes(self, *, planet: str, start_date: str, end_date: str, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Find KP sublord changes"""
@@ -1283,7 +1272,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/sublord-changes", body)
+        return self._post("/vedic-astrology/kp/sublord-changes", body)
 
     async def get_kp_sublord_changes_async(self, *, planet: str, start_date: str, end_date: str, timezone: float | None = None, ayanamsa: str | None = None, node_type: str | None = None) -> Any:
         """Find KP sublord changes (async)"""
@@ -1297,7 +1286,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsa"] = ayanamsa
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/sublord-changes", body)
+        return await self._post_async("/vedic-astrology/kp/sublord-changes", body)
 
     def get_lunar_aspects(self, *, year: int, month: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Monthly Lunar Aspects - Moon aspect events with all planets for a month"""
@@ -1308,7 +1297,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/aspects/lunar", body)
+        return self._post("/vedic-astrology/aspects/lunar", body)
 
     async def get_lunar_aspects_async(self, *, year: int, month: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Monthly Lunar Aspects - Moon aspect events with all planets for a month (async)"""
@@ -1319,7 +1308,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/aspects/lunar", body)
+        return await self._post_async("/vedic-astrology/aspects/lunar", body)
 
     def get_major_dashas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get all 9 Mahadasha periods (120-year cycle)"""
@@ -1333,7 +1322,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/vedic-astrology/dasha/major", body, params=params or None)
+        return self._post("/vedic-astrology/dasha/major", body, params=params or None)
 
     async def get_major_dashas_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get all 9 Mahadasha periods (120-year cycle) (async)"""
@@ -1347,7 +1336,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/vedic-astrology/dasha/major", body, params=params or None)
+        return await self._post_async("/vedic-astrology/dasha/major", body, params=params or None)
 
     def get_monthly_aspects(self, *, year: int, month: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Monthly Planetary Aspects - Major and minor aspect events for a month"""
@@ -1358,7 +1347,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/aspects/monthly", body)
+        return self._post("/vedic-astrology/aspects/monthly", body)
 
     async def get_monthly_aspects_async(self, *, year: int, month: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Monthly Planetary Aspects - Major and minor aspect events for a month (async)"""
@@ -1369,7 +1358,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/aspects/monthly", body)
+        return await self._post_async("/vedic-astrology/aspects/monthly", body)
 
     def get_monthly_ephemeris(self, *, year: int, month: int, coordinate_system: str | None = None) -> Any:
         """Monthly Ephemeris - Daily sidereal planetary positions for a month"""
@@ -1378,7 +1367,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["month"] = month
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/planetary-positions/monthly", body)
+        return self._post("/vedic-astrology/planetary-positions/monthly", body)
 
     async def get_monthly_ephemeris_async(self, *, year: int, month: int, coordinate_system: str | None = None) -> Any:
         """Monthly Ephemeris - Daily sidereal planetary positions for a month (async)"""
@@ -1387,7 +1376,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["month"] = month
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/planetary-positions/monthly", body)
+        return await self._post_async("/vedic-astrology/planetary-positions/monthly", body)
 
     def get_monthly_parallels(self, *, year: int, month: int, timezone: float | None = None) -> Any:
         """Monthly Declination Parallels - Parallel and contraparallel events for a month"""
@@ -1396,7 +1385,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/parallels/monthly", body)
+        return self._post("/vedic-astrology/parallels/monthly", body)
 
     async def get_monthly_parallels_async(self, *, year: int, month: int, timezone: float | None = None) -> Any:
         """Monthly Declination Parallels - Parallel and contraparallel events for a month (async)"""
@@ -1405,7 +1394,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/parallels/monthly", body)
+        return await self._post_async("/vedic-astrology/parallels/monthly", body)
 
     def get_monthly_transits(self, *, year: int, month: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Monthly Transit - Planetary sign changes for an entire month"""
@@ -1416,7 +1405,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/transit/monthly", body)
+        return self._post("/vedic-astrology/transit/monthly", body)
 
     async def get_monthly_transits_async(self, *, year: int, month: int, timezone: float | None = None, coordinate_system: str | None = None) -> Any:
         """Monthly Transit - Planetary sign changes for an entire month (async)"""
@@ -1427,7 +1416,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/transit/monthly", body)
+        return await self._post_async("/vedic-astrology/transit/monthly", body)
 
     def get_nakshatra(self, *, id: str, lang: str | None = None) -> Any:
         """Get Nakshatra by ID - Lunar Mansion Detail"""
@@ -1455,7 +1444,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/vedic-astrology/planetary-positions", body, params=params or None)
+        return self._post("/vedic-astrology/planetary-positions", body, params=params or None)
 
     async def get_planet_positions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None, lang: str | None = None) -> Any:
         """Get planetary positions - Graha Positions API (async)"""
@@ -1469,7 +1458,7 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/vedic-astrology/planetary-positions", body, params=params or None)
+        return await self._post_async("/vedic-astrology/planetary-positions", body, params=params or None)
 
     def get_rashi(self, *, id: str, lang: str | None = None) -> Any:
         """Get Rashi by ID - Vedic Zodiac Sign Detail"""
@@ -1522,7 +1511,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/upagraha", body)
+        return self._post("/vedic-astrology/upagraha", body)
 
     async def get_upagraha_positions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: float | None = None) -> Any:
         """Get upagraha (sub-planet) positions - Upagraha Calculator API (async)"""
@@ -1533,7 +1522,7 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/upagraha", body)
+        return await self._post_async("/vedic-astrology/upagraha", body)
 
     def get_yoga(self, *, id: str, lang: str | None = None) -> Any:
         """Get yoga details by ID - Detailed Yoga Information API"""
@@ -1554,42 +1543,42 @@ class VedicAstrologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/vedic-astrology/nakshatras", params=params or None)
+        return self._get("/vedic-astrology/nakshatras", params=params or None)
 
     async def list_nakshatras_async(self, *, lang: str | None = None) -> Any:
         """List all 27 Nakshatras - Lunar Mansions Reference (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/vedic-astrology/nakshatras", params=params or None)
+        return await self._get_async("/vedic-astrology/nakshatras", params=params or None)
 
     def list_rashis(self, *, lang: str | None = None) -> Any:
         """List all 12 Rashis - Vedic Zodiac Signs Reference"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/vedic-astrology/rashis", params=params or None)
+        return self._get("/vedic-astrology/rashis", params=params or None)
 
     async def list_rashis_async(self, *, lang: str | None = None) -> Any:
         """List all 12 Rashis - Vedic Zodiac Signs Reference (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/vedic-astrology/rashis", params=params or None)
+        return await self._get_async("/vedic-astrology/rashis", params=params or None)
 
     def list_yogas(self, *, lang: str | None = None) -> Any:
         """List all planetary yogas - 300+ Vedic Yoga Combinations"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/vedic-astrology/yoga", params=params or None)
+        return self._get("/vedic-astrology/yoga", params=params or None)
 
     async def list_yogas_async(self, *, lang: str | None = None) -> Any:
         """List all planetary yogas - 300+ Vedic Yoga Combinations (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/vedic-astrology/yoga", params=params or None)
+        return await self._get_async("/vedic-astrology/yoga", params=params or None)
 
 
 class TarotDomain(_BaseDomain):
@@ -1605,7 +1594,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/spreads/career", body, params=params or None)
+        return self._post("/tarot/spreads/career", body, params=params or None)
 
     async def cast_career_spread_async(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Career Spread (7 cards) (async)"""
@@ -1617,7 +1606,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/spreads/career", body, params=params or None)
+        return await self._post_async("/tarot/spreads/career", body, params=params or None)
 
     def cast_celtic_cross(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Celtic Cross Spread (10 cards)"""
@@ -1629,7 +1618,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/spreads/celtic-cross", body, params=params or None)
+        return self._post("/tarot/spreads/celtic-cross", body, params=params or None)
 
     async def cast_celtic_cross_async(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Celtic Cross Spread (10 cards) (async)"""
@@ -1641,7 +1630,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/spreads/celtic-cross", body, params=params or None)
+        return await self._post_async("/tarot/spreads/celtic-cross", body, params=params or None)
 
     def cast_custom_spread(self, *, spread_name: str | None = None, positions: list[dict[str, Any]], question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Custom Spread Builder"""
@@ -1656,7 +1645,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/spreads/custom", body, params=params or None)
+        return self._post("/tarot/spreads/custom", body, params=params or None)
 
     async def cast_custom_spread_async(self, *, spread_name: str | None = None, positions: list[dict[str, Any]], question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Custom Spread Builder (async)"""
@@ -1671,7 +1660,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/spreads/custom", body, params=params or None)
+        return await self._post_async("/tarot/spreads/custom", body, params=params or None)
 
     def cast_love_spread(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Love Spread (5 cards)"""
@@ -1683,7 +1672,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/spreads/love", body, params=params or None)
+        return self._post("/tarot/spreads/love", body, params=params or None)
 
     async def cast_love_spread_async(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Love Spread (5 cards) (async)"""
@@ -1695,7 +1684,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/spreads/love", body, params=params or None)
+        return await self._post_async("/tarot/spreads/love", body, params=params or None)
 
     def cast_three_card(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Three-Card Spread: Past, Present, Future"""
@@ -1707,7 +1696,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/spreads/three-card", body, params=params or None)
+        return self._post("/tarot/spreads/three-card", body, params=params or None)
 
     async def cast_three_card_async(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Three-Card Spread: Past, Present, Future (async)"""
@@ -1719,7 +1708,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/spreads/three-card", body, params=params or None)
+        return await self._post_async("/tarot/spreads/three-card", body, params=params or None)
 
     def cast_yes_no(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Get yes/no answer to your question"""
@@ -1731,7 +1720,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/yes-no", body, params=params or None)
+        return self._post("/tarot/yes-no", body, params=params or None)
 
     async def cast_yes_no_async(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Get yes/no answer to your question (async)"""
@@ -1743,7 +1732,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/yes-no", body, params=params or None)
+        return await self._post_async("/tarot/yes-no", body, params=params or None)
 
     def draw_cards(self, *, count: float, seed: str | None = None, allow_reversals: bool | None = None, allow_duplicates: bool | None = None, lang: str | None = None) -> Any:
         """Draw random tarot cards with reproducible results"""
@@ -1758,7 +1747,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/draw", body, params=params or None)
+        return self._post("/tarot/draw", body, params=params or None)
 
     async def draw_cards_async(self, *, count: float, seed: str | None = None, allow_reversals: bool | None = None, allow_duplicates: bool | None = None, lang: str | None = None) -> Any:
         """Draw random tarot cards with reproducible results (async)"""
@@ -1773,7 +1762,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/draw", body, params=params or None)
+        return await self._post_async("/tarot/draw", body, params=params or None)
 
     def get_card(self, *, id: str, lang: str | None = None) -> Any:
         """Get detailed tarot card information"""
@@ -1799,7 +1788,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/tarot/daily", body, params=params or None)
+        return self._post("/tarot/daily", body, params=params or None)
 
     async def get_daily_card_async(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Get daily tarot card reading (async)"""
@@ -1811,7 +1800,7 @@ class TarotDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/tarot/daily", body, params=params or None)
+        return await self._post_async("/tarot/daily", body, params=params or None)
 
     def list_cards(self, *, limit: int | None = None, offset: int | None = None, arcana: str | None = None, suit: str | None = None, number: float | None = None, lang: str | None = None) -> Any:
         """List all 78 tarot cards"""
@@ -1828,7 +1817,7 @@ class TarotDomain(_BaseDomain):
             params["suit"] = suit
         if number is not None:
             params["number"] = number
-        return self._get(f"/tarot/cards", params=params or None)
+        return self._get("/tarot/cards", params=params or None)
 
     async def list_cards_async(self, *, limit: int | None = None, offset: int | None = None, arcana: str | None = None, suit: str | None = None, number: float | None = None, lang: str | None = None) -> Any:
         """List all 78 tarot cards (async)"""
@@ -1845,7 +1834,7 @@ class TarotDomain(_BaseDomain):
             params["suit"] = suit
         if number is not None:
             params["number"] = number
-        return await self._get_async(f"/tarot/cards", params=params or None)
+        return await self._get_async("/tarot/cards", params=params or None)
 
 
 class NumerologyDomain(_BaseDomain):
@@ -1858,7 +1847,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/karmic-lessons", body, params=params or None)
+        return self._post("/numerology/karmic-lessons", body, params=params or None)
 
     async def analyze_karmic_lessons_async(self, *, full_name: str, lang: str | None = None) -> Any:
         """Analyze Karmic Lessons - Life lessons from missing numbers (async)"""
@@ -1867,7 +1856,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/karmic-lessons", body, params=params or None)
+        return await self._post_async("/numerology/karmic-lessons", body, params=params or None)
 
     def calculate_birth_day(self, *, day: int, lang: str | None = None) -> Any:
         """Calculate Birth Day number - Special talents from day of birth"""
@@ -1876,7 +1865,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/birth-day", body, params=params or None)
+        return self._post("/numerology/birth-day", body, params=params or None)
 
     async def calculate_birth_day_async(self, *, day: int, lang: str | None = None) -> Any:
         """Calculate Birth Day number - Special talents from day of birth (async)"""
@@ -1885,7 +1874,31 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/birth-day", body, params=params or None)
+        return await self._post_async("/numerology/birth-day", body, params=params or None)
+
+    def calculate_bridge_numbers(self, *, full_name: str, year: int, month: int, day: int, lang: str | None = None) -> Any:
+        """Calculate Bridge Numbers - Harmonize different aspects of personality"""
+        body: dict[str, Any] = {}
+        body["fullName"] = full_name
+        body["year"] = year
+        body["month"] = month
+        body["day"] = day
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post("/numerology/bridge", body, params=params or None)
+
+    async def calculate_bridge_numbers_async(self, *, full_name: str, year: int, month: int, day: int, lang: str | None = None) -> Any:
+        """Calculate Bridge Numbers - Harmonize different aspects of personality (async)"""
+        body: dict[str, Any] = {}
+        body["fullName"] = full_name
+        body["year"] = year
+        body["month"] = month
+        body["day"] = day
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async("/numerology/bridge", body, params=params or None)
 
     def calculate_expression(self, *, full_name: str, lang: str | None = None) -> Any:
         """Calculate Expression number - Natural talents and life goals"""
@@ -1894,7 +1907,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/expression", body, params=params or None)
+        return self._post("/numerology/expression", body, params=params or None)
 
     async def calculate_expression_async(self, *, full_name: str, lang: str | None = None) -> Any:
         """Calculate Expression number - Natural talents and life goals (async)"""
@@ -1903,7 +1916,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/expression", body, params=params or None)
+        return await self._post_async("/numerology/expression", body, params=params or None)
 
     def calculate_life_path(self, *, year: int, month: int, day: int, lang: str | None = None) -> Any:
         """Calculate Life Path number - Most important numerology calculation"""
@@ -1914,7 +1927,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/life-path", body, params=params or None)
+        return self._post("/numerology/life-path", body, params=params or None)
 
     async def calculate_life_path_async(self, *, year: int, month: int, day: int, lang: str | None = None) -> Any:
         """Calculate Life Path number - Most important numerology calculation (async)"""
@@ -1925,27 +1938,47 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/life-path", body, params=params or None)
+        return await self._post_async("/numerology/life-path", body, params=params or None)
 
-    def calculate_maturity(self, *, life_path: int, expression: int, lang: str | None = None) -> Any:
+    def calculate_maturity(self, *, life_path: int | None = None, expression: int | None = None, full_name: str | None = None, year: int | None = None, month: int | None = None, day: int | None = None, lang: str | None = None) -> Any:
         """Calculate Maturity number - Who you become in later life"""
         body: dict[str, Any] = {}
-        body["lifePath"] = life_path
-        body["expression"] = expression
+        if life_path is not None:
+            body["lifePath"] = life_path
+        if expression is not None:
+            body["expression"] = expression
+        if full_name is not None:
+            body["fullName"] = full_name
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if day is not None:
+            body["day"] = day
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/maturity", body, params=params or None)
+        return self._post("/numerology/maturity", body, params=params or None)
 
-    async def calculate_maturity_async(self, *, life_path: int, expression: int, lang: str | None = None) -> Any:
+    async def calculate_maturity_async(self, *, life_path: int | None = None, expression: int | None = None, full_name: str | None = None, year: int | None = None, month: int | None = None, day: int | None = None, lang: str | None = None) -> Any:
         """Calculate Maturity number - Who you become in later life (async)"""
         body: dict[str, Any] = {}
-        body["lifePath"] = life_path
-        body["expression"] = expression
+        if life_path is not None:
+            body["lifePath"] = life_path
+        if expression is not None:
+            body["expression"] = expression
+        if full_name is not None:
+            body["fullName"] = full_name
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if day is not None:
+            body["day"] = day
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/maturity", body, params=params or None)
+        return await self._post_async("/numerology/maturity", body, params=params or None)
 
     def calculate_num_compatibility(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
         """Calculate Compatibility - Relationship dynamics between two people"""
@@ -1955,7 +1988,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/compatibility", body, params=params or None)
+        return self._post("/numerology/compatibility", body, params=params or None)
 
     async def calculate_num_compatibility_async(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
         """Calculate Compatibility - Relationship dynamics between two people (async)"""
@@ -1965,7 +1998,59 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/compatibility", body, params=params or None)
+        return await self._post_async("/numerology/compatibility", body, params=params or None)
+
+    def calculate_personal_day(self, *, month: int, day: int, target_date: str | None = None, lang: str | None = None) -> Any:
+        """Calculate Personal Day - Daily personalized numerology forecast"""
+        body: dict[str, Any] = {}
+        body["month"] = month
+        body["day"] = day
+        if target_date is not None:
+            body["targetDate"] = target_date
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post("/numerology/personal-day", body, params=params or None)
+
+    async def calculate_personal_day_async(self, *, month: int, day: int, target_date: str | None = None, lang: str | None = None) -> Any:
+        """Calculate Personal Day - Daily personalized numerology forecast (async)"""
+        body: dict[str, Any] = {}
+        body["month"] = month
+        body["day"] = day
+        if target_date is not None:
+            body["targetDate"] = target_date
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async("/numerology/personal-day", body, params=params or None)
+
+    def calculate_personal_month(self, *, month: int, day: int, year: int | None = None, target_month: int | None = None, lang: str | None = None) -> Any:
+        """Calculate Personal Month - Monthly numerology forecast"""
+        body: dict[str, Any] = {}
+        body["month"] = month
+        body["day"] = day
+        if year is not None:
+            body["year"] = year
+        if target_month is not None:
+            body["targetMonth"] = target_month
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post("/numerology/personal-month", body, params=params or None)
+
+    async def calculate_personal_month_async(self, *, month: int, day: int, year: int | None = None, target_month: int | None = None, lang: str | None = None) -> Any:
+        """Calculate Personal Month - Monthly numerology forecast (async)"""
+        body: dict[str, Any] = {}
+        body["month"] = month
+        body["day"] = day
+        if year is not None:
+            body["year"] = year
+        if target_month is not None:
+            body["targetMonth"] = target_month
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async("/numerology/personal-month", body, params=params or None)
 
     def calculate_personal_year(self, *, month: int, day: int, year: int | None = None, lang: str | None = None) -> Any:
         """Calculate Personal Year - Annual cycle and forecast for current year"""
@@ -1977,7 +2062,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/personal-year", body, params=params or None)
+        return self._post("/numerology/personal-year", body, params=params or None)
 
     async def calculate_personal_year_async(self, *, month: int, day: int, year: int | None = None, lang: str | None = None) -> Any:
         """Calculate Personal Year - Annual cycle and forecast for current year (async)"""
@@ -1989,7 +2074,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/personal-year", body, params=params or None)
+        return await self._post_async("/numerology/personal-year", body, params=params or None)
 
     def calculate_personality(self, *, full_name: str, lang: str | None = None) -> Any:
         """Calculate Personality number - How others perceive you"""
@@ -1998,7 +2083,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/personality", body, params=params or None)
+        return self._post("/numerology/personality", body, params=params or None)
 
     async def calculate_personality_async(self, *, full_name: str, lang: str | None = None) -> Any:
         """Calculate Personality number - How others perceive you (async)"""
@@ -2007,7 +2092,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/personality", body, params=params or None)
+        return await self._post_async("/numerology/personality", body, params=params or None)
 
     def calculate_soul_urge(self, *, full_name: str, lang: str | None = None) -> Any:
         """Calculate Soul Urge number - Inner motivations and desires"""
@@ -2016,7 +2101,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/soul-urge", body, params=params or None)
+        return self._post("/numerology/soul-urge", body, params=params or None)
 
     async def calculate_soul_urge_async(self, *, full_name: str, lang: str | None = None) -> Any:
         """Calculate Soul Urge number - Inner motivations and desires (async)"""
@@ -2025,7 +2110,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/soul-urge", body, params=params or None)
+        return await self._post_async("/numerology/soul-urge", body, params=params or None)
 
     def check_karmic_debt(self, *, year: int | None = None, month: int | None = None, day: int | None = None, full_name: str | None = None, lang: str | None = None) -> Any:
         """Detect Karmic Debt numbers - Past life challenges (13, 14, 16, 19)"""
@@ -2041,7 +2126,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/karmic-debt", body, params=params or None)
+        return self._post("/numerology/karmic-debt", body, params=params or None)
 
     async def check_karmic_debt_async(self, *, year: int | None = None, month: int | None = None, day: int | None = None, full_name: str | None = None, lang: str | None = None) -> Any:
         """Detect Karmic Debt numbers - Past life challenges (13, 14, 16, 19) (async)"""
@@ -2057,7 +2142,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/karmic-debt", body, params=params or None)
+        return await self._post_async("/numerology/karmic-debt", body, params=params or None)
 
     def generate_numerology_chart(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, lang: str | None = None) -> Any:
         """Generate Complete Numerology Chart - Full profile analysis"""
@@ -2071,7 +2156,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/chart", body, params=params or None)
+        return self._post("/numerology/chart", body, params=params or None)
 
     async def generate_numerology_chart_async(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, lang: str | None = None) -> Any:
         """Generate Complete Numerology Chart - Full profile analysis (async)"""
@@ -2085,7 +2170,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/chart", body, params=params or None)
+        return await self._post_async("/numerology/chart", body, params=params or None)
 
     def get_daily_number(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Get daily numerology number - Number of the Day with interpretation"""
@@ -2097,7 +2182,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/numerology/daily", body, params=params or None)
+        return self._post("/numerology/daily", body, params=params or None)
 
     async def get_daily_number_async(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Get daily numerology number - Number of the Day with interpretation (async)"""
@@ -2109,7 +2194,7 @@ class NumerologyDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/numerology/daily", body, params=params or None)
+        return await self._post_async("/numerology/daily", body, params=params or None)
 
     def get_number_meaning(self, *, number: str, lang: str | None = None) -> Any:
         """Get Number Meaning - Interpretation for any number 1-9, 11, 22, 33"""
@@ -2139,7 +2224,7 @@ class IChingDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/iching/daily/cast", body, params=params or None)
+        return self._post("/iching/daily/cast", body, params=params or None)
 
     async def cast_daily_reading_async(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Cast daily I-Ching reading with changing lines (async)"""
@@ -2151,7 +2236,7 @@ class IChingDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/iching/daily/cast", body, params=params or None)
+        return await self._post_async("/iching/daily/cast", body, params=params or None)
 
     def cast_reading(self, *, seed: str | None = None, lang: str | None = None) -> Any:
         """Cast an I-Ching reading"""
@@ -2160,7 +2245,7 @@ class IChingDomain(_BaseDomain):
             params["lang"] = lang
         if seed is not None:
             params["seed"] = seed
-        return self._get(f"/iching/cast", params=params or None)
+        return self._get("/iching/cast", params=params or None)
 
     async def cast_reading_async(self, *, seed: str | None = None, lang: str | None = None) -> Any:
         """Cast an I-Ching reading (async)"""
@@ -2169,7 +2254,7 @@ class IChingDomain(_BaseDomain):
             params["lang"] = lang
         if seed is not None:
             params["seed"] = seed
-        return await self._get_async(f"/iching/cast", params=params or None)
+        return await self._get_async("/iching/cast", params=params or None)
 
     def get_daily_hexagram(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Get daily I-Ching hexagram"""
@@ -2181,7 +2266,7 @@ class IChingDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/iching/daily", body, params=params or None)
+        return self._post("/iching/daily", body, params=params or None)
 
     async def get_daily_hexagram_async(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Get daily I-Ching hexagram (async)"""
@@ -2193,7 +2278,7 @@ class IChingDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/iching/daily", body, params=params or None)
+        return await self._post_async("/iching/daily", body, params=params or None)
 
     def get_hexagram(self, *, number: str, lang: str | None = None) -> Any:
         """Get hexagram by number"""
@@ -2214,14 +2299,14 @@ class IChingDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/iching/hexagrams/random", params=params or None)
+        return self._get("/iching/hexagrams/random", params=params or None)
 
     async def get_random_hexagram_async(self, *, lang: str | None = None) -> Any:
         """Get a random hexagram (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/iching/hexagrams/random", params=params or None)
+        return await self._get_async("/iching/hexagrams/random", params=params or None)
 
     def get_trigram(self, *, id: str, lang: str | None = None) -> Any:
         """Get trigram by number or name"""
@@ -2246,7 +2331,7 @@ class IChingDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return self._get(f"/iching/hexagrams", params=params or None)
+        return self._get("/iching/hexagrams", params=params or None)
 
     async def list_hexagrams_async(self, *, limit: int | None = None, offset: int | None = None, lang: str | None = None) -> Any:
         """List all 64 hexagrams (async)"""
@@ -2257,21 +2342,21 @@ class IChingDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return await self._get_async(f"/iching/hexagrams", params=params or None)
+        return await self._get_async("/iching/hexagrams", params=params or None)
 
     def list_trigrams(self, *, lang: str | None = None) -> Any:
         """List all 8 trigrams"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/iching/trigrams", params=params or None)
+        return self._get("/iching/trigrams", params=params or None)
 
     async def list_trigrams_async(self, *, lang: str | None = None) -> Any:
         """List all 8 trigrams (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/iching/trigrams", params=params or None)
+        return await self._get_async("/iching/trigrams", params=params or None)
 
     def lookup_hexagram(self, *, lines: str | None = None, lang: str | None = None) -> Any:
         """Lookup hexagram by line pattern"""
@@ -2280,7 +2365,7 @@ class IChingDomain(_BaseDomain):
             params["lang"] = lang
         if lines is not None:
             params["lines"] = lines
-        return self._get(f"/iching/hexagrams/lookup", params=params or None)
+        return self._get("/iching/hexagrams/lookup", params=params or None)
 
     async def lookup_hexagram_async(self, *, lines: str | None = None, lang: str | None = None) -> Any:
         """Lookup hexagram by line pattern (async)"""
@@ -2289,7 +2374,7 @@ class IChingDomain(_BaseDomain):
             params["lang"] = lang
         if lines is not None:
             params["lines"] = lines
-        return await self._get_async(f"/iching/hexagrams/lookup", params=params or None)
+        return await self._get_async("/iching/hexagrams/lookup", params=params or None)
 
 
 class CrystalsDomain(_BaseDomain):
@@ -2413,7 +2498,7 @@ class CrystalsDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/crystals/daily", body, params=params or None)
+        return self._post("/crystals/daily", body, params=params or None)
 
     async def get_daily_crystal_async(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Daily Crystal (async)"""
@@ -2425,37 +2510,37 @@ class CrystalsDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/crystals/daily", body, params=params or None)
+        return await self._post_async("/crystals/daily", body, params=params or None)
 
     def get_random_crystal(self, *, lang: str | None = None) -> Any:
         """Random Crystal"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._get(f"/crystals/random", params=params or None)
+        return self._get("/crystals/random", params=params or None)
 
     async def get_random_crystal_async(self, *, lang: str | None = None) -> Any:
         """Random Crystal (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._get_async(f"/crystals/random", params=params or None)
+        return await self._get_async("/crystals/random", params=params or None)
 
     def list_crystal_colors(self) -> Any:
         """List Crystal Colors"""
-        return self._get(f"/crystals/colors")
+        return self._get("/crystals/colors")
 
     async def list_crystal_colors_async(self) -> Any:
         """List Crystal Colors (async)"""
-        return await self._get_async(f"/crystals/colors")
+        return await self._get_async("/crystals/colors")
 
     def list_crystal_planets(self) -> Any:
         """List Crystal Planets"""
-        return self._get(f"/crystals/planets")
+        return self._get("/crystals/planets")
 
     async def list_crystal_planets_async(self) -> Any:
         """List Crystal Planets (async)"""
-        return await self._get_async(f"/crystals/planets")
+        return await self._get_async("/crystals/planets")
 
     def list_crystals(self, *, chakra: str | None = None, zodiac: str | None = None, element: str | None = None, color: str | None = None, planet: str | None = None, limit: int | None = None, offset: int | None = None, lang: str | None = None) -> Any:
         """List All Crystals"""
@@ -2476,7 +2561,7 @@ class CrystalsDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return self._get(f"/crystals", params=params or None)
+        return self._get("/crystals", params=params or None)
 
     async def list_crystals_async(self, *, chakra: str | None = None, zodiac: str | None = None, element: str | None = None, color: str | None = None, planet: str | None = None, limit: int | None = None, offset: int | None = None, lang: str | None = None) -> Any:
         """List All Crystals (async)"""
@@ -2497,7 +2582,7 @@ class CrystalsDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return await self._get_async(f"/crystals", params=params or None)
+        return await self._get_async("/crystals", params=params or None)
 
     def search_crystals(self, *, q: str | None = None, limit: int | None = None, offset: int | None = None, lang: str | None = None) -> Any:
         """Search Crystals"""
@@ -2510,7 +2595,7 @@ class CrystalsDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return self._get(f"/crystals/search", params=params or None)
+        return self._get("/crystals/search", params=params or None)
 
     async def search_crystals_async(self, *, q: str | None = None, limit: int | None = None, offset: int | None = None, lang: str | None = None) -> Any:
         """Search Crystals (async)"""
@@ -2523,7 +2608,7 @@ class CrystalsDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return await self._get_async(f"/crystals/search", params=params or None)
+        return await self._get_async("/crystals/search", params=params or None)
 
 
 class AngelNumbersDomain(_BaseDomain):
@@ -2536,7 +2621,7 @@ class AngelNumbersDomain(_BaseDomain):
             params["lang"] = lang
         if number is not None:
             params["number"] = number
-        return self._get(f"/angel-numbers/lookup", params=params or None)
+        return self._get("/angel-numbers/lookup", params=params or None)
 
     async def analyze_number_sequence_async(self, *, number: str | None = None, lang: str | None = None) -> Any:
         """Analyze Any Number Sequence (async)"""
@@ -2545,7 +2630,7 @@ class AngelNumbersDomain(_BaseDomain):
             params["lang"] = lang
         if number is not None:
             params["number"] = number
-        return await self._get_async(f"/angel-numbers/lookup", params=params or None)
+        return await self._get_async("/angel-numbers/lookup", params=params or None)
 
     def get_angel_number(self, *, number: str, lang: str | None = None) -> Any:
         """Get Angel Number Meaning"""
@@ -2571,7 +2656,7 @@ class AngelNumbersDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return self._post(f"/angel-numbers/daily", body, params=params or None)
+        return self._post("/angel-numbers/daily", body, params=params or None)
 
     async def get_daily_angel_number_async(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Daily Angel Number (async)"""
@@ -2583,7 +2668,7 @@ class AngelNumbersDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
-        return await self._post_async(f"/angel-numbers/daily", body, params=params or None)
+        return await self._post_async("/angel-numbers/daily", body, params=params or None)
 
     def list_angel_numbers(self, *, limit: int | None = None, offset: int | None = None, type: str | None = None, lang: str | None = None) -> Any:
         """List All Angel Numbers"""
@@ -2596,7 +2681,7 @@ class AngelNumbersDomain(_BaseDomain):
             params["offset"] = offset
         if type is not None:
             params["type"] = type
-        return self._get(f"/angel-numbers/numbers", params=params or None)
+        return self._get("/angel-numbers/numbers", params=params or None)
 
     async def list_angel_numbers_async(self, *, limit: int | None = None, offset: int | None = None, type: str | None = None, lang: str | None = None) -> Any:
         """List All Angel Numbers (async)"""
@@ -2609,7 +2694,7 @@ class AngelNumbersDomain(_BaseDomain):
             params["offset"] = offset
         if type is not None:
             params["type"] = type
-        return await self._get_async(f"/angel-numbers/numbers", params=params or None)
+        return await self._get_async("/angel-numbers/numbers", params=params or None)
 
 
 class DreamsDomain(_BaseDomain):
@@ -2622,7 +2707,7 @@ class DreamsDomain(_BaseDomain):
             body["seed"] = seed
         if date is not None:
             body["date"] = date
-        return self._post(f"/dreams/daily", body)
+        return self._post("/dreams/daily", body)
 
     async def get_daily_dream_symbol_async(self, *, seed: str | None = None, date: str | None = None) -> Any:
         """Get daily dream symbol (async)"""
@@ -2631,7 +2716,7 @@ class DreamsDomain(_BaseDomain):
             body["seed"] = seed
         if date is not None:
             body["date"] = date
-        return await self._post_async(f"/dreams/daily", body)
+        return await self._post_async("/dreams/daily", body)
 
     def get_dream_symbol(self, *, id: str) -> Any:
         """Get dream symbol details"""
@@ -2646,22 +2731,22 @@ class DreamsDomain(_BaseDomain):
         params: dict[str, Any] = {}
         if count is not None:
             params["count"] = count
-        return self._get(f"/dreams/symbols/random", params=params or None)
+        return self._get("/dreams/symbols/random", params=params or None)
 
     async def get_random_symbols_async(self, *, count: float | None = None) -> Any:
         """Get random dream symbols (async)"""
         params: dict[str, Any] = {}
         if count is not None:
             params["count"] = count
-        return await self._get_async(f"/dreams/symbols/random", params=params or None)
+        return await self._get_async("/dreams/symbols/random", params=params or None)
 
     def get_symbol_letter_counts(self) -> Any:
         """Get symbol counts by letter"""
-        return self._get(f"/dreams/symbols/letters")
+        return self._get("/dreams/symbols/letters")
 
     async def get_symbol_letter_counts_async(self) -> Any:
         """Get symbol counts by letter (async)"""
-        return await self._get_async(f"/dreams/symbols/letters")
+        return await self._get_async("/dreams/symbols/letters")
 
     def search_dream_symbols(self, *, q: str | None = None, letter: str | None = None, limit: int | None = None, offset: int | None = None) -> Any:
         """List and search dream symbols"""
@@ -2674,7 +2759,7 @@ class DreamsDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return self._get(f"/dreams/symbols", params=params or None)
+        return self._get("/dreams/symbols", params=params or None)
 
     async def search_dream_symbols_async(self, *, q: str | None = None, letter: str | None = None, limit: int | None = None, offset: int | None = None) -> Any:
         """List and search dream symbols (async)"""
@@ -2687,7 +2772,7 @@ class DreamsDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return await self._get_async(f"/dreams/symbols", params=params or None)
+        return await self._get_async("/dreams/symbols", params=params or None)
 
 
 class LocationDomain(_BaseDomain):
@@ -2718,7 +2803,7 @@ class LocationDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return self._get(f"/location/countries", params=params or None)
+        return self._get("/location/countries", params=params or None)
 
     async def list_countries_async(self, *, limit: int | None = None, offset: int | None = None) -> Any:
         """List all 227 countries - ISO codes and city coverage (async)"""
@@ -2727,7 +2812,7 @@ class LocationDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return await self._get_async(f"/location/countries", params=params or None)
+        return await self._get_async("/location/countries", params=params or None)
 
     def search_cities(self, *, q: str | None = None, limit: int | None = None, offset: int | None = None) -> Any:
         """Search cities worldwide - Geocoding autocomplete with coordinates and timezone"""
@@ -2738,7 +2823,7 @@ class LocationDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return self._get(f"/location/search", params=params or None)
+        return self._get("/location/search", params=params or None)
 
     async def search_cities_async(self, *, q: str | None = None, limit: int | None = None, offset: int | None = None) -> Any:
         """Search cities worldwide - Geocoding autocomplete with coordinates and timezone (async)"""
@@ -2749,7 +2834,7 @@ class LocationDomain(_BaseDomain):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        return await self._get_async(f"/location/search", params=params or None)
+        return await self._get_async("/location/search", params=params or None)
 
 
 class UsageDomain(_BaseDomain):
@@ -2757,11 +2842,11 @@ class UsageDomain(_BaseDomain):
 
     def get_usage_stats(self) -> Any:
         """Get API usage statistics"""
-        return self._get(f"/usage")
+        return self._get("/usage")
 
     async def get_usage_stats_async(self) -> Any:
         """Get API usage statistics (async)"""
-        return await self._get_async(f"/usage")
+        return await self._get_async("/usage")
 
 
 class Roxy:

@@ -5,6 +5,7 @@ typed client code, then run codegen to produce the factory.py wrapper.
 
 Run with: python generate.py
 """
+
 import json
 import shutil
 import subprocess
@@ -58,9 +59,12 @@ def run_openapi_python_client() -> None:
     cmd = [
         opc_cmd,
         "generate",
-        "--path", str(SPEC_PATH),
-        "--meta", "none",
-        "--output-path", str(GENERATED_DIR),
+        "--path",
+        str(SPEC_PATH),
+        "--meta",
+        "none",
+        "--output-path",
+        str(GENERATED_DIR),
     ]
 
     # Note: openapi-python-client.toml is not used with --meta none
@@ -74,8 +78,10 @@ def run_openapi_python_client() -> None:
         sys.exit(result.returncode)
 
     # Count generated files
-    api_files = list((GENERATED_DIR / "api").rglob("*.py")) if (GENERATED_DIR / "api").exists() else []
-    model_files = list((GENERATED_DIR / "models").rglob("*.py")) if (GENERATED_DIR / "models").exists() else []
+    api_dir = GENERATED_DIR / "api"
+    model_dir = GENERATED_DIR / "models"
+    api_files = list(api_dir.rglob("*.py")) if api_dir.exists() else []
+    model_files = list(model_dir.rglob("*.py")) if model_dir.exists() else []
     print(f"Generated {len(api_files)} API files, {len(model_files)} model files")
 
 

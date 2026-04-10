@@ -9,7 +9,7 @@ Setup:
 
     export ROXY_API_KEY="your-api-key"                        # get one at https://roxyapi.com/pricing
     export ROXY_BASE_URL="https://roxyapi.com/api/v2"        # optional, this is the default
-    uvicorn examples.fastapi_app:app --reload --port 8001
+    cd examples && uvicorn app:app --reload --port 8001
 
 Test with curl:
     curl localhost:8001/horoscope/aries
@@ -28,6 +28,7 @@ Test with curl:
     curl localhost:8001/location/search?q=Mumbai
     curl localhost:8001/usage
 """
+
 from __future__ import annotations
 
 import os
@@ -92,8 +93,8 @@ async def daily_horoscope(sign: str, lang: str | None = None):
 
 
 class ChartRequest(BaseModel):
-    date: str        # YYYY-MM-DD
-    time: str        # HH:MM:SS
+    date: str  # YYYY-MM-DD
+    time: str  # HH:MM:SS
     latitude: float
     longitude: float
     timezone: float = 0.0  # UTC offset in hours (e.g., -5 for EST, 5.5 for IST)

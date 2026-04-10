@@ -1,4 +1,5 @@
 """Unit tests for the SDK factory wrapper."""
+
 import inspect
 
 import pytest
@@ -14,8 +15,18 @@ def test_create_roxy_returns_roxy_instance():
 
 def test_roxy_has_all_domains():
     roxy = create_roxy("test-key")
-    for domain in ["astrology", "vedic_astrology", "tarot", "numerology", "iching",
-                    "crystals", "angel_numbers", "dreams", "location", "usage"]:
+    for domain in [
+        "astrology",
+        "vedic_astrology",
+        "tarot",
+        "numerology",
+        "iching",
+        "crystals",
+        "angel_numbers",
+        "dreams",
+        "location",
+        "usage",
+    ]:
         assert hasattr(roxy, domain), f"Missing domain: {domain}"
     roxy.close()
 
@@ -67,6 +78,7 @@ def test_roxy_api_error_attributes():
 
 def test_version_exported():
     import roxy_sdk
+
     assert hasattr(roxy_sdk, "__version__")
     assert isinstance(roxy_sdk.__version__, str)
 
@@ -95,11 +107,26 @@ def test_sync_methods_are_not_coroutines():
 
 def test_domain_method_count():
     roxy = create_roxy("test-key")
-    mins = {"astrology": 20, "vedic_astrology": 30, "tarot": 8, "numerology": 10,
-            "iching": 7, "crystals": 10, "angel_numbers": 3, "dreams": 4, "location": 2, "usage": 1}
+    mins = {
+        "astrology": 20,
+        "vedic_astrology": 30,
+        "tarot": 8,
+        "numerology": 10,
+        "iching": 7,
+        "crystals": 10,
+        "angel_numbers": 3,
+        "dreams": 4,
+        "location": 2,
+        "usage": 1,
+    }
     for domain_name, min_count in mins.items():
         domain = getattr(roxy, domain_name)
-        methods = [m for m in dir(domain)
-                   if not m.startswith("_") and not m.endswith("_async") and callable(getattr(domain, m))]
-        assert len(methods) >= min_count, f"{domain_name} has {len(methods)}, expected >= {min_count}"
+        methods = [
+            m
+            for m in dir(domain)
+            if not m.startswith("_") and not m.endswith("_async") and callable(getattr(domain, m))
+        ]
+        assert len(methods) >= min_count, (
+            f"{domain_name} has {len(methods)}, expected >= {min_count}"
+        )
     roxy.close()

@@ -186,10 +186,14 @@ def main() -> None:
                 continue
             tags = operation.get("tags", ["Other"])
             tag = tags[0]
-            if tag not in TAG_MAP:
-                print(f"WARNING: Unknown tag '{tag}' for operationId '{oid}'. Add it to TAG_MAP in codegen.py.")
-                continue
             oid = operation.get("operationId", "")
+            if tag not in TAG_MAP:
+                print(
+                    f"WARNING: Unknown tag '{tag}' for "
+                    f"operationId '{oid}'. "
+                    "Add it to TAG_MAP in codegen.py."
+                )
+                continue
             if not oid:
                 continue
 

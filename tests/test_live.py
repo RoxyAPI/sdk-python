@@ -1,15 +1,35 @@
-"""Live integration tests against localhost:3000."""
+"""Live integration tests against the RoxyAPI.
+
+Requires ROXY_TEST_KEY environment variable.
+Set it in a .env file at the project root (gitignored) or export it:
+
+    export ROXY_TEST_KEY="your-test-key"
+
+Optionally set ROXY_BASE_URL to override the default production URL.
+"""
+
 import os
+from pathlib import Path
 
 import pytest
 
 from roxy_sdk import create_roxy
 
-TEST_KEY = os.environ.get(
-    "ROXY_TEST_KEY",
-    "c475efae-087c-47e8-a967-c59cb2ac837d.0b30d0fdcae1450d.mxs1rhIKiN_qSuSqZ9FbW198bpXiG3SyVUtXN7_zZh8",
-)
-BASE_URL = os.environ.get("ROXY_BASE_URL", "http://localhost:3000/api/v2")
+# Load .env file from project root if it exists
+_env_file = Path(__file__).resolve().parent.parent / ".env"
+if _env_file.exists():
+    for _line in _env_file.read_text().splitlines():
+        _line = _line.strip()
+        if not _line or _line.startswith("#") or "=" not in _line:
+            continue
+        _key, _, _val = _line.partition("=")
+        _val = _val.strip().strip("\"'")
+        os.environ.setdefault(_key.strip(), _val)
+
+TEST_KEY = os.environ.get("ROXY_TEST_KEY", "")
+BASE_URL = os.environ.get("ROXY_BASE_URL", "https://roxyapi.com/api/v2")
+
+pytestmark = pytest.mark.skipif(not TEST_KEY, reason="ROXY_TEST_KEY not set")
 
 
 @pytest.fixture

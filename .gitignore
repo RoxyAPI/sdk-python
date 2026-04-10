@@ -7,6 +7,9 @@ openapi-python-client.toml
 # Generated typed models (excluded from wheel, regenerated locally)
 src/roxy_sdk/_generated/
 
+# Environment / secrets
+.env
+
 # Python
 __pycache__/
 *.py[cod]

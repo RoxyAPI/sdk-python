@@ -62,6 +62,7 @@ build = "hatch build"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+exclude = ["src/roxy_sdk/factory.py", "codegen.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
