@@ -29,6 +29,7 @@ TAG_MAP: dict[str, tuple[str, str]] = {
     "Crystals and Healing Stones": ("CrystalsDomain", "crystals"),
     "Angel Numbers": ("AngelNumbersDomain", "angel_numbers"),
     "Dreams": ("DreamsDomain", "dreams"),
+    "Biorhythm": ("BiorhythmDomain", "biorhythm"),
     "Location and Timezone": ("LocationDomain", "location"),
     "Usage": ("UsageDomain", "usage"),
 }

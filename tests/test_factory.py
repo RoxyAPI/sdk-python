@@ -24,6 +24,7 @@ def test_roxy_has_all_domains():
         "crystals",
         "angel_numbers",
         "dreams",
+        "biorhythm",
         "location",
         "usage",
     ]:
@@ -92,6 +93,7 @@ def test_async_methods_exist():
     assert inspect.iscoroutinefunction(roxy.crystals.list_crystals_async)
     assert inspect.iscoroutinefunction(roxy.angel_numbers.list_angel_numbers_async)
     assert inspect.iscoroutinefunction(roxy.dreams.search_dream_symbols_async)
+    assert inspect.iscoroutinefunction(roxy.biorhythm.get_daily_biorhythm_async)
     assert inspect.iscoroutinefunction(roxy.location.search_cities_async)
     assert inspect.iscoroutinefunction(roxy.usage.get_usage_stats_async)
     roxy.close()
@@ -116,6 +118,7 @@ def test_domain_method_count():
         "crystals": 10,
         "angel_numbers": 3,
         "dreams": 4,
+        "biorhythm": 5,
         "location": 2,
         "usage": 1,
     }
