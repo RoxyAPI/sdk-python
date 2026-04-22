@@ -6,7 +6,7 @@
 [![API Reference](https://img.shields.io/badge/api%20reference-roxyapi.com-blue)](https://roxyapi.com/api-reference)
 [![License](https://img.shields.io/github/license/RoxyAPI/sdk-python)](https://github.com/RoxyAPI/sdk-python/blob/main/LICENSE)
 
-Python SDK for [RoxyAPI](https://roxyapi.com). Astrology, tarot, numerology, I Ching, crystals, angel numbers, dream interpretation, and more. One API key, 10 domains, 120+ endpoints.
+Python SDK for [RoxyAPI](https://roxyapi.com). Astrology, tarot, numerology, I Ching, crystals, angel numbers, dream interpretation, biorhythm, and more. One API key, 11 domains, 120+ endpoints.
 
 ## Install
 
@@ -88,6 +88,7 @@ print(f"I Ching: {reading}")
 | Crystals | `roxy.crystals` | Healing properties, zodiac/chakra pairings, birthstones, search |
 | Angel Numbers | `roxy.angel_numbers` | Number meanings, pattern analysis, daily guidance |
 | Dreams | `roxy.dreams` | Symbol dictionary, interpretations, daily guidance |
+| Biorhythm | `roxy.biorhythm` | Physical, emotional, intellectual cycles, forecasts, compatibility |
 | Location | `roxy.location` | City geocoding for birth chart coordinates |
 | Usage | `roxy.usage` | API usage stats and subscription info |
 

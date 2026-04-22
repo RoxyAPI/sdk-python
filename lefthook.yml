@@ -1,17 +1,21 @@
 pre-commit:
+  parallel: true
   commands:
+    ruff-format:
+      glob: "*.py"
+      run: uv run ruff format {staged_files}
+      stage_fixed: true
     ruff-check:
       glob: "*.py"
-      run: ruff check --fix . && ruff format .
+      run: uv run ruff check --fix {staged_files}
       stage_fixed: true
-    typecheck:
-      run: mypy src/roxy_sdk/factory.py src/roxy_sdk/__init__.py
 
 pre-push:
+  parallel: true
   commands:
-    ruff-full:
-      run: ruff check .
-    typecheck:
-      run: mypy src/roxy_sdk/factory.py src/roxy_sdk/__init__.py
-    test:
-      run: python -m pytest tests/test_factory.py -q
+    ruff-check-strict:
+      run: uv run ruff check .
+    type-check:
+      run: uv run mypy src/roxy_sdk/__init__.py
+    pytest:
+      run: uv run pytest tests/test_factory.py -q

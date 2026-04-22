@@ -1,6 +1,6 @@
 # roxy-sdk (Python) Agent Guide
 
-Python SDK for RoxyAPI. Multi-domain spiritual and metaphysical intelligence API. One API key, 10 domains, sync and async support.
+Python SDK for RoxyAPI. Multi-domain spiritual and metaphysical intelligence API. One API key, 11 domains, sync and async support.
 
 ## Install and initialize
 
@@ -30,6 +30,7 @@ Type `roxy.` to see all available namespaces:
 | `roxy.iching` | I Ching: hexagrams, trigrams, coin casting, daily readings |
 | `roxy.angel_numbers` | Angel number meanings, pattern analysis, daily guidance |
 | `roxy.dreams` | Dream symbol dictionary and interpretations |
+| `roxy.biorhythm` | Physical, emotional, intellectual cycles, forecasts, compatibility |
 | `roxy.location` | City geocoding for birth chart coordinates |
 | `roxy.usage` | API usage stats and subscription info |
 
@@ -116,6 +117,8 @@ Error codes: `validation_error`, `api_key_required`, `invalid_api_key`, `subscri
 | I Ching reading | `roxy.iching.cast_reading()` |
 | Angel number meaning | `roxy.angel_numbers.get_angel_number(number="1111")` |
 | Dream symbol lookup | `roxy.dreams.get_dream_symbol(id="flying")` |
+| Daily biorhythm | `roxy.biorhythm.get_daily_biorhythm(date="1990-01-15")` |
+| Biorhythm forecast | `roxy.biorhythm.get_biorhythm_forecast(date="1990-01-15", days=30)` |
 | Find city coordinates | `roxy.location.search_cities(q="Mumbai")` |
 | Check API usage | `roxy.usage.get_usage_stats()` |
 

@@ -1,10 +1,10 @@
 name: Release
 
 on:
-  # repository_dispatch:
-  #   types: [openapi-updated]
-  # schedule:
-  #   - cron: '0 6 * * *'
+  repository_dispatch:
+    types: [openapi-updated]
+  schedule:
+    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       version_bump:
@@ -24,59 +24,62 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
+          enable-cache: true
 
-      - name: Install tools
-        run: pip install hatch httpx
+      - name: Install deps
+        run: uv sync --all-extras --dev
 
-      - name: Fetch latest spec
-        run: python generate.py
+      - name: Regenerate SDK from live spec
+        run: uv run python generate.py
 
       - name: Check if spec changed
         id: diff
         run: |
-          if git diff --quiet specs/openapi.json; then
+          if git diff --quiet specs/openapi.json src/roxy_sdk/factory.py; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Lint and typecheck
+      - name: Lint
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
-        run: |
-          pip install ruff mypy
-          ruff check .
-          mypy src/roxy_sdk/factory.py src/roxy_sdk/__init__.py
+        run: uv run ruff check .
+
+      - name: Typecheck
+        if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: uv run mypy src/roxy_sdk/__init__.py
 
       - name: Test
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
-        run: |
-          pip install -e . pytest pytest-asyncio
-          pytest tests/test_factory.py -v
+        run: uv run pytest tests/test_factory.py -v
 
-      - name: Bump version
+      - name: Bump version in pyproject.toml and version.py
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         run: |
-          python3 -c "
+          python3 - <<'PY'
           import re
-          bump = '${{ github.event.inputs.version_bump || 'patch' }}'
-          path = 'src/roxy_sdk/version.py'
-          text = open(path).read()
-          ver = re.search(r'VERSION = \"(.+?)\"', text).group(1)
-          parts = [int(x) for x in ver.split('.')]
-          if bump == 'major':   parts[0] += 1; parts[1] = 0; parts[2] = 0
-          elif bump == 'minor': parts[1] += 1; parts[2] = 0
-          else:                 parts[2] += 1
-          new_ver = '.'.join(str(x) for x in parts)
-          open(path, 'w').write(f'VERSION = \"{new_ver}\"\n')
-          open('/tmp/new_version.txt', 'w').write(new_ver)
-          "
+          bump = "${{ github.event.inputs.version_bump || 'patch' }}"
+          pp = open("pyproject.toml").read()
+          ver = re.search(r'^version = "(.+?)"', pp, re.M).group(1)
+          parts = [int(x) for x in ver.split(".")]
+          if bump == "major":   parts = [parts[0] + 1, 0, 0]
+          elif bump == "minor": parts = [parts[0], parts[1] + 1, 0]
+          else:                 parts = [parts[0], parts[1], parts[2] + 1]
+          new_ver = ".".join(str(x) for x in parts)
+          open("pyproject.toml", "w").write(
+              re.sub(r'^version = ".+?"', f'version = "{new_ver}"', pp, count=1, flags=re.M)
+          )
+          open("src/roxy_sdk/version.py", "w").write(f'VERSION = "{new_ver}"\n')
+          open("/tmp/new_version.txt", "w").write(new_ver)
+          print(f"Bumped {ver} -> {new_ver} ({bump})")
+          PY
 
       - name: Build
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
-        run: hatch build
+        run: uv build
 
       - name: Publish to PyPI
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
@@ -88,7 +91,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           VERSION=$(cat /tmp/new_version.txt)
-          git add src/roxy_sdk/version.py specs/openapi.json src/roxy_sdk/factory.py
+          git add pyproject.toml src/roxy_sdk/version.py specs/openapi.json src/roxy_sdk/factory.py
           git commit -m "release: v$VERSION"
           git tag "v$VERSION"
           git push --follow-tags
