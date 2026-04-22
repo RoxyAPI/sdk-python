@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "roxy-sdk"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python SDK for RoxyAPI. Astrology, tarot, numerology, and more."
 readme = "README.md"
 license = "MIT"
