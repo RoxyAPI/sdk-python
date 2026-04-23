@@ -5,6 +5,7 @@
 [![Docs](https://img.shields.io/badge/docs-roxyapi.com-blue)](https://roxyapi.com/docs)
 [![API Reference](https://img.shields.io/badge/api%20reference-roxyapi.com-blue)](https://roxyapi.com/api-reference)
 [![License](https://img.shields.io/github/license/RoxyAPI/sdk-python)](https://github.com/RoxyAPI/sdk-python/blob/main/LICENSE)
+[![SafeSkill 93/100](https://img.shields.io/badge/SafeSkill-93%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/roxyapi-sdk-python)
 
 The Python SDK for [Roxy](https://roxyapi.com), the multi-domain spiritual intelligence API. One key, ten domains, sync and async. Western astrology API, Vedic astrology API, numerology API, tarot API, biorhythm API, I Ching API, crystals API, dream interpretation API, and angel numbers API behind a single subscription.
 
