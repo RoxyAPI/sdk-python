@@ -26,9 +26,10 @@ roxy = create_roxy("your-api-key")
 # Step 1: geocode the birth city (required for any chart endpoint)
 result = roxy.location.search_cities(q="Mumbai, India")
 city = result["cities"][0]
-lat, lng, tz = city["latitude"], city["longitude"], city["utcOffset"]
+lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 
-# Step 2: Vedic kundli. Pass utcOffset as `timezone` (decimal hours, e.g. 5.5 for IST).
+# Step 2: Vedic kundli. `timezone` can be the IANA string ("Asia/Kolkata") —
+# the server resolves it to the DST-correct offset for the chart's own date.
 kundli = roxy.vedic_astrology.generate_birth_chart(
     date="1990-01-15",
     time="14:30:00",
@@ -37,7 +38,7 @@ kundli = roxy.vedic_astrology.generate_birth_chart(
     timezone=tz,
 )
 
-# Or Western natal chart
+# Or Western natal chart (same timezone semantics)
 natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15",
     time="14:30:00",
@@ -56,10 +57,10 @@ Every chart, horoscope, panchang, dasha, dosha, navamsa, KP, synastry, compatibi
 ```python
 result = roxy.location.search_cities(q="Tokyo")
 city = result["cities"][0]
-lat, lng, tz = city["latitude"], city["longitude"], city["utcOffset"]
-# Pass `tz` (a decimal like 9.0 for JST) as the `timezone` kwarg on chart endpoints.
-# The `timezone` field on the city is the IANA string ("Asia/Tokyo"), useful for
-# date libraries, but not what RoxyAPI chart endpoints expect.
+lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
+# `tz` is the IANA string ("Asia/Tokyo"). Pass it straight into any chart
+# endpoint — the server resolves it to the DST-correct offset for the chart's
+# own date. If you prefer a decimal, city["utcOffset"] also works.
 ```
 
 ## Domain reference

@@ -23,9 +23,11 @@ Every chart, horoscope, panchang, dasha, dosha, navamsa, KP, synastry, compatibi
 ```python
 result = roxy.location.search_cities(q="Mumbai")
 city = result["cities"][0]
-lat, lng, tz = city["latitude"], city["longitude"], city["utcOffset"]
-# Use `utcOffset` (decimal: 5.5, -5, 9, ...) as the `timezone` kwarg on chart calls.
-# The city's `timezone` field is the IANA string ("Asia/Kolkata"), not what chart endpoints expect.
+lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
+# `timezone` is the IANA string ("Asia/Kolkata"). Pass it directly to any chart endpoint.
+# The server resolves it to the DST-correct decimal offset using the request's own date,
+# so a January 1990 New York chart gets EST (-5) even when you looked the city up in July.
+# If you prefer numbers, city["utcOffset"] (decimal: 5.5, -5, ...) also works.
 ```
 
 ## Domains
@@ -57,7 +59,7 @@ city = result["cities"][0]
 chart = roxy.astrology.generate_natal_chart(
     date="1990-01-15", time="14:30:00",
     latitude=city["latitude"], longitude=city["longitude"],
-    timezone=city["utcOffset"],
+    timezone=city["timezone"],  # IANA string, server resolves DST for the date
 )
 ```
 
@@ -185,7 +187,7 @@ These are the fields AI agents most often get wrong. Copy the format column exac
 
 | Field | Format | Good | Bad |
 |-------|--------|------|-----|
-| `timezone` | Decimal hours from UTC (float) | `5.5` (India IST, GMT+5:30), `5.75` (Nepal NPT, GMT+5:45), `-5` (NY EST), `9.5` (Adelaide), `0` (UTC) | `"5:30"`, `"5:45"`, `5.45`, `"GMT-5"`, `"Asia/Kolkata"`, `"+0530"` |
+| `timezone` | Decimal hours (float) OR IANA string | `5.5`, `-5`, `0` (decimal) OR `"Asia/Kolkata"`, `"America/New_York"` (IANA, resolved to DST-correct offset for the chart date) | `"5:30"`, `"+0530"`, `"GMT-5"`, partial names |
 | `date` | ISO date string | `"1990-01-15"` | `"Jan 15 1990"`, `datetime.now()`, `"15/01/1990"`, `"1990-1-15"` |
 | `time` | 24-hour string | `"14:30:00"`, `"09:00:00"` | `"2:30 PM"`, `"14:30"` (no seconds), `"9:0:0"` (no leading zeros) |
 | `latitude` | Decimal degrees (float) | `28.6139` (Delhi), `-33.8688` (Sydney), `40.7128` (NYC) | `"28°36'N"`, `"28 36 50"`, strings |
