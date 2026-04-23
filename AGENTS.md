@@ -21,8 +21,11 @@ roxy = create_roxy("your-api-key")
 Every chart, horoscope, panchang, dasha, dosha, navamsa, KP, synastry, compatibility, and natal endpoint needs `latitude`, `longitude`, and (for Western) `timezone`. **Never ask the user for coordinates.** Always call `roxy.location.search_cities` first.
 
 ```python
-cities = roxy.location.search_cities(q="Mumbai")
-lat, lng, tz = cities[0]["latitude"], cities[0]["longitude"], cities[0]["timezone"]
+result = roxy.location.search_cities(q="Mumbai")
+city = result["cities"][0]
+lat, lng, tz = city["latitude"], city["longitude"], city["utcOffset"]
+# Use `utcOffset` (decimal: 5.5, -5, 9, ...) as the `timezone` kwarg on chart calls.
+# The city's `timezone` field is the IANA string ("Asia/Kolkata") — not what chart endpoints expect.
 ```
 
 ## Domains
@@ -48,12 +51,13 @@ Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE wi
 ### Two-step pattern for coordinate-dependent endpoints
 
 ```python
-cities = roxy.location.search_cities(q="Delhi")
-lat, lng, tz = cities[0]["latitude"], cities[0]["longitude"], cities[0]["timezone"]
+result = roxy.location.search_cities(q="Delhi")
+city = result["cities"][0]
 
 chart = roxy.astrology.generate_natal_chart(
     date="1990-01-15", time="14:30:00",
-    latitude=lat, longitude=lng, timezone=tz,
+    latitude=city["latitude"], longitude=city["longitude"],
+    timezone=city["utcOffset"],
 )
 ```
 

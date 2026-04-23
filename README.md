@@ -6,9 +6,9 @@
 [![API Reference](https://img.shields.io/badge/api%20reference-roxyapi.com-blue)](https://roxyapi.com/api-reference)
 [![License](https://img.shields.io/github/license/RoxyAPI/sdk-python)](https://github.com/RoxyAPI/sdk-python/blob/main/LICENSE)
 
-Python SDK for [RoxyAPI](https://roxyapi.com). Natal charts, Vedic kundli, numerology, tarot, biorhythm, I Ching, crystals, dreams, and angel numbers. Eleven domains, one API key, sync and async.
+The Python SDK for [Roxy](https://roxyapi.com), the multi-domain spiritual intelligence API. One key, ten domains, sync and async. Western astrology API, Vedic astrology API, numerology API, tarot API, biorhythm API, I Ching API, crystals API, dream interpretation API, and angel numbers API behind a single subscription.
 
-Build astrology apps, kundli matching, tarot platforms, compatibility tools, and daily-horoscope features without writing a single calculation.
+Build a natal chart app, a kundli matching product, a daily horoscope feature, a tarot reading app, a numerology life path calculator, or a spiritual AI agent without writing a single calculation. Calculations are verified against NASA JPL Horizons; interpretations ship in eight languages.
 
 ## Install
 
@@ -24,24 +24,26 @@ from roxy_sdk import create_roxy
 roxy = create_roxy("your-api-key")
 
 # Step 1: geocode the birth city (required for any chart endpoint)
-cities = roxy.location.search_cities(q="Mumbai, India")
-lat, lng = cities[0]["latitude"], cities[0]["longitude"]
+result = roxy.location.search_cities(q="Mumbai, India")
+city = result["cities"][0]
+lat, lng, tz = city["latitude"], city["longitude"], city["utcOffset"]
 
-# Step 2: Vedic kundli
+# Step 2: Vedic kundli. Pass utcOffset as `timezone` (decimal hours, e.g. 5.5 for IST).
 kundli = roxy.vedic_astrology.generate_birth_chart(
     date="1990-01-15",
     time="14:30:00",
     latitude=lat,
     longitude=lng,
+    timezone=tz,
 )
 
-# Or Western natal chart (timezone required, decimal hours)
+# Or Western natal chart
 natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15",
     time="14:30:00",
     latitude=lat,
     longitude=lng,
-    timezone=5.5,
+    timezone=tz,
 )
 ```
 
@@ -52,8 +54,12 @@ Get your API key at [roxyapi.com/pricing](https://roxyapi.com/pricing). Free tes
 Every chart, horoscope, panchang, dasha, dosha, navamsa, KP, synastry, compatibility, and natal endpoint needs `latitude`, `longitude`, and (for Western) `timezone`. **Never ask users to type coordinates.** Always call `roxy.location.search_cities(q=city)` first and feed the result into the chart call.
 
 ```python
-cities = roxy.location.search_cities(q="Tokyo")
-lat, lng, tz = cities[0]["latitude"], cities[0]["longitude"], cities[0]["timezone"]
+result = roxy.location.search_cities(q="Tokyo")
+city = result["cities"][0]
+lat, lng, tz = city["latitude"], city["longitude"], city["utcOffset"]
+# Pass `tz` (a decimal like 9.0 for JST) as the `timezone` kwarg on chart endpoints.
+# The `timezone` field on the city is the IANA string ("Asia/Tokyo"), useful for
+# date libraries, but not what RoxyAPI chart endpoints expect.
 ```
 
 ## Domain reference
@@ -72,90 +78,183 @@ lat, lng, tz = cities[0]["latitude"], cities[0]["longitude"], cities[0]["timezon
 | Location | `roxy.location` | City search with coordinates and timezone, countries |
 | Usage | `roxy.usage` | API usage stats and subscription info |
 
-## Recipes
+## Most-used endpoints
 
-### Daily horoscope (wellness, news, lifestyle apps)
+The highest-demand endpoints by domain, in the order you are most likely to ship them. Each block shows the most-searched API call in that domain so you can pick the feature that drives the most user value first. Full endpoint catalog in the [API reference](https://roxyapi.com/api-reference).
 
-```python
-horoscope = roxy.astrology.get_daily_horoscope(sign="aries")
-# horoscope["overview"], horoscope["love"], horoscope["career"], ...
-```
+### 1. Western astrology API (natal chart, daily horoscope, synastry)
 
-### Vedic kundli (India market, matrimonial, muhurat)
+The global astrology app market is $6.27B and almost entirely Western. These endpoints power zodiac dating apps, Co-Star-style natal chart products, daily horoscope features, and lunar-cycle wellness apps.
 
 ```python
-cities = roxy.location.search_cities(q="Delhi")
-lat, lng = cities[0]["latitude"], cities[0]["longitude"]
-
-kundli = roxy.vedic_astrology.generate_birth_chart(
-    date="1990-01-15", time="14:30:00", latitude=lat, longitude=lng,
+# Natal chart. The #1 Western query, called on every onboarding.
+natal = roxy.astrology.generate_natal_chart(
+    date="1990-01-15", time="14:30:00",
+    latitude=28.6139, longitude=77.209, timezone=5.5,
 )
+
+# Daily horoscope. Highest per-user call frequency in the catalog, drives DAUs and push.
+horoscope = roxy.astrology.get_daily_horoscope(sign="aries")
+# horoscope["overview"], horoscope["love"], horoscope["career"], horoscope["luckyNumber"]
+
+# Synastry. The dating-app pro-tier feature, full inter-aspect analysis.
+synastry = roxy.astrology.calculate_synastry(
+    person1={"date": "1990-01-15", "time": "14:30:00", "latitude": 28.61, "longitude": 77.20, "timezone": 5.5},
+    person2={"date": "1992-07-22", "time": "09:00:00", "latitude": 19.07, "longitude": 72.87, "timezone": 5.5},
+)
+# synastry["compatibilityScore"], synastry["interAspects"], synastry["strengths"]
+
+# Moon phase. Viral for wellness, cycle-tracking, meditation apps.
+moon = roxy.astrology.get_current_moon_phase()
 ```
 
-### Panchang (daily almanac, ritual planner)
+### 2. Vedic astrology API (kundli, panchang, dasha, Guna Milan, KP)
+
+The depth moat. India astrology market: $163M in 2024, projected $1.8B by 2030 (49% CAGR). Kundli, panchang, dasha, dosha, and KP are the five Google-dominant queries for every matrimonial platform, kundli generator, and muhurat app.
 
 ```python
+# Vedic kundli. Top India astrology keyword. Entry point for every Jyotish product.
+kundli = roxy.vedic_astrology.generate_birth_chart(
+    date="1990-01-15", time="14:30:00",
+    latitude=28.6139, longitude=77.209, timezone=5.5,
+)
+
+# Panchang. Tithi, nakshatra, yoga, karana, rahu kaal, abhijit muhurta in one call.
 panchang = roxy.vedic_astrology.get_detailed_panchang(
     date="2026-04-22", latitude=28.6139, longitude=77.209,
 )
-# panchang["tithi"], panchang["nakshatra"], panchang["rahuKaal"], ...
-```
 
-### Guna Milan (matrimonial matching)
+# Vimshottari dasha. Highest-value single-shot Vedic query.
+dasha = roxy.vedic_astrology.get_current_dasha(
+    date="1990-01-15", time="14:30:00",
+    latitude=28.6139, longitude=77.209, timezone=5.5,
+)
 
-```python
-person1 = {"date": "1990-01-15", "time": "14:30:00", "latitude": 28.61, "longitude": 77.20}
-person2 = {"date": "1992-07-22", "time": "09:00:00", "latitude": 19.07, "longitude": 72.87}
+# Mangal Dosha. Most-asked matrimonial question in India.
+dosha = roxy.vedic_astrology.check_manglik_dosha(
+    date="1990-01-15", time="14:30:00",
+    latitude=28.6139, longitude=77.209, timezone=5.5,
+)
 
-score = roxy.vedic_astrology.calculate_gun_milan(person1=person1, person2=person2)
-# score["total"], score["maxScore"] (36), score["isCompatible"], score["breakdown"]
-```
+# Guna Milan. 36-point Ashtakoota matrimonial compatibility score.
+milan = roxy.vedic_astrology.calculate_gun_milan(
+    person1={"date": "1990-01-15", "time": "14:30:00", "latitude": 28.61, "longitude": 77.20},
+    person2={"date": "1992-07-22", "time": "09:00:00", "latitude": 19.07, "longitude": 72.87},
+)
 
-### Numerology life path (numerology calculators)
-
-```python
-result = roxy.numerology.calculate_life_path(year=1990, month=1, day=15)
-
-chart = roxy.numerology.generate_numerology_chart(
-    full_name="Jane Smith", year=1990, month=1, day=15,
+# KP ruling planets. Horary answers for "will X happen" questions in real time.
+kp = roxy.vedic_astrology.get_kp_ruling_planets(
+    latitude=28.6139, longitude=77.209, timezone=5.5,
 )
 ```
 
-### Tarot Celtic Cross (premium-tier tarot feature)
+### 3. Numerology API (life path, full chart, personal year)
+
+Commodity content with durable demand. `life path number calculator` is among the highest-volume spiritual searches globally. Works without birth time, the easiest domain to integrate.
 
 ```python
-reading = roxy.tarot.cast_celtic_cross(question="What should I focus on?")
-# reading["positions"][10], reading["reading"]
+# Life Path. The #1 numerology keyword, every calculator page starts here.
+lp = roxy.numerology.calculate_life_path(year=1990, month=1, day=15)
+# lp["number"], lp["type"] ("single" | "master"), lp["meaning"]
+
+# Full numerology chart. Premium one-shot: all six core numbers plus karmic, personal year.
+chart = roxy.numerology.generate_numerology_chart(
+    full_name="Jane Smith", year=1990, month=1, day=15,
+)
+
+# Personal Year. Annual forecast, drives January traffic spikes.
+pyear = roxy.numerology.calculate_personal_year(month=1, day=15, year=2026)
 ```
 
-### Daily biorhythm (wellness, productivity, sports apps)
+### 4. Tarot API (daily card, Celtic Cross, three-card, yes / no)
+
+High search volume, evergreen. The tarot card database is the highest per-endpoint call count in the catalog because apps fetch once and cache.
 
 ```python
-biorhythm = roxy.biorhythm.get_daily_biorhythm(seed="user-123")
+# Daily card. Stickiest tarot feature. Seed per user for deterministic once-per-day behavior.
+card = roxy.tarot.get_daily_card(seed="user-42")
+# card["card"]["name"], card["card"]["imageUrl"], card["interpretation"]
+
+# Celtic Cross. Professional-reader spread. Premium-tier, ten positions.
+cc = roxy.tarot.cast_celtic_cross(question="What should I focus on?", seed="user-42")
+
+# Three-card past-present-future. Most-drawn spread on every tarot platform.
+three = roxy.tarot.cast_three_card(question="My next quarter", seed="user-42")
+
+# Yes / No. Impulse micro-query, highest conversion-to-first-call on tarot surfaces.
+answer = roxy.tarot.cast_yes_no(question="Should I take the offer?")
+# answer["answer"] ("Yes" | "No" | "Maybe"), answer["strength"]
 ```
 
-### I Ching cast (decision-making, meditation)
+### 5. Biorhythm API (daily check-in, forecast, compatibility)
+
+Zero competition domain. Steady search volume with the top Google result being a static calculator page. Pure land-grab for wellness, productivity, sports, and couples apps.
 
 ```python
-reading = roxy.iching.cast_reading()
+# Daily biorhythm. Physical, emotional, intellectual, intuitive, plus seven extended cycles.
+bio = roxy.biorhythm.get_daily_biorhythm(seed="user-1", date="2026-04-23")
+
+# Multi-day forecast. Best-day / worst-day planner for calendar and coaching products.
+forecast = roxy.biorhythm.get_forecast(
+    birth_date="1990-01-15", start_date="2026-04-01", end_date="2026-04-30",
+)
 ```
 
-### Crystal healing (retail, wellness)
+### 6. I Ching API (daily hexagram, coin cast, 64-hexagram catalog)
+
+Meditation apps, decision-making tools, and wisdom chatbots. `i ching API` and `hexagram API` are the keywords.
 
 ```python
-crystals = roxy.crystals.get_crystals_by_zodiac(sign="scorpio")
+# Cast a reading. Active divination, primary hexagram plus changing lines and transformed hexagram.
+reading = roxy.iching.cast_reading(seed="user-42")
+# reading["hexagram"], reading["changingLinePositions"], reading["resultingHexagram"]
+
+# Hexagram catalog. Cache once for all 64 hexagrams.
+hexagrams = roxy.iching.list_hexagrams()
+# hexagrams["hexagrams"] has 64 entries
 ```
 
-### Dream symbol lookup (journaling, self-discovery)
+### 7. Crystals API (by zodiac, by chakra, birthstone)
+
+Crystal retail and metaphysical shops use these to build "crystals for [sign]" and "[chakra] chakra stones" pages.
 
 ```python
+# By zodiac. Highest-search crystal query pattern.
+by_sign = roxy.crystals.get_crystals_by_zodiac(sign="scorpio")
+# by_sign["crystals"] is a list of id, name, color, chakra, properties
+
+# By chakra. Second-highest crystal query pattern.
+by_chakra = roxy.crystals.get_crystals_by_chakra(chakra="heart")
+
+# Birthstone. Evergreen gift and jewelry SEO.
+birthstone = roxy.crystals.get_birthstones(month=4)
+```
+
+### 8. Dream interpretation API (symbol dictionary, search)
+
+Thousands of dream symbols. `dream meaning` is among the highest-volume spiritual searches on Google. Journal apps, AI therapy chatbots, and self-discovery products are the buyers.
+
+```python
+# Symbol detail. Every "what does it mean to dream about X" page lands here.
 symbol = roxy.dreams.get_dream_symbol(id="flying")
+# symbol["id"], symbol["name"], symbol["meaning"]
+
+# Symbol search. Chatbots cache the dictionary locally after one call.
+results = roxy.dreams.search_dream_symbols(q="flying")
+# results["symbols"] is an array of matching symbols
 ```
 
-### Angel number meaning (viral content, spiritual apps)
+### 9. Angel Numbers API (1111, 222, 333 meanings plus universal lookup)
+
+Gen Z spiritual-tok fuel. `111 meaning`, `222 meaning`, `333 angel number` are evergreen viral queries with massive shareability.
 
 ```python
-meaning = roxy.angel_numbers.get_angel_number(number="1111")
+# By number. Every "meaning of 1111" page is backed by this.
+angel = roxy.angel_numbers.get_angel_number(number="1111")
+# angel["meaning"]["spiritual"], angel["meaning"]["love"], angel["affirmation"]
+
+# Universal lookup. Works for any positive integer via digit-root fallback.
+any_number = roxy.angel_numbers.analyze_number_sequence(number="4242")
 ```
 
 ## Async support
