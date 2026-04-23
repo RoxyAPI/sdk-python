@@ -6,15 +6,32 @@
 [![API Reference](https://img.shields.io/badge/api%20reference-roxyapi.com-blue)](https://roxyapi.com/api-reference)
 [![License](https://img.shields.io/github/license/RoxyAPI/sdk-python)](https://github.com/RoxyAPI/sdk-python/blob/main/LICENSE)
 
-The Python SDK for [Roxy](https://roxyapi.com), the multi-domain spiritual intelligence API. One key, ten domains, sync and async. Western astrology API, Vedic astrology API, numerology API, tarot API, biorhythm API, I Ching API, crystals API, dream interpretation API, and angel numbers API behind a single subscription.
+Python SDK for astrology, Vedic astrology, tarot, numerology, and more.
 
-Build a natal chart app, a kundli matching product, a daily horoscope feature, a tarot reading app, a numerology life path calculator, or a spiritual AI agent without writing a single calculation. Calculations are verified against NASA JPL Horizons; interpretations ship in eight languages.
+One API key. Sync and async (every method has an `_async` suffix). Verified against NASA JPL Horizons.
+
+The fastest way to add natal charts, kundli matching, daily horoscopes, tarot readings, and spiritual insights to FastAPI, Django, Flask, or any Python project. Ten domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in eight languages.
 
 ## Install
 
 ```bash
 pip install roxy-sdk
 ```
+
+## Start with one call
+
+Get real product value with a single typed call. No setup beyond your API key.
+
+```python
+from roxy_sdk import create_roxy
+
+roxy = create_roxy("your-api-key")
+
+horoscope = roxy.astrology.get_daily_horoscope(sign="aries")
+print(horoscope["overview"], horoscope["love"], horoscope["luckyNumber"])
+```
+
+Then expand into charts, compatibility, tarot, numerology, and more.
 
 ## Quickstart
 
@@ -28,8 +45,8 @@ result = roxy.location.search_cities(q="Mumbai, India")
 city = result["cities"][0]
 lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 
-# Step 2: Vedic kundli. `timezone` can be the IANA string ("Asia/Kolkata") —
-# the server resolves it to the DST-correct offset for the chart's own date.
+# Step 2: Vedic kundli. `timezone` can be the IANA string ("Asia/Kolkata").
+# The server resolves it to the DST-correct offset for the chart's own date.
 kundli = roxy.vedic_astrology.generate_birth_chart(
     date="1990-01-15",
     time="14:30:00",
@@ -59,7 +76,7 @@ result = roxy.location.search_cities(q="Tokyo")
 city = result["cities"][0]
 lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 # `tz` is the IANA string ("Asia/Tokyo"). Pass it straight into any chart
-# endpoint — the server resolves it to the DST-correct offset for the chart's
+# endpoint and the server resolves it to the DST-correct offset for the chart's
 # own date. If you prefer a decimal, city["utcOffset"] also works.
 ```
 
@@ -258,6 +275,17 @@ angel = roxy.angel_numbers.get_angel_number(number="1111")
 any_number = roxy.angel_numbers.analyze_number_sequence(number="4242")
 ```
 
+## Built for AI agents (Claude Code, Cursor, Copilot, Codex, Gemini CLI)
+
+This package ships `AGENTS.md` bundled alongside the source so AI coding agents can read the SDK patterns, common tasks, and gotchas directly from `site-packages/`.
+
+Prefer MCP? Every domain has a [remote MCP server](https://roxyapi.com/docs/mcp) at `https://roxyapi.com/mcp/{domain}` (Streamable HTTP, no stdio, no self-hosting). One-line Claude Code setup:
+
+```bash
+claude mcp add-json --scope user roxy-astrology \
+  '{"type":"http","url":"https://roxyapi.com/mcp/astrology","headers":{"X-API-Key":"YOUR_KEY"}}'
+```
+
 ## Async support
 
 Every method has an `_async` suffix variant for use with asyncio:
@@ -392,12 +420,6 @@ with create_roxy("your-api-key") as roxy:
     horoscope = roxy.astrology.get_daily_horoscope(sign="aries")
 # connections closed automatically
 ```
-
-## AI agents (Claude Code, Cursor, Copilot, Codex, Gemini CLI)
-
-This package ships with `AGENTS.md` bundled alongside the source so AI coding agents can read the SDK patterns, common tasks, and gotchas directly.
-
-Also available: [remote MCP server](https://roxyapi.com/docs/mcp) per domain at `https://roxyapi.com/mcp/{domain}` (Streamable HTTP, no stdio / no self-hosting) for agents that speak the Model Context Protocol.
 
 ## Links
 
