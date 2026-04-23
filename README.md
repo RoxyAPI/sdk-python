@@ -297,7 +297,7 @@ with create_roxy("your-api-key") as roxy:
 
 This package ships with `AGENTS.md` bundled alongside the source so AI coding agents can read the SDK patterns, common tasks, and gotchas directly.
 
-Also available: [remote MCP server](https://roxyapi.com/docs/mcp) per domain at `https://roxyapi.com/mcp/{domain}-api` (Streamable HTTP, no stdio / no self-hosting) for agents that speak the Model Context Protocol.
+Also available: [remote MCP server](https://roxyapi.com/docs/mcp) per domain at `https://roxyapi.com/mcp/{domain}` (Streamable HTTP, no stdio / no self-hosting) for agents that speak the Model Context Protocol.
 
 ## Links
 
