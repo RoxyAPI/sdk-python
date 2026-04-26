@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://roxyapi.com">
+    <img src="https://raw.githubusercontent.com/RoxyAPI/sdk-python/main/assets/hero.png" alt="Roxy Python SDK. Astrology, Vedic, tarot, numerology, and more behind one API key." width="100%">
+  </a>
+</p>
+
 # roxy-sdk
 
 [![PyPI](https://img.shields.io/pypi/v/roxy-sdk)](https://pypi.org/project/roxy-sdk/)
@@ -276,6 +282,10 @@ any_number = roxy.angel_numbers.analyze_number_sequence(number="4242")
 ```
 
 ## Built for AI agents (Claude Code, Cursor, Copilot, Codex, Gemini CLI)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/RoxyAPI/sdk-python/main/assets/agents.png" alt="Built for Cursor, Claude, Copilot, Codex. AGENTS.md ships in site-packages, remote MCP, no local setup." width="100%">
+</p>
 
 This package ships `AGENTS.md` bundled alongside the source so AI coding agents can read the SDK patterns, common tasks, and gotchas directly from `site-packages/`.
 
