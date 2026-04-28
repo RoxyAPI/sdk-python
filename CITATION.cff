@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "RoxyAPI Python SDK"
+abstract: "Official Python SDK for RoxyAPI. Sync and async clients for 130+ endpoints across 10 spiritual intelligence domains. MCP ready."
+authors:
+  - name: "RoxyAPI"
+url: "https://github.com/RoxyAPI/sdk-python"
+repository-code: "https://github.com/RoxyAPI/sdk-python"
+license: MIT
+type: software
+keywords:
+  - astrology-api
+  - vedic-astrology-api
+  - tarot-api
+  - numerology-api
+  - mcp-server
+  - python-sdk
+  - openapi
