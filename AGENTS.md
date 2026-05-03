@@ -30,6 +30,8 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 # If you prefer numbers, city["utcOffset"] (decimal: 5.5, -5, ...) also works.
 ```
 
+`q` accepts bare city (`"Mumbai"`), city + country (`"Berlin Germany"`), or comma-qualified (`"Springfield, Illinois"`). Use the qualified form to disambiguate same-named cities.
+
 ## Domains
 
 Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE with a Python LSP to see every method.
