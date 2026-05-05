@@ -63,6 +63,7 @@ dev = [
     "pytest-asyncio>=0.23",
     "mypy>=1.9",
     "ruff>=0.4",
+    "lefthook>=2.1.6",
 ]
 
 [tool.ruff]
