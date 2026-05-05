@@ -1,6 +1,6 @@
 # roxy-sdk (Python) - Agent Guide
 
-Python SDK for RoxyAPI. Eleven domains (Western astrology, Vedic astrology, numerology, tarot, biorhythm, I Ching, crystals, dreams, angel numbers, location, usage). One API key, sync and async.
+Python SDK for RoxyAPI. Twelve domains (Western astrology, Vedic astrology, numerology, tarot, biorhythm, I Ching, crystals, dreams, angel numbers, location, usage, languages). One API key, sync and async.
 
 ## Install and initialize
 
@@ -49,6 +49,7 @@ Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE wi
 | `roxy.angel_numbers` | Number meanings, universal digit-root lookup, daily |
 | `roxy.location` | City search with coordinates and timezone, countries |
 | `roxy.usage` | API usage stats and subscription info |
+| `roxy.languages` | Supported response languages for the `lang` kwarg (code, English name, native name) |
 
 ## Critical patterns
 
@@ -113,7 +114,7 @@ card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
 life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
 ```
 
-Supported: `astrology`, `vedic_astrology`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`.
+Supported: `astrology`, `vedic_astrology`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`, `languages`. To list supported codes at runtime, call `roxy.languages.list_languages()`.
 
 ### Error handling
 
@@ -143,7 +144,7 @@ except RoxyAPIError as e:
 
 ## Common tasks
 
-Ordered by domain priority (Western, Vedic, Numerology, Tarot, Biorhythm, I Ching, Crystals, Dreams, Angel Numbers, Location, Usage).
+Ordered by domain priority (Western, Vedic, Numerology, Tarot, Biorhythm, I Ching, Crystals, Dreams, Angel Numbers, Location, Usage, Languages).
 
 | Task | Code |
 |------|------|
@@ -182,6 +183,7 @@ Ordered by domain priority (Western, Vedic, Numerology, Tarot, Biorhythm, I Chin
 | Universal number lookup | `roxy.angel_numbers.analyze_number_sequence(number="1234")` |
 | Find city coordinates | `roxy.location.search_cities(q="Mumbai")` |
 | Check API usage | `roxy.usage.get_usage_stats()` |
+| List supported languages | `roxy.languages.list_languages()` |
 
 ## Field formats that trip agents
 
