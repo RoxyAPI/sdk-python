@@ -5,34 +5,83 @@ Generate factory.py from OpenAPI spec.
 Reads specs/openapi.json and auto-generates src/roxy_sdk/factory.py with all
 domain namespace classes, Roxy aggregate, and create_roxy() factory.
 
-The generated factory.py uses httpx directly (not the openapi-python-client
-generated code) for a clean, minimal SDK with zero extra dependencies beyond httpx.
+The OpenAPI spec is the only source of truth for *which* tags exist and what
+endpoints belong to each. This file only configures how tag names map to
+public SDK namespaces:
+
+  1. Most tags derive their snake_case attribute and PascalCase class name
+     automatically — e.g. "Vedic Astrology" -> vedic_astrology / VedicAstrologyDomain,
+     "Numerology" -> numerology / NumerologyDomain, "Languages" -> languages /
+     LanguagesDomain. New tags need NO change here.
+  2. A handful of tags use a curated short-form for branding — the public SDK
+     exposes ``roxy.astrology``, not ``roxy.western_astrology``. Those overrides
+     live in NAMESPACE_ALIASES below.
+
+Adding a brand-new tag with a non-default short-form (e.g. "Crystals and Healing
+Stones" -> ``crystals``) is the only reason to touch this file. Otherwise
+codegen handles it.
 
 Run: python codegen.py
 """
+
 from __future__ import annotations
 
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 SPEC_PATH = Path("specs/openapi.json")
 OUTPUT_PATH = Path("src/roxy_sdk/factory.py")
 
-# OpenAPI tag → (ClassName, attribute_name)
-TAG_MAP: dict[str, tuple[str, str]] = {
-    "Western Astrology": ("AstrologyDomain", "astrology"),
-    "Vedic Astrology": ("VedicAstrologyDomain", "vedic_astrology"),
-    "Tarot": ("TarotDomain", "tarot"),
-    "Numerology": ("NumerologyDomain", "numerology"),
-    "I-Ching": ("IChingDomain", "iching"),
-    "Crystals and Healing Stones": ("CrystalsDomain", "crystals"),
-    "Angel Numbers": ("AngelNumbersDomain", "angel_numbers"),
-    "Dreams": ("DreamsDomain", "dreams"),
-    "Biorhythm": ("BiorhythmDomain", "biorhythm"),
-    "Location and Timezone": ("LocationDomain", "location"),
-    "Usage": ("UsageDomain", "usage"),
+# Curated short-form namespaces for product branding. Keys are exact tag names
+# from the OpenAPI spec; values are the desired snake_case attribute name on
+# the Roxy aggregate. The class name is derived from the attribute name (see
+# tag_to_class). Any tag not listed here uses snake_case(tag_name) automatically.
+NAMESPACE_ALIASES: dict[str, str] = {
+    "Western Astrology": "astrology",
+    "Crystals and Healing Stones": "crystals",
+    "Location and Timezone": "location",
+    "I-Ching": "iching",
 }
+
+
+def _snake_case(name: str) -> str:
+    """Split on non-alphanumerics, lowercase, join with underscores."""
+    parts = [p for p in re.split(r"[^a-zA-Z0-9]+", str(name)) if p]
+    if not parts:
+        return str(name).lower()
+    return "_".join(p.lower() for p in parts)
+
+
+def tag_to_attr(name: str) -> str:
+    """Return the snake_case attribute name on the Roxy aggregate for a tag."""
+    return NAMESPACE_ALIASES.get(name, _snake_case(name))
+
+
+def tag_to_class(name: str) -> str:
+    """Return the PascalCase domain class name for a tag, suffixed with Domain."""
+    attr = tag_to_attr(name)
+    pascal = attr.title().replace("_", "")
+    return f"{pascal}Domain"
+
+
+def tag_summary(tag: dict[str, Any]) -> str:
+    """Extract a short, dev-facing summary from the spec's tag object.
+
+    Prefers ``x-sdk-summary`` if present (forward-compat for when the server adds
+    explicit SDK summaries per tag). Otherwise takes the first sentence of
+    ``description``, capped at ~120 chars.
+    """
+    sdk_summary = tag.get("x-sdk-summary")
+    if isinstance(sdk_summary, str) and sdk_summary.strip():
+        return sdk_summary.strip()
+    desc = (tag.get("description") or "").strip()
+    if not desc:
+        return str(tag.get("name") or "")
+    first_sentence = re.split(r"\.\s+", desc, maxsplit=1)[0].strip()
+    flat = re.sub(r"\s+", " ", first_sentence)
+    return flat[:117].rstrip() + "..." if len(flat) > 120 else flat
 
 
 def camel_to_snake(name: str) -> str:
@@ -178,6 +227,26 @@ def build_method(op: dict) -> str:
 def main() -> None:
     spec = json.loads(SPEC_PATH.read_text())
 
+    # Index tag objects (with descriptions) for summary extraction.
+    tag_objects: dict[str, dict[str, Any]] = {
+        t["name"]: t for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t
+    }
+
+    # Warn on stale NAMESPACE_ALIASES — aliases pointing at tags no longer in
+    # the spec. New tags are fine; they auto-derive via tag_to_attr / tag_to_class.
+    spec_tag_names: set[str] = set(tag_objects.keys())
+    for _, path_item in spec.get("paths", {}).items():
+        for http_method in ("get", "post"):
+            op = path_item.get(http_method)
+            if op:
+                spec_tag_names.add((op.get("tags", ["Other"]) or ["Other"])[0])
+    for alias_tag in NAMESPACE_ALIASES:
+        if alias_tag not in spec_tag_names:
+            print(
+                f"WARNING: NAMESPACE_ALIASES entry '{alias_tag}' is stale — "
+                "no such tag in the OpenAPI spec. Remove it from codegen.py."
+            )
+
     # Group operations by tag
     domains: dict[str, list[dict]] = {}
     for path, path_item in spec.get("paths", {}).items():
@@ -188,13 +257,6 @@ def main() -> None:
             tags = operation.get("tags", ["Other"])
             tag = tags[0]
             oid = operation.get("operationId", "")
-            if tag not in TAG_MAP:
-                print(
-                    f"WARNING: Unknown tag '{tag}' for "
-                    f"operationId '{oid}'. "
-                    "Add it to TAG_MAP in codegen.py."
-                )
-                continue
             if not oid:
                 continue
 
@@ -202,15 +264,17 @@ def main() -> None:
 
             if tag not in domains:
                 domains[tag] = []
-            domains[tag].append({
-                "operationId": oid,
-                "method": http_method,
-                "path": path,
-                "summary": operation.get("summary", ""),
-                "parameters": operation.get("parameters", []),
-                "body_properties": body_props,
-                "body_required_fields": body_req,
-            })
+            domains[tag].append(
+                {
+                    "operationId": oid,
+                    "method": http_method,
+                    "path": path,
+                    "summary": operation.get("summary", ""),
+                    "parameters": operation.get("parameters", []),
+                    "body_properties": body_props,
+                    "body_required_fields": body_req,
+                }
+            )
 
     # Write output
     out: list[str] = [
@@ -287,15 +351,24 @@ def main() -> None:
         "",
     ]
 
-    # Domain classes
+    # Domain classes. Emit in spec tag order when available; fall back to
+    # alphabetical so brand-new endpoints get a deterministic position.
+    spec_tag_order = [
+        t["name"] for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t
+    ]
+    ordered_tags = [t for t in spec_tag_order if t in domains]
+    ordered_tags += sorted(t for t in domains if t not in spec_tag_order)
+
     domain_classes: list[tuple[str, str]] = []
-    for tag, (class_name, attr_name) in TAG_MAP.items():
-        if tag not in domains:
-            continue
+    for tag in ordered_tags:
+        class_name = tag_to_class(tag)
+        attr_name = tag_to_attr(tag)
+        summary = tag_summary(tag_objects.get(tag, {"name": tag}))
+        docstring = summary or f"{tag} endpoints."
         domain_classes.append((class_name, attr_name))
         out.append("")
         out.append(f"class {class_name}(_BaseDomain):")
-        out.append(f'    """{tag} endpoints."""')
+        out.append(f'    """{docstring}"""')
         out.append("")
         for op in sorted(domains[tag], key=lambda x: x["operationId"]):
             out.append(build_method(op))
@@ -308,17 +381,25 @@ def main() -> None:
     out.append("    Reuses HTTP connections. Supports context manager.")
     out.append("")
     out.append("    Usage::")
-    out.append('        from roxy_sdk import create_roxy')
+    out.append("        from roxy_sdk import create_roxy")
     out.append('        roxy = create_roxy("your-api-key")')
     out.append('        horoscope = roxy.astrology.get_daily_horoscope(sign="aries")')
     out.append('    """')
     out.append("")
-    out.append("    def __init__(self, api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> None:")
+    out.append(
+        "    def __init__(self, api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> None:"
+    )
     out.append("        if not api_key:")
-    out.append('            raise ValueError("API key is required. Get one at https://roxyapi.com/pricing")')
+    out.append(
+        '            raise ValueError("API key is required. Get one at https://roxyapi.com/pricing")'
+    )
     out.append("        headers = _default_headers(api_key)")
-    out.append("        self._client = httpx.Client(base_url=base_url, headers=headers, timeout=timeout)")
-    out.append("        self._async_client = httpx.AsyncClient(base_url=base_url, headers=headers, timeout=timeout)")
+    out.append(
+        "        self._client = httpx.Client(base_url=base_url, headers=headers, timeout=timeout)"
+    )
+    out.append(
+        "        self._async_client = httpx.AsyncClient(base_url=base_url, headers=headers, timeout=timeout)"
+    )
     for cn, an in domain_classes:
         out.append(f"        self.{an} = {cn}(self._client, self._async_client)")
     out.append("")
@@ -349,13 +430,17 @@ def main() -> None:
     out.append("")
 
     # create_roxy
-    out.append("def create_roxy(api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> Roxy:")
+    out.append(
+        "def create_roxy(api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> Roxy:"
+    )
     out.append('    """')
     out.append("    Create a configured Roxy instance.")
     out.append("")
     out.append("    Args:")
     out.append("        api_key: Your RoxyAPI key. Get one at https://roxyapi.com/pricing")
-    out.append("        base_url: Override the default API base URL. Default: https://roxyapi.com/api/v2")
+    out.append(
+        "        base_url: Override the default API base URL. Default: https://roxyapi.com/api/v2"
+    )
     out.append("        timeout: Request timeout in seconds. Default: 30.")
     out.append('    """')
     out.append("    return Roxy(api_key=api_key, base_url=base_url, timeout=timeout)")

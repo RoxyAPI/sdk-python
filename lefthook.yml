@@ -3,10 +3,16 @@ pre-commit:
   commands:
     ruff-format:
       glob: "*.py"
+      exclude:
+        - "src/roxy_sdk/factory.py"
+        - "codegen.py"
       run: uv run ruff format {staged_files}
       stage_fixed: true
     ruff-check:
       glob: "*.py"
+      exclude:
+        - "src/roxy_sdk/factory.py"
+        - "codegen.py"
       run: uv run ruff check --fix {staged_files}
       stage_fixed: true
 
