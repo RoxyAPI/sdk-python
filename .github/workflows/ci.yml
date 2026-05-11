@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+
+      - run: uv sync --all-extras --dev
+
+      - name: Codegen drift check
+        if: matrix.python == '3.12'
+        run: |
+          uv run python generate.py
+          git diff --exit-code -- specs/openapi.json src/roxy_sdk/factory.py \
+            || { echo 'codegen drift: commit the regenerated files'; exit 1; }
+
+      - name: Lint
+        if: matrix.python == '3.12'
+        run: uv run ruff check .
+
+      - name: Typecheck
+        if: matrix.python == '3.12'
+        run: uv run mypy src/roxy_sdk/__init__.py
+
+      - name: Test
+        run: uv run pytest tests/test_factory.py -v
