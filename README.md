@@ -114,7 +114,7 @@ The global astrology app market is $6.27B and almost entirely Western. These end
 # Natal chart. The #1 Western query, called on every onboarding.
 natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone=5.5,
+    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
 )
 
 # Daily horoscope. Highest per-user call frequency in the catalog, drives DAUs and push.
@@ -126,7 +126,7 @@ synastry = roxy.astrology.calculate_synastry(
     person1={"date": "1990-01-15", "time": "14:30:00", "latitude": 28.61, "longitude": 77.20, "timezone": 5.5},
     person2={"date": "1992-07-22", "time": "09:00:00", "latitude": 19.07, "longitude": 72.87, "timezone": 5.5},
 )
-# synastry["compatibilityScore"], synastry["interAspects"], synastry["strengths"]
+# synastry["compatibilityScore"], synastry["interAspects"], synastry["analysis"]["strengths"]
 
 # Moon phase. Viral for wellness, cycle-tracking, meditation apps.
 moon = roxy.astrology.get_current_moon_phase()
@@ -140,7 +140,7 @@ The depth moat. India astrology market: $163M in 2024, projected $1.8B by 2030 (
 # Vedic kundli. Top India astrology keyword. Entry point for every Jyotish product.
 kundli = roxy.vedic_astrology.generate_birth_chart(
     date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone=5.5,
+    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
 )
 
 # Panchang. Tithi, nakshatra, yoga, karana, rahu kaal, abhijit muhurta in one call.
@@ -151,13 +151,13 @@ panchang = roxy.vedic_astrology.get_detailed_panchang(
 # Vimshottari dasha. Highest-value single-shot Vedic query.
 dasha = roxy.vedic_astrology.get_current_dasha(
     date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone=5.5,
+    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
 )
 
 # Mangal Dosha. Most-asked matrimonial question in India.
 dosha = roxy.vedic_astrology.check_manglik_dosha(
     date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone=5.5,
+    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
 )
 
 # Guna Milan. 36-point Ashtakoota matrimonial compatibility score.
@@ -168,7 +168,7 @@ milan = roxy.vedic_astrology.calculate_gun_milan(
 
 # KP ruling planets. Horary answers for "will X happen" questions in real time.
 kp = roxy.vedic_astrology.get_kp_ruling_planets(
-    latitude=28.6139, longitude=77.209, timezone=5.5,
+    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
 )
 ```
 
@@ -197,7 +197,7 @@ High search volume, evergreen. The tarot card database is the highest per-endpoi
 ```python
 # Daily card. Stickiest tarot feature. Seed per user for deterministic once-per-day behavior.
 card = roxy.tarot.get_daily_card(seed="user-42")
-# card["card"]["name"], card["card"]["imageUrl"], card["interpretation"]
+# card["card"]["name"], card["card"]["imageUrl"], card["dailyMessage"]
 
 # Celtic Cross. Professional-reader spread. Premium-tier, ten positions.
 cc = roxy.tarot.cast_celtic_cross(question="What should I focus on?", seed="user-42")
@@ -251,7 +251,7 @@ by_sign = roxy.crystals.get_crystals_by_zodiac(sign="scorpio")
 by_chakra = roxy.crystals.get_crystals_by_chakra(chakra="heart")
 
 # Birthstone. Evergreen gift and jewelry SEO.
-birthstone = roxy.crystals.get_birthstones(month=4)
+birthstone = roxy.crystals.get_birthstones(month="4")
 ```
 
 ### 8. Dream interpretation API (symbol dictionary, search)

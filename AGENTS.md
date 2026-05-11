@@ -16,6 +16,16 @@ roxy = create_roxy("your-api-key")
 
 `create_roxy` sets the base URL (`https://roxyapi.com/api/v2`) and auth header automatically. Returns a `Roxy` instance with namespaced domain properties.
 
+## Quality guidelines for agents
+
+- Every method returns `dict[str, Any]`. Access fields with `result["key"]["subkey"]`, never `result.key.subkey` (Python will raise `AttributeError: 'dict' object has no attribute ...`).
+- Method names are snake_case versions of the OpenAPI operationId (e.g. `castThreeCard` -> `cast_three_card`, `analyzeNumberSequence` -> `analyze_number_sequence`). Every sync method has an `_async` variant; use `await` with the async variants.
+- Param names are snake_case versions of the spec param names (`fullName` -> `full_name`, `birthDate` -> `birth_date`, `houseSystem` -> `house_system`). All params are keyword-only.
+- When in doubt about a method or kwarg, check `roxy_sdk.factory` directly or run `python -c "from roxy_sdk import Roxy; help(Roxy)"` - the generated signatures are the contract.
+- Response field names match the OpenAPI spec's response schema exactly. Never invent or pluralize. If a field isn't in the spec, it isn't in the response.
+- Strings everywhere: `date` is `"YYYY-MM-DD"`, `time` is `"HH:MM:SS"`, `timezone` is an IANA name (`"Asia/Kolkata"`, `"America/New_York"`) - the server resolves DST for the chart date. `number` (angel) is `"1111"`, `month` (birthstone) is `"4"`, `number` (hexagram) is `"1"`. Numeric kwargs are only `latitude`, `longitude`, `year`, `month` (numerology), `day`, `count` (tarot draw).
+- Inside `person1` / `person2` dicts any value type works because the kwarg is typed `dict[str, Any]`; only the top-level `timezone` kwarg needs string form.
+
 ## Critical rule: geocode before any chart endpoint
 
 Every chart, horoscope, panchang, dasha, dosha, navamsa, KP, synastry, compatibility, and natal endpoint needs `latitude`, `longitude`, and (for Western) `timezone`. **Never ask the user for coordinates.** Always call `roxy.location.search_cities` first.
@@ -90,7 +100,7 @@ Most valuable endpoints are POST:
 ```python
 natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone=5.5,
+    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
 )
 
 kundli = roxy.vedic_astrology.generate_birth_chart(
@@ -175,7 +185,7 @@ Ordered by domain priority (Western, Vedic, Numerology, Tarot, Biorhythm, I Chin
 | Biorhythm compatibility | `roxy.biorhythm.calculate_bio_compatibility(person1, person2)` |
 | Daily hexagram | `roxy.iching.get_daily_hexagram(seed="user-123")` |
 | Cast I Ching reading | `roxy.iching.cast_reading()` |
-| Hexagram detail | `roxy.iching.get_hexagram(number=1)` |
+| Hexagram detail | `roxy.iching.get_hexagram(number="1")` |
 | Crystal by zodiac | `roxy.crystals.get_crystals_by_zodiac(sign="aries")` |
 | Crystal by chakra | `roxy.crystals.get_crystals_by_chakra(chakra="heart")` |
 | Dream symbol lookup | `roxy.dreams.get_dream_symbol(id="flying")` |
@@ -191,7 +201,7 @@ These are the fields AI agents most often get wrong. Copy the format column exac
 
 | Field | Format | Good | Bad |
 |-------|--------|------|-----|
-| `timezone` | Decimal hours (float) OR IANA string | `5.5`, `-5`, `0` (decimal) OR `"Asia/Kolkata"`, `"America/New_York"` (IANA, resolved to DST-correct offset for the chart date) | `"5:30"`, `"+0530"`, `"GMT-5"`, partial names |
+| `timezone` | IANA string (typed kwarg) OR decimal number (inside a `dict[str, Any]`) | `"Asia/Kolkata"`, `"America/New_York"`, `"Europe/London"` as the top-level `timezone=` kwarg (server resolves to the DST-correct offset for the chart date). Decimal hours (`5.5`, `-5`, `0`) work as JSON numbers and are accepted only inside `person1`/`person2` dicts because the dict is typed `dict[str, Any]` - the top-level `timezone=` kwarg is typed `str`, so a quoted decimal like `"5.5"` is rejected server-side (validation_error). | `"5.5"` as `timezone=` (rejected, server expects IANA string or a JSON number), `"5:30"`, `"+0530"`, `"GMT-5"` |
 | `date` | ISO date string | `"1990-01-15"` | `"Jan 15 1990"`, `datetime.now()`, `"15/01/1990"`, `"1990-1-15"` |
 | `time` | 24-hour string | `"14:30:00"`, `"09:00:00"` | `"2:30 PM"`, `"14:30"` (no seconds), `"9:0:0"` (no leading zeros) |
 | `latitude` | Decimal degrees (float) | `28.6139` (Delhi), `-33.8688` (Sydney), `40.7128` (NYC) | `"28°36'N"`, `"28 36 50"`, strings |
@@ -211,6 +221,9 @@ These are the fields AI agents most often get wrong. Copy the format column exac
 | `year` / `month` / `day` (numerology) | Integer | `1990`, `1`, `15` | Zero-padded strings `"01"`, floats, full dates |
 
 ### Timezone cheat sheet (most-asked locations)
+
+Values are decimal hours. For the typed top-level `timezone=` kwarg, pass the IANA name from `roxy.location.search_cities` (`timezone="Asia/Kolkata"`) - the server resolves it to the correct DST offset for the chart date. Inside a `person1`/`person2` dict the bare decimal works because the dict is typed `dict[str, Any]`, so the JSON-number form below is accepted.
+
 
 | Region | Decimal | Region | Decimal |
 |--------|---------|--------|---------|
@@ -260,7 +273,7 @@ Use the SDK for typed Python apps. Use MCP for AI agents (Claude Desktop, Cursor
 - **Async methods end with `_async`.** Every sync method has a matching async variant.
 - **Do not expose API keys client-side.** Call Roxy from server code only.
 - **Date format is `YYYY-MM-DD`, time is `HH:MM:SS`.** Both are strings.
-- **Western `timezone` is required** (decimal hours, `-5` for EST, `5.5` for IST, `0` for UTC). Vedic endpoints accept an optional `timezone` that defaults to `5.5` (IST).
+- **Western `timezone` is required** as an IANA string (`"Asia/Kolkata"`, `"America/New_York"`, `"Europe/London"`, `"UTC"`); the server resolves it to the DST-correct offset for the chart date. Vedic endpoints accept an optional `timezone` (same form) that defaults to IST when omitted. The decimal-number form (`5.5`) is also accepted by the API, but only inside `person1`/`person2` dicts - the top-level `timezone=` kwarg is typed `str`.
 - **Errors raise `RoxyAPIError`.** Catch it and check `e.code`, `e.error`, and `e.status_code`.
 - **Switch on `code`, not `error`.** Codes are stable. Messages may change.
 
