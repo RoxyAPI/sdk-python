@@ -247,6 +247,32 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/transits", body, params=params or None)
 
+    def detect_aspect_patterns(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, strict_orbs: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
+        """Detect aspect patterns - Grand Trine, Kite, T-Square, Grand Cross, Yod, Mystic Rectangle, Stellium"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/astrology/aspect-patterns", body, params=params or None)
+
+    async def detect_aspect_patterns_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, strict_orbs: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
+        """Detect aspect patterns - Grand Trine, Kite, T-Square, Grand Cross, Yod, Mystic Rectangle, Stellium (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/astrology/aspect-patterns", body, params=params or None)
+
     def generate_composite_chart(self, *, person1: dict[str, Any], person2: dict[str, Any], house_system: str | None = None, lang: str | None = None) -> Any:
         """Composite Chart - Midpoint relationship chart with interpretations"""
         body: dict[str, Any] = {}
@@ -806,6 +832,34 @@ class VedicAstrologyDomain(_BaseDomain):
         if timezone is not None:
             body["timezone"] = timezone
         return await self._post_async(f"/vedic-astrology/dosha/sadhesati", body)
+
+    def detect_yogas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Detect classical Vedic yogas in a birth chart"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/yoga/detect", body, params=params or None)
+
+    async def detect_yogas_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Detect classical Vedic yogas in a birth chart (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/yoga/detect", body, params=params or None)
 
     def generate_birth_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
         """Get birth chart (D1 Rashi chart) - Kundli Calculator API"""
@@ -1526,14 +1580,14 @@ class VedicAstrologyDomain(_BaseDomain):
         return await self._post_async(f"/vedic-astrology/upagraha", body)
 
     def get_yoga(self, *, id: str, lang: str | None = None) -> Any:
-        """Get yoga details by ID - Detailed Yoga Information API"""
+        """Get yoga details by ID - Vedic Yoga Glossary Entry"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._get(f"/vedic-astrology/yoga/{id}", params=params or None)
 
     async def get_yoga_async(self, *, id: str, lang: str | None = None) -> Any:
-        """Get yoga details by ID - Detailed Yoga Information API (async)"""
+        """Get yoga details by ID - Vedic Yoga Glossary Entry (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -1568,14 +1622,14 @@ class VedicAstrologyDomain(_BaseDomain):
         return await self._get_async(f"/vedic-astrology/rashis", params=params or None)
 
     def list_yogas(self, *, lang: str | None = None) -> Any:
-        """List all planetary yogas - 300+ Vedic Yoga Combinations"""
+        """List all planetary yogas - 300+ Vedic Yoga Glossary"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._get(f"/vedic-astrology/yoga", params=params or None)
 
     async def list_yogas_async(self, *, lang: str | None = None) -> Any:
-        """List all planetary yogas - 300+ Vedic Yoga Combinations (async)"""
+        """List all planetary yogas - 300+ Vedic Yoga Glossary (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
