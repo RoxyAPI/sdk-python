@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python }}
           enable-cache: true
 
-      - run: uv sync --all-extras --dev
+      - run: uv sync --locked --all-extras --dev
 
       - name: Codegen drift check
         if: matrix.python == '3.12'
