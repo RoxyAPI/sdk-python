@@ -2266,6 +2266,366 @@ class TarotDomain(_BaseDomain):
         return await self._get_async(f"/tarot/cards", params=params or None)
 
 
+class HumanDesignDomain(_BaseDomain):
+    """Generate the full Human Design bodygraph from a birth moment: type, strategy, inner authority, profile, definition, i..."""
+
+    def calculate_centers(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the nine Human Design centers"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/centers", body, params=params or None)
+
+    async def calculate_centers_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the nine Human Design centers (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/centers", body, params=params or None)
+
+    def calculate_channels(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the defined Human Design channels"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/channels", body, params=params or None)
+
+    async def calculate_channels_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the defined Human Design channels (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/channels", body, params=params or None)
+
+    def calculate_connection(self, *, person_a: dict[str, Any], person_b: dict[str, Any], lang: str | None = None) -> Any:
+        """Calculate Human Design connection chart - Two-person composite bodygraph compatibility"""
+        body: dict[str, Any] = {}
+        body["personA"] = person_a
+        body["personB"] = person_b
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/connection", body, params=params or None)
+
+    async def calculate_connection_async(self, *, person_a: dict[str, Any], person_b: dict[str, Any], lang: str | None = None) -> Any:
+        """Calculate Human Design connection chart - Two-person composite bodygraph compatibility (async)"""
+        body: dict[str, Any] = {}
+        body["personA"] = person_a
+        body["personB"] = person_b
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/connection", body, params=params or None)
+
+    def calculate_gates(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the 26 Human Design gate activations"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/gates", body, params=params or None)
+
+    async def calculate_gates_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the 26 Human Design gate activations (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/gates", body, params=params or None)
+
+    def calculate_profile(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the Human Design profile and line keynotes"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/profile", body, params=params or None)
+
+    async def calculate_profile_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate the Human Design profile and line keynotes (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/profile", body, params=params or None)
+
+    def calculate_type(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate Human Design type, authority and profile"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/type", body, params=params or None)
+
+    async def calculate_type_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate Human Design type, authority and profile (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/type", body, params=params or None)
+
+    def generate_bodygraph(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Generate full Human Design bodygraph - Type, authority, profile, centers, channels, gates"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/bodygraph", body, params=params or None)
+
+    async def generate_bodygraph_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Generate full Human Design bodygraph - Type, authority, profile, centers, channels, gates (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/bodygraph", body, params=params or None)
+
+    def generate_transit(self, *, birth_data: dict[str, Any], date: str | None = None, time: str | None = None, lang: str | None = None) -> Any:
+        """Generate Human Design transit overlay - Current planetary activations on a natal bodygraph"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if date is not None:
+            body["date"] = date
+        if time is not None:
+            body["time"] = time
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/transit", body, params=params or None)
+
+    async def generate_transit_async(self, *, birth_data: dict[str, Any], date: str | None = None, time: str | None = None, lang: str | None = None) -> Any:
+        """Generate Human Design transit overlay - Current planetary activations on a natal bodygraph (async)"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if date is not None:
+            body["date"] = date
+        if time is not None:
+            body["time"] = time
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/transit", body, params=params or None)
+
+    def get_center(self, *, id: str, lang: str | None = None) -> Any:
+        """Look up a Human Design center by id"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/human-design/centers/{id}", params=params or None)
+
+    async def get_center_async(self, *, id: str, lang: str | None = None) -> Any:
+        """Look up a Human Design center by id (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/human-design/centers/{id}", params=params or None)
+
+    def get_gate(self, *, number: str, lang: str | None = None) -> Any:
+        """Look up a Human Design gate by number"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/human-design/gates/{number}", params=params or None)
+
+    async def get_gate_async(self, *, number: str, lang: str | None = None) -> Any:
+        """Look up a Human Design gate by number (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/human-design/gates/{number}", params=params or None)
+
+
+class ForecastDomain(_BaseDomain):
+    """Merge upcoming transit aspects, sign ingresses, retrograde stations, Vimshottari dasha changes, and biorhythm critica..."""
+
+    def find_significant_dates(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+        """Significant dates - High-significance cross-domain forecast highlights"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if end_date is not None:
+            body["endDate"] = end_date
+        if domains is not None:
+            body["domains"] = domains
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/forecast/significant-dates", body, params=params or None)
+
+    async def find_significant_dates_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+        """Significant dates - High-significance cross-domain forecast highlights (async)"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if end_date is not None:
+            body["endDate"] = end_date
+        if domains is not None:
+            body["domains"] = domains
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/forecast/significant-dates", body, params=params or None)
+
+    def forecast_transits(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+        """Western transit forecast - Transit aspects, sign ingresses, retrograde stations"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if end_date is not None:
+            body["endDate"] = end_date
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/forecast/transits", body, params=params or None)
+
+    async def forecast_transits_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+        """Western transit forecast - Transit aspects, sign ingresses, retrograde stations (async)"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if end_date is not None:
+            body["endDate"] = end_date
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/forecast/transits", body, params=params or None)
+
+    def generate_timeline(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+        """Cross-domain forecast timeline - Transits, ingresses, stations, dasha changes, critical days"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if end_date is not None:
+            body["endDate"] = end_date
+        if domains is not None:
+            body["domains"] = domains
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/forecast/timeline", body, params=params or None)
+
+    async def generate_timeline_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+        """Cross-domain forecast timeline - Transits, ingresses, stations, dasha changes, critical days (async)"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if end_date is not None:
+            body["endDate"] = end_date
+        if domains is not None:
+            body["domains"] = domains
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/forecast/timeline", body, params=params or None)
+
+
 class BiorhythmDomain(_BaseDomain):
     """The most complete biorhythm API + remote MCP for AI agents and developers"""
 
@@ -3085,6 +3445,8 @@ class Roxy:
         self.vedic_astrology = VedicAstrologyDomain(self._client, self._async_client)
         self.numerology = NumerologyDomain(self._client, self._async_client)
         self.tarot = TarotDomain(self._client, self._async_client)
+        self.human_design = HumanDesignDomain(self._client, self._async_client)
+        self.forecast = ForecastDomain(self._client, self._async_client)
         self.biorhythm = BiorhythmDomain(self._client, self._async_client)
         self.iching = IchingDomain(self._client, self._async_client)
         self.crystals = CrystalsDomain(self._client, self._async_client)
