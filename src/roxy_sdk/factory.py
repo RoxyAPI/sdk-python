@@ -2379,6 +2379,24 @@ class HumanDesignDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/human-design/gates", body, params=params or None)
 
+    def calculate_penta(self, *, members: list[dict[str, Any]], lang: str | None = None) -> Any:
+        """Calculate Human Design Penta - Small-group BG5 operating system for three to five people"""
+        body: dict[str, Any] = {}
+        body["members"] = members
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/penta", body, params=params or None)
+
+    async def calculate_penta_async(self, *, members: list[dict[str, Any]], lang: str | None = None) -> Any:
+        """Calculate Human Design Penta - Small-group BG5 operating system for three to five people (async)"""
+        body: dict[str, Any] = {}
+        body["members"] = members
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/penta", body, params=params or None)
+
     def calculate_profile(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
         """Calculate the Human Design profile and line keynotes"""
         body: dict[str, Any] = {}
@@ -2438,6 +2456,36 @@ class HumanDesignDomain(_BaseDomain):
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/human-design/type", body, params=params or None)
+
+    def calculate_variables(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate Human Design Variables - The four arrows and Color, Tone, Base substructure"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/human-design/variables", body, params=params or None)
+
+    async def calculate_variables_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+        """Calculate Human Design Variables - The four arrows and Color, Tone, Base substructure (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/human-design/variables", body, params=params or None)
 
     def generate_bodygraph(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
         """Generate full Human Design bodygraph - Type, authority, profile, centers, channels, gates"""
@@ -2527,7 +2575,7 @@ class HumanDesignDomain(_BaseDomain):
 class ForecastDomain(_BaseDomain):
     """Merge upcoming transit aspects, sign ingresses, retrograde stations, Vimshottari dasha changes, and biorhythm critica..."""
 
-    def find_significant_dates(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+    def find_significant_dates(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Significant dates - High-significance cross-domain forecast highlights"""
         body: dict[str, Any] = {}
         body["birthData"] = birth_data
@@ -2539,12 +2587,14 @@ class ForecastDomain(_BaseDomain):
             body["domains"] = domains
         if min_significance is not None:
             body["minSignificance"] = min_significance
+        if domain_weights is not None:
+            body["domainWeights"] = domain_weights
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/forecast/significant-dates", body, params=params or None)
 
-    async def find_significant_dates_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+    async def find_significant_dates_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Significant dates - High-significance cross-domain forecast highlights (async)"""
         body: dict[str, Any] = {}
         body["birthData"] = birth_data
@@ -2556,6 +2606,8 @@ class ForecastDomain(_BaseDomain):
             body["domains"] = domains
         if min_significance is not None:
             body["minSignificance"] = min_significance
+        if domain_weights is not None:
+            body["domainWeights"] = domain_weights
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -2591,7 +2643,77 @@ class ForecastDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/forecast/transits", body, params=params or None)
 
-    def generate_timeline(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+    def generate_digest(self, *, birth_data: dict[str, Any], start_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, top: int | None = None, lang: str | None = None) -> Any:
+        """Forecast digest - Pre-summarized next 24h, 7d, 30d, and 90d rollups"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if domains is not None:
+            body["domains"] = domains
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        if domain_weights is not None:
+            body["domainWeights"] = domain_weights
+        if top is not None:
+            body["top"] = top
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/forecast/digest", body, params=params or None)
+
+    async def generate_digest_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, top: int | None = None, lang: str | None = None) -> Any:
+        """Forecast digest - Pre-summarized next 24h, 7d, 30d, and 90d rollups (async)"""
+        body: dict[str, Any] = {}
+        body["birthData"] = birth_data
+        if start_date is not None:
+            body["startDate"] = start_date
+        if domains is not None:
+            body["domains"] = domains
+        if min_significance is not None:
+            body["minSignificance"] = min_significance
+        if domain_weights is not None:
+            body["domainWeights"] = domain_weights
+        if top is not None:
+            body["top"] = top
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/forecast/digest", body, params=params or None)
+
+    def generate_solar_return(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+        """Solar return chart - Annual birthday forecast chart for a single subject"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["year"] = year
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/forecast/solar-return", body, params=params or None)
+
+    async def generate_solar_return_async(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+        """Solar return chart - Annual birthday forecast chart for a single subject (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["year"] = year
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/forecast/solar-return", body, params=params or None)
+
+    def generate_timeline(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Cross-domain forecast timeline - Transits, ingresses, stations, dasha changes, critical days"""
         body: dict[str, Any] = {}
         body["birthData"] = birth_data
@@ -2603,12 +2725,14 @@ class ForecastDomain(_BaseDomain):
             body["domains"] = domains
         if min_significance is not None:
             body["minSignificance"] = min_significance
+        if domain_weights is not None:
+            body["domainWeights"] = domain_weights
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/forecast/timeline", body, params=params or None)
 
-    async def generate_timeline_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
+    async def generate_timeline_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Cross-domain forecast timeline - Transits, ingresses, stations, dasha changes, critical days (async)"""
         body: dict[str, Any] = {}
         body["birthData"] = birth_data
@@ -2620,6 +2744,8 @@ class ForecastDomain(_BaseDomain):
             body["domains"] = domains
         if min_significance is not None:
             body["minSignificance"] = min_significance
+        if domain_weights is not None:
+            body["domainWeights"] = domain_weights
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
