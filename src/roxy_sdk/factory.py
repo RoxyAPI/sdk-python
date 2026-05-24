@@ -2613,6 +2613,38 @@ class ForecastDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/forecast/significant-dates", body, params=params or None)
 
+    def forecast_solar_return(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+        """Solar return chart - Annual birthday forecast chart for a single subject"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["year"] = year
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/forecast/solar-return", body, params=params or None)
+
+    async def forecast_solar_return_async(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+        """Solar return chart - Annual birthday forecast chart for a single subject (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["year"] = year
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/forecast/solar-return", body, params=params or None)
+
     def forecast_transits(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
         """Western transit forecast - Transit aspects, sign ingresses, retrograde stations"""
         body: dict[str, Any] = {}
@@ -2680,38 +2712,6 @@ class ForecastDomain(_BaseDomain):
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/forecast/digest", body, params=params or None)
-
-    def generate_solar_return(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
-        """Solar return chart - Annual birthday forecast chart for a single subject"""
-        body: dict[str, Any] = {}
-        body["date"] = date
-        body["time"] = time
-        body["year"] = year
-        body["latitude"] = latitude
-        body["longitude"] = longitude
-        body["timezone"] = timezone
-        if house_system is not None:
-            body["houseSystem"] = house_system
-        params: dict[str, Any] = {}
-        if lang is not None:
-            params["lang"] = lang
-        return self._post(f"/forecast/solar-return", body, params=params or None)
-
-    async def generate_solar_return_async(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
-        """Solar return chart - Annual birthday forecast chart for a single subject (async)"""
-        body: dict[str, Any] = {}
-        body["date"] = date
-        body["time"] = time
-        body["year"] = year
-        body["latitude"] = latitude
-        body["longitude"] = longitude
-        body["timezone"] = timezone
-        if house_system is not None:
-            body["houseSystem"] = house_system
-        params: dict[str, Any] = {}
-        if lang is not None:
-            params["lang"] = lang
-        return await self._post_async(f"/forecast/solar-return", body, params=params or None)
 
     def generate_timeline(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Cross-domain forecast timeline - Transits, ingresses, stations, dasha changes, critical days"""
