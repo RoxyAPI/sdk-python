@@ -1,6 +1,6 @@
 # roxy-sdk (Python) - Agent Guide
 
-Python SDK for RoxyAPI. Twelve domains (Western astrology, Vedic astrology, numerology, tarot, biorhythm, I Ching, crystals, dreams, angel numbers, location, usage, languages). One API key, sync and async.
+Python SDK for RoxyAPI. Spiritual domains (Western astrology, Vedic astrology, numerology, tarot, Human Design, forecast, biorhythm, I Ching, crystals, dreams, angel numbers) plus utility namespaces (location, usage, languages). One API key, sync and async.
 
 ## Install and initialize
 
@@ -52,6 +52,8 @@ Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE wi
 | `roxy.vedic_astrology` | Vedic / Jyotish: kundli, panchang, Vimshottari dasha, nakshatras, Mangal / Kaal Sarp / Sade Sati doshas, Guna Milan, navamsa, KP chart and ruling planets |
 | `roxy.numerology` | Life path, expression, soul urge, personal year, full chart, compatibility, karmic lessons |
 | `roxy.tarot` | Daily card, custom draws, three-card, Celtic Cross, yes / no, love spread, 78-card catalog |
+| `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates. No coordinates needed |
+| `roxy.forecast` | Cross-domain timeline: transits, ingresses, retrograde stations, dasha changes, biorhythm critical days |
 | `roxy.biorhythm` | Daily check-in, multi-day forecast, critical days, couples compatibility, phases |
 | `roxy.iching` | Daily hexagram, three-coin cast, 64 hexagrams, trigrams |
 | `roxy.crystals` | By zodiac, by chakra, birthstone, search, daily, pairings |
@@ -154,7 +156,7 @@ except RoxyAPIError as e:
 
 ## Common tasks
 
-Ordered by domain priority (Western, Vedic, Numerology, Tarot, Biorhythm, I Ching, Crystals, Dreams, Angel Numbers, Location, Usage, Languages).
+Ordered by domain priority (Western, Vedic, Numerology, Tarot, Human Design, Forecast, Biorhythm, I Ching, Crystals, Dreams, Angel Numbers, Location, Usage, Languages).
 
 | Task | Code |
 |------|------|
@@ -180,6 +182,8 @@ Ordered by domain priority (Western, Vedic, Numerology, Tarot, Biorhythm, I Chin
 | Three-card spread | `roxy.tarot.cast_three_card(question="...")` |
 | Celtic Cross | `roxy.tarot.cast_celtic_cross(question="...")` |
 | Yes / no tarot | `roxy.tarot.cast_yes_no(question="...")` |
+| Human Design bodygraph | `roxy.human_design.generate_bodygraph(date, time, timezone)` |
+| Forecast timeline | `roxy.forecast.generate_timeline(birth_data=...)` |
 | Daily biorhythm | `roxy.biorhythm.get_daily_biorhythm(seed="user-123")` |
 | Biorhythm forecast | `roxy.biorhythm.get_forecast(birth_date="1990-01-15")` |
 | Biorhythm compatibility | `roxy.biorhythm.calculate_bio_compatibility(person1, person2)` |

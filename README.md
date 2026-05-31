@@ -16,7 +16,7 @@ Python SDK for astrology, Vedic astrology, tarot, numerology, and more.
 
 One API key. Sync and async (every method has an `_async` suffix). Verified against NASA JPL Horizons.
 
-The fastest way to add natal charts, kundli matching, daily horoscopes, tarot readings, and spiritual insights to FastAPI, Django, Flask, or any Python project. Ten domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in eight languages.
+The fastest way to add natal charts, kundli matching, daily horoscopes, tarot readings, and spiritual insights to FastAPI, Django, Flask, or any Python project. Twelve domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in eight languages.
 
 ## Install
 
@@ -94,6 +94,8 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 | Vedic Astrology | `roxy.vedic_astrology` | Kundli, panchang, Vimshottari dasha, nakshatras, Mangal / Kaal Sarp / Sade Sati doshas, Guna Milan, navamsa, KP chart and ruling planets |
 | Numerology | `roxy.numerology` | Life path, expression, soul urge, personal year, full chart, compatibility, karmic lessons |
 | Tarot | `roxy.tarot` | Daily card, custom draws, three-card, Celtic Cross, yes / no, love spread, 78-card catalog |
+| Human Design | `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates |
+| Forecast | `roxy.forecast` | Cross-domain timeline: transits, ingresses, stations, dasha changes, critical days |
 | Biorhythm | `roxy.biorhythm` | Daily check-in, multi-day forecast, critical days, couples compatibility, phases |
 | I Ching | `roxy.iching` | Daily hexagram, three-coin cast, 64 hexagrams, trigrams |
 | Crystals | `roxy.crystals` | By zodiac, by chakra, birthstone, search, daily, pairings |
@@ -210,7 +212,41 @@ answer = roxy.tarot.cast_yes_no(question="Should I take the offer?")
 # answer["answer"] ("Yes" | "No" | "Maybe"), answer["strength"]
 ```
 
-### 5. Biorhythm API (daily check-in, forecast, compatibility)
+### 5. Human Design API (full bodygraph: type, strategy, authority, profile)
+
+The breakout 2026 spiritual category, computed from the same ephemeris as Western astrology plus the I Ching gate wheel and chakra-style centers. Self-discovery apps, dating and compatibility products, and AI coaching bots are the buyers. The full bodygraph is the chart, returned in one call. No coordinates needed: Human Design uses the birth instant and ecliptic longitudes, so there is no city-search setup step.
+
+```python
+# Full bodygraph. The #1 Human Design query, the whole chart in one call.
+# `timezone` is the IANA string ("Asia/Kolkata"), same as the chart endpoints.
+bodygraph = roxy.human_design.generate_bodygraph(
+    date="1990-07-04", time="10:12:00", timezone="Asia/Kolkata",
+)
+# bodygraph["type"] ("Generator", "Projector", "Manifestor", ...)
+print(bodygraph["type"], bodygraph["strategy"], bodygraph["profile"], bodygraph["definition"])
+# bodygraph["authority"], bodygraph["centers"], bodygraph["channels"], bodygraph["gates"]
+```
+
+### 6. Forecast API (cross-domain transit timeline, significance-scored)
+
+The first cross-domain, stateless forecast in the catalog. One call merges Western transit-to-natal aspects, sign ingresses, retrograde stations, Vedic Vimshottari dasha boundaries, and biorhythm critical days into a single significance-scored, time-ordered timeline. Forecast feeds, transit alerts, and timing tools are the buyers. The window is clamped to a 90-day horizon.
+
+```python
+# Cross-domain timeline. Acquire on the transit keyword, convert on this breadth.
+# Response keys are camelCase passthrough: result["count"], result["events"].
+timeline = roxy.forecast.generate_timeline(
+    birth_data={
+        "date": "1990-07-04", "time": "10:12:00", "timezone": "Asia/Kolkata",
+        "latitude": 28.6139, "longitude": 77.209,
+    },
+    start_date="2026-06-01", end_date="2026-06-30",
+)
+print(timeline["count"])  # number of events in the window
+event = timeline["events"][0]
+print(event["date"], event["domain"], event["type"], event["description"], event["significance"])
+```
+
+### 7. Biorhythm API (daily check-in, forecast, compatibility)
 
 Zero competition domain. Steady search volume with the top Google result being a static calculator page. Pure land-grab for wellness, productivity, sports, and couples apps.
 
@@ -224,7 +260,7 @@ forecast = roxy.biorhythm.get_forecast(
 )
 ```
 
-### 6. I Ching API (daily hexagram, coin cast, 64-hexagram catalog)
+### 8. I Ching API (daily hexagram, coin cast, 64-hexagram catalog)
 
 Meditation apps, decision-making tools, and wisdom chatbots. `i ching API` and `hexagram API` are the keywords.
 
@@ -238,7 +274,7 @@ hexagrams = roxy.iching.list_hexagrams()
 # hexagrams["hexagrams"] has 64 entries
 ```
 
-### 7. Crystals API (by zodiac, by chakra, birthstone)
+### 9. Crystals API (by zodiac, by chakra, birthstone)
 
 Crystal retail and metaphysical shops use these to build "crystals for [sign]" and "[chakra] chakra stones" pages.
 
@@ -254,7 +290,7 @@ by_chakra = roxy.crystals.get_crystals_by_chakra(chakra="heart")
 birthstone = roxy.crystals.get_birthstones(month="4")
 ```
 
-### 8. Dream interpretation API (symbol dictionary, search)
+### 10. Dream interpretation API (symbol dictionary, search)
 
 Thousands of dream symbols. `dream meaning` is among the highest-volume spiritual searches on Google. Journal apps, AI therapy chatbots, and self-discovery products are the buyers.
 
@@ -268,7 +304,7 @@ results = roxy.dreams.search_dream_symbols(q="flying")
 # results["symbols"] is an array of matching symbols
 ```
 
-### 9. Angel Numbers API (1111, 222, 333 meanings plus universal lookup)
+### 11. Angel Numbers API (1111, 222, 333 meanings plus universal lookup)
 
 Gen Z spiritual-tok fuel. `111 meaning`, `222 meaning`, `333 angel number` are evergreen viral queries with massive shareability.
 
