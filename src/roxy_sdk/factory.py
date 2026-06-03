@@ -2573,7 +2573,7 @@ class HumanDesignDomain(_BaseDomain):
 
 
 class ForecastDomain(_BaseDomain):
-    """Merge upcoming transit aspects, sign ingresses, retrograde stations, Vimshottari dasha changes, and biorhythm critica..."""
+    """Merge upcoming transit aspects, sign ingresses, retrograde stations, new and full moons, biorhythm critical days, and..."""
 
     def find_significant_dates(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Significant dates - High-significance cross-domain forecast highlights"""
@@ -2646,7 +2646,7 @@ class ForecastDomain(_BaseDomain):
         return await self._post_async(f"/forecast/solar-return", body, params=params or None)
 
     def forecast_transits(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
-        """Western transit forecast - Transit aspects, sign ingresses, retrograde stations"""
+        """Western astrology forecast - aspects, ingresses, stations, eclipses, moon phases"""
         body: dict[str, Any] = {}
         body["birthData"] = birth_data
         if start_date is not None:
@@ -2661,7 +2661,7 @@ class ForecastDomain(_BaseDomain):
         return self._post(f"/forecast/transits", body, params=params or None)
 
     async def forecast_transits_async(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, min_significance: float | None = None, lang: str | None = None) -> Any:
-        """Western transit forecast - Transit aspects, sign ingresses, retrograde stations (async)"""
+        """Western astrology forecast - aspects, ingresses, stations, eclipses, moon phases (async)"""
         body: dict[str, Any] = {}
         body["birthData"] = birth_data
         if start_date is not None:
