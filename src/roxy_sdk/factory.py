@@ -3381,22 +3381,26 @@ class DreamsDomain(_BaseDomain):
 class AngelNumbersDomain(_BaseDomain):
     """Production-ready angel numbers API + hosted MCP for AI agents and developers"""
 
-    def analyze_number_sequence(self, *, number: str | None = None, lang: str | None = None) -> Any:
+    def analyze_number_sequence(self, *, number: str | None = None, context: str | None = None, lang: str | None = None) -> Any:
         """Analyze Any Number Sequence"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         if number is not None:
             params["number"] = number
+        if context is not None:
+            params["context"] = context
         return self._get(f"/angel-numbers/lookup", params=params or None)
 
-    async def analyze_number_sequence_async(self, *, number: str | None = None, lang: str | None = None) -> Any:
+    async def analyze_number_sequence_async(self, *, number: str | None = None, context: str | None = None, lang: str | None = None) -> Any:
         """Analyze Any Number Sequence (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         if number is not None:
             params["number"] = number
+        if context is not None:
+            params["context"] = context
         return await self._get_async(f"/angel-numbers/lookup", params=params or None)
 
     def get_angel_number(self, *, number: str, lang: str | None = None) -> Any:
