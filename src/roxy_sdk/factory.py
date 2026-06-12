@@ -889,7 +889,7 @@ class VedicAstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/vedic-astrology/birth-chart", body, params=params or None)
 
-    def generate_divisional_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, division: int) -> Any:
+    def generate_divisional_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, division: int, lang: str | None = None) -> Any:
         """Get divisional chart (Varga) - D2 to D60 Calculator"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -899,9 +899,12 @@ class VedicAstrologyDomain(_BaseDomain):
         if timezone is not None:
             body["timezone"] = timezone
         body["division"] = division
-        return self._post(f"/vedic-astrology/divisional-chart", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/divisional-chart", body, params=params or None)
 
-    async def generate_divisional_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, division: int) -> Any:
+    async def generate_divisional_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, division: int, lang: str | None = None) -> Any:
         """Get divisional chart (Varga) - D2 to D60 Calculator (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -911,9 +914,12 @@ class VedicAstrologyDomain(_BaseDomain):
         if timezone is not None:
             body["timezone"] = timezone
         body["division"] = division
-        return await self._post_async(f"/vedic-astrology/divisional-chart", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/divisional-chart", body, params=params or None)
 
-    def generate_kp_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None) -> Any:
+    def generate_kp_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Generate complete KP birth chart"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -928,9 +934,12 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsaValue"] = ayanamsa_value
         if node_type is not None:
             body["nodeType"] = node_type
-        return self._post(f"/vedic-astrology/kp/chart", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/kp/chart", body, params=params or None)
 
-    async def generate_kp_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None) -> Any:
+    async def generate_kp_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Generate complete KP birth chart (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -945,9 +954,12 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsaValue"] = ayanamsa_value
         if node_type is not None:
             body["nodeType"] = node_type
-        return await self._post_async(f"/vedic-astrology/kp/chart", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/kp/chart", body, params=params or None)
 
-    def generate_navamsa(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None) -> Any:
+    def generate_navamsa(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
         """Get Navamsa chart (D9) - Marriage Compatibility Calculator"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -956,9 +968,12 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/navamsa", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/navamsa", body, params=params or None)
 
-    async def generate_navamsa_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None) -> Any:
+    async def generate_navamsa_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
         """Get Navamsa chart (D9) - Marriage Compatibility Calculator (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -967,7 +982,10 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/navamsa", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/navamsa", body, params=params or None)
 
     def get_basic_panchang(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
         """Get basic Panchang - Tithi Nakshatra Yoga Karana Calculator"""
