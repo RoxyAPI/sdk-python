@@ -1717,6 +1717,60 @@ class NumerologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/numerology/bridge", body, params=params or None)
 
+    def calculate_business_name(self, *, name: str, lang: str | None = None) -> Any:
+        """Business name numerology - Chaldean brand name analysis and lucky numbers"""
+        body: dict[str, Any] = {}
+        body["name"] = name
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/numerology/business-name", body, params=params or None)
+
+    async def calculate_business_name_async(self, *, name: str, lang: str | None = None) -> Any:
+        """Business name numerology - Chaldean brand name analysis and lucky numbers (async)"""
+        body: dict[str, Any] = {}
+        body["name"] = name
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/numerology/business-name", body, params=params or None)
+
+    def calculate_chaldean(self, *, name: str, lang: str | None = None) -> Any:
+        """Chaldean numerology name reading - Destiny, compound number, planetary ruler"""
+        body: dict[str, Any] = {}
+        body["name"] = name
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/numerology/chaldean", body, params=params or None)
+
+    async def calculate_chaldean_async(self, *, name: str, lang: str | None = None) -> Any:
+        """Chaldean numerology name reading - Destiny, compound number, planetary ruler (async)"""
+        body: dict[str, Any] = {}
+        body["name"] = name
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/numerology/chaldean", body, params=params or None)
+
+    def calculate_dual(self, *, name: str, lang: str | None = None) -> Any:
+        """Dual numerology - Pythagorean and Chaldean name numbers in one call"""
+        body: dict[str, Any] = {}
+        body["name"] = name
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/numerology/dual", body, params=params or None)
+
+    async def calculate_dual_async(self, *, name: str, lang: str | None = None) -> Any:
+        """Dual numerology - Pythagorean and Chaldean name numbers in one call (async)"""
+        body: dict[str, Any] = {}
+        body["name"] = name
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/numerology/dual", body, params=params or None)
+
     def calculate_expression(self, *, full_name: str, lang: str | None = None) -> Any:
         """Calculate Expression number - Natural talents and life goals"""
         body: dict[str, Any] = {}
@@ -1988,6 +2042,20 @@ class NumerologyDomain(_BaseDomain):
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/numerology/chart", body, params=params or None)
+
+    def get_compound_number(self, *, number: str, lang: str | None = None) -> Any:
+        """Compound number meaning - Cheiro Chaldean interpretation 10 to 52"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/numerology/compound-number/{number}", params=params or None)
+
+    async def get_compound_number_async(self, *, number: str, lang: str | None = None) -> Any:
+        """Compound number meaning - Cheiro Chaldean interpretation 10 to 52 (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/numerology/compound-number/{number}", params=params or None)
 
     def get_daily_number(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Get daily numerology number - Number of the Day with interpretation"""
