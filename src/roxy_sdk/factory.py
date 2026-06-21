@@ -71,7 +71,7 @@ class _BaseDomain:
 
 
 class AstrologyDomain(_BaseDomain):
-    """Production-ready Western astrology API + remote MCP for AI agents and developers"""
+    """Western astrology API for natal birth charts, daily, weekly, and monthly horoscopes with unique content per sign, syn..."""
 
     def calculate_aspects(self, *, date: str, time: str, timezone: str, planets: list[str] | None = None, aspect_types: list[str] | None = None, lang: str | None = None) -> Any:
         """Calculate planetary aspects - Aspect finder for any date and time"""
@@ -617,7 +617,7 @@ class AstrologyDomain(_BaseDomain):
 
 
 class VedicAstrologyDomain(_BaseDomain):
-    """Production-grade Vedic (Jyotish) and KP astrology API + remote MCP for AI agents and developers"""
+    """Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), Ashtakoot Gun Milan ku..."""
 
     def calculate_ashtakavarga(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None) -> Any:
         """Get Ashtakavarga (planetary strength) analysis - Ashtakavarga Calculator API"""
@@ -1655,7 +1655,7 @@ class VedicAstrologyDomain(_BaseDomain):
 
 
 class NumerologyDomain(_BaseDomain):
-    """Production-ready Pythagorean numerology API + hosted MCP for AI agents and developers"""
+    """Numerology API to calculate life path, expression, soul urge, personality, and maturity numbers, with Pinnacle and Ch..."""
 
     def analyze_karmic_lessons(self, *, full_name: str, lang: str | None = None) -> Any:
         """Analyze Karmic Lessons - Life lessons from missing numbers"""
@@ -2097,7 +2097,7 @@ class NumerologyDomain(_BaseDomain):
 
 
 class TarotDomain(_BaseDomain):
-    """Production-ready tarot card reading API + hosted MCP for AI agents and developers"""
+    """Tarot reading API with the complete 78-card Rider-Waite-Smith deck and card meanings for love, career, health, and sp..."""
 
     def cast_career_spread(self, *, question: str | None = None, seed: str | None = None, lang: str | None = None) -> Any:
         """Career Spread (7 cards)"""
@@ -2839,7 +2839,7 @@ class ForecastDomain(_BaseDomain):
 
 
 class BiorhythmDomain(_BaseDomain):
-    """The most complete biorhythm API + remote MCP for AI agents and developers"""
+    """The most complete biorhythm API: 10 cycle types across 3 primary (physical, emotional, intellectual), 4 secondary (in..."""
 
     def calculate_bio_compatibility(self, *, person1: dict[str, Any], person2: dict[str, Any], target_date: str | None = None, lang: str | None = None) -> Any:
         """Calculate compatibility - Biorhythm alignment between two people"""
@@ -2987,7 +2987,7 @@ class BiorhythmDomain(_BaseDomain):
 
 
 class IchingDomain(_BaseDomain):
-    """I-Ching oracle API + hosted MCP for AI agents and developers"""
+    """I-Ching oracle API with all 64 hexagrams, 384 changing lines, 8 trigrams, and modern interpretations for love, career..."""
 
     def cast_daily_reading(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
         """Cast daily I-Ching reading with changing lines"""
@@ -3153,7 +3153,7 @@ class IchingDomain(_BaseDomain):
 
 
 class CrystalsDomain(_BaseDomain):
-    """Production-ready crystal healing API + hosted MCP for AI agents and developers"""
+    """Crystal healing API with 80 healing crystals and gemstones and their spiritual, emotional, and physical properties"""
 
     def get_birthstones(self, *, month: str, lang: str | None = None) -> Any:
         """Birthstone Crystals by Month"""
@@ -3387,7 +3387,7 @@ class CrystalsDomain(_BaseDomain):
 
 
 class DreamsDomain(_BaseDomain):
-    """Dream interpretation API + hosted MCP for AI agents and developers"""
+    """Dream interpretation API with a 2,000+ symbol dream dictionary and psychological meanings covering animals, objects,..."""
 
     def get_daily_dream_symbol(self, *, seed: str | None = None, date: str | None = None) -> Any:
         """Get daily dream symbol"""
@@ -3465,7 +3465,7 @@ class DreamsDomain(_BaseDomain):
 
 
 class AngelNumbersDomain(_BaseDomain):
-    """Production-ready angel numbers API + hosted MCP for AI agents and developers"""
+    """Angel numbers API with meanings for 111, 222, 333, 444, 555, 666, 777, 888, 999, 1111, and 75+ sequences covering eve..."""
 
     def analyze_number_sequence(self, *, number: str | None = None, context: str | None = None, lang: str | None = None) -> Any:
         """Analyze Any Number Sequence"""
@@ -3555,7 +3555,7 @@ class AngelNumbersDomain(_BaseDomain):
 
 
 class LocationDomain(_BaseDomain):
-    """City search and geocoding API + hosted MCP for AI agents and astrology apps"""
+    """City search and geocoding API with 7,000+ cities across 227 countries, returning latitude, longitude, IANA timezone,..."""
 
     def get_cities_by_country(self, *, iso2: str, limit: int | None = None, offset: int | None = None) -> Any:
         """Get cities in a country - Geocoding directory sorted by population"""
