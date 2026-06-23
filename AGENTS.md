@@ -1,6 +1,6 @@
 # roxy-sdk (Python) - Agent Guide
 
-Python SDK for RoxyAPI. Spiritual domains (Western astrology, Vedic astrology, numerology, tarot, Human Design, forecast, biorhythm, I Ching, crystals, dreams, angel numbers) plus utility namespaces (location, usage, languages). One API key, sync and async.
+Python SDK for RoxyAPI. 12+ domains (Western astrology, Vedic astrology, numerology, tarot, human design, forecast, biorhythm, I Ching, crystals, dreams, angel numbers, location) plus utility namespaces (usage, languages). One API key, sync and async.
 
 ## Install and initialize
 
@@ -31,16 +31,16 @@ roxy = create_roxy("your-api-key")
 Every chart, horoscope, panchang, dasha, dosha, navamsa, KP, synastry, compatibility, and natal endpoint needs `latitude`, `longitude`, and (for Western) `timezone`. **Never ask the user for coordinates.** Always call `roxy.location.search_cities` first.
 
 ```python
-result = roxy.location.search_cities(q="Mumbai")
+result = roxy.location.search_cities(q="New York")
 city = result["cities"][0]
 lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
-# `timezone` is the IANA string ("Asia/Kolkata"). Pass it directly to any chart endpoint.
+# `timezone` is the IANA string ("America/New_York"). Pass it directly to any chart endpoint.
 # The server resolves it to the DST-correct decimal offset using the request's own date,
 # so a January 1990 New York chart gets EST (-5) even when you looked the city up in July.
 # If you prefer numbers, city["utcOffset"] (decimal: 5.5, -5, ...) also works.
 ```
 
-`q` accepts bare city (`"Mumbai"`), city + country (`"Berlin Germany"`), or comma-qualified (`"Springfield, Illinois"`). Use the qualified form to disambiguate same-named cities.
+`q` accepts bare city (`"Paris"`), city + country (`"Berlin Germany"`), or comma-qualified (`"Springfield, Illinois"`). Use the qualified form to disambiguate same-named cities.
 
 ## Domains
 
@@ -68,7 +68,7 @@ Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE wi
 ### Two-step pattern for coordinate-dependent endpoints
 
 ```python
-result = roxy.location.search_cities(q="Delhi")
+result = roxy.location.search_cities(q="London")
 city = result["cities"][0]
 
 chart = roxy.astrology.generate_natal_chart(
@@ -102,7 +102,7 @@ Most valuable endpoints are POST:
 ```python
 natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
+    latitude=40.7128, longitude=-74.006, timezone="America/New_York",
 )
 
 kundli = roxy.vedic_astrology.generate_birth_chart(
@@ -195,7 +195,7 @@ Ordered by domain priority (Western, Vedic, Numerology, Tarot, Human Design, For
 | Dream symbol lookup | `roxy.dreams.get_dream_symbol(id="flying")` |
 | Angel number meaning | `roxy.angel_numbers.get_angel_number(number="1111")` |
 | Universal number lookup | `roxy.angel_numbers.analyze_number_sequence(number="1234")` |
-| Find city coordinates | `roxy.location.search_cities(q="Mumbai")` |
+| Find city coordinates | `roxy.location.search_cities(q="Berlin")` |
 | Check API usage | `roxy.usage.get_usage_stats()` |
 | List supported languages | `roxy.languages.list_languages()` |
 
@@ -208,8 +208,8 @@ These are the fields AI agents most often get wrong. Copy the format column exac
 | `timezone` | IANA string (typed kwarg) OR decimal number (inside a `dict[str, Any]`) | `"Asia/Kolkata"`, `"America/New_York"`, `"Europe/London"` as the top-level `timezone=` kwarg (server resolves to the DST-correct offset for the chart date). Decimal hours (`5.5`, `-5`, `0`) work as JSON numbers and are accepted only inside `person1`/`person2` dicts because the dict is typed `dict[str, Any]` - the top-level `timezone=` kwarg is typed `str`, so a quoted decimal like `"5.5"` is rejected server-side (validation_error). | `"5.5"` as `timezone=` (rejected, server expects IANA string or a JSON number), `"5:30"`, `"+0530"`, `"GMT-5"` |
 | `date` | ISO date string | `"1990-01-15"` | `"Jan 15 1990"`, `datetime.now()`, `"15/01/1990"`, `"1990-1-15"` |
 | `time` | 24-hour string | `"14:30:00"`, `"09:00:00"` | `"2:30 PM"`, `"14:30"` (no seconds), `"9:0:0"` (no leading zeros) |
-| `latitude` | Decimal degrees (float) | `28.6139` (Delhi), `-33.8688` (Sydney), `40.7128` (NYC) | `"28°36'N"`, `"28 36 50"`, strings |
-| `longitude` | Decimal degrees (float) | `77.209` (Delhi), `-74.006` (NYC), `139.6917` (Tokyo) | Same as latitude - no DMS strings |
+| `latitude` | Decimal degrees (float) | `51.5074` (London), `-33.8688` (Sydney), `40.7128` (NYC) | `"28°36'N"`, `"28 36 50"`, strings |
+| `longitude` | Decimal degrees (float) | `-0.1278` (London), `-74.006` (NYC), `139.6917` (Tokyo) | Same as latitude - no DMS strings |
 | `sign` (horoscope kwarg) | Lowercase zodiac name | `"aries"`, `"taurus"`, `"gemini"`, ... `"pisces"` | `"Aries"`, `"♈"`, `"1"`, `"ARIES"` (case-insensitive but prefer lowercase) |
 | `full_name` (numerology) | Birth-certificate name | `"John William Smith"`, `"Priya Rajesh Sharma"` | Nickname, married name, partial name - affects all letter-based calcs |
 | `seed` | Any string (deterministic) | `"user-42"`, `"session-abc-123"`, email hash | Numbers, objects - must be string |
@@ -226,7 +226,7 @@ These are the fields AI agents most often get wrong. Copy the format column exac
 
 ### Timezone cheat sheet (most-asked locations)
 
-Values are decimal hours. For the typed top-level `timezone=` kwarg, pass the IANA name from `roxy.location.search_cities` (`timezone="Asia/Kolkata"`) - the server resolves it to the correct DST offset for the chart date. Inside a `person1`/`person2` dict the bare decimal works because the dict is typed `dict[str, Any]`, so the JSON-number form below is accepted.
+Values are decimal hours. For the typed top-level `timezone=` kwarg, pass the IANA name from `roxy.location.search_cities` (`timezone="America/New_York"`) - the server resolves it to the correct DST offset for the chart date. Inside a `person1`/`person2` dict the bare decimal works because the dict is typed `dict[str, Any]`, so the JSON-number form below is accepted.
 
 
 | Region | Decimal | Region | Decimal |

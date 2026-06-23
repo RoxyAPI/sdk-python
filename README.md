@@ -16,7 +16,7 @@ Python SDK for astrology, Vedic astrology, tarot, numerology, and more.
 
 One API key. Sync and async (every method has an `_async` suffix). Verified against NASA JPL Horizons.
 
-The fastest way to add natal charts, kundli matching, daily horoscopes, tarot readings, and spiritual insights to FastAPI, Django, Flask, or any Python project. Twelve domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in eight languages.
+The fastest way to add natal charts, daily horoscopes, synastry, Vedic kundli, tarot spreads, numerology, human design bodygraphs, and transit forecasts to FastAPI, Django, Flask, or any Python project. 12+ domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in eight languages.
 
 ## Install
 
@@ -47,13 +47,13 @@ from roxy_sdk import create_roxy
 roxy = create_roxy("your-api-key")
 
 # Step 1: geocode the birth city (required for any chart endpoint)
-result = roxy.location.search_cities(q="Mumbai, India")
+result = roxy.location.search_cities(q="London, UK")
 city = result["cities"][0]
 lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 
-# Step 2: Vedic kundli. `timezone` can be the IANA string ("Asia/Kolkata").
+# Step 2: Western natal chart. `timezone` can be the IANA string ("Europe/London").
 # The server resolves it to the DST-correct offset for the chart's own date.
-kundli = roxy.vedic_astrology.generate_birth_chart(
+natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15",
     time="14:30:00",
     latitude=lat,
@@ -61,8 +61,8 @@ kundli = roxy.vedic_astrology.generate_birth_chart(
     timezone=tz,
 )
 
-# Or Western natal chart (same timezone semantics)
-natal = roxy.astrology.generate_natal_chart(
+# Vedic kundli takes the same inputs (timezone optional, defaults to 5.5 IST).
+kundli = roxy.vedic_astrology.generate_birth_chart(
     date="1990-01-15",
     time="14:30:00",
     latitude=lat,
@@ -116,7 +116,7 @@ The global astrology app market is $6.27B and almost entirely Western. These end
 # Natal chart. The #1 Western query, called on every onboarding.
 natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
+    latitude=40.7128, longitude=-74.006, timezone="America/New_York",
 )
 
 # Daily horoscope. Highest per-user call frequency in the catalog, drives DAUs and push.
@@ -125,8 +125,8 @@ horoscope = roxy.astrology.get_daily_horoscope(sign="aries")
 
 # Synastry. The dating-app pro-tier feature, full inter-aspect analysis.
 synastry = roxy.astrology.calculate_synastry(
-    person1={"date": "1990-01-15", "time": "14:30:00", "latitude": 28.61, "longitude": 77.20, "timezone": 5.5},
-    person2={"date": "1992-07-22", "time": "09:00:00", "latitude": 19.07, "longitude": 72.87, "timezone": 5.5},
+    person1={"date": "1990-01-15", "time": "14:30:00", "latitude": 40.71, "longitude": -74.01, "timezone": -5},
+    person2={"date": "1992-07-22", "time": "09:00:00", "latitude": 51.51, "longitude": -0.13, "timezone": 1},
 )
 # synastry["compatibilityScore"], synastry["interAspects"], synastry["analysis"]["strengths"]
 
@@ -218,9 +218,9 @@ The breakout 2026 spiritual category, computed from the same ephemeris as Wester
 
 ```python
 # Full bodygraph. The #1 Human Design query, the whole chart in one call.
-# `timezone` is the IANA string ("Asia/Kolkata"), same as the chart endpoints.
+# `timezone` is the IANA string ("America/New_York"), same as the chart endpoints.
 bodygraph = roxy.human_design.generate_bodygraph(
-    date="1990-07-04", time="10:12:00", timezone="Asia/Kolkata",
+    date="1990-07-04", time="10:12:00", timezone="America/New_York",
 )
 # bodygraph["type"] ("Generator", "Projector", "Manifestor", ...)
 print(bodygraph["type"], bodygraph["strategy"], bodygraph["profile"], bodygraph["definition"])
@@ -236,8 +236,8 @@ The first cross-domain, stateless forecast in the catalog. One call merges Weste
 # Response keys are camelCase passthrough: result["count"], result["events"].
 timeline = roxy.forecast.generate_timeline(
     birth_data={
-        "date": "1990-07-04", "time": "10:12:00", "timezone": "Asia/Kolkata",
-        "latitude": 28.6139, "longitude": 77.209,
+        "date": "1990-07-04", "time": "10:12:00", "timezone": "America/New_York",
+        "latitude": 40.7128, "longitude": -74.006,
     },
     start_date="2026-06-01", end_date="2026-06-30",
 )
