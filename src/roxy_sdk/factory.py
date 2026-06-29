@@ -3845,7 +3845,7 @@ class AngelNumbersDomain(_BaseDomain):
 
 
 class LocationDomain(_BaseDomain):
-    """City search and geocoding API with 7,000+ cities across 227 countries, returning latitude, longitude, IANA timezone,..."""
+    """City search and geocoding API with 23,000+ cities across 240+ countries, returning latitude, longitude, IANA timezone..."""
 
     def get_cities_by_country(self, *, iso2: str, limit: int | None = None, offset: int | None = None) -> Any:
         """Get cities in a country - Geocoding directory sorted by population"""
