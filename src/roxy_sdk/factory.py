@@ -3443,7 +3443,7 @@ class IchingDomain(_BaseDomain):
 
 
 class CrystalsDomain(_BaseDomain):
-    """Crystal healing API with 80 healing crystals and gemstones and their spiritual, emotional, and physical properties"""
+    """Crystal healing API covering the most popular and widely-searched healing crystals and gemstones, from Amethyst and R..."""
 
     def get_birthstones(self, *, month: str, lang: str | None = None) -> Any:
         """Birthstone Crystals by Month"""
