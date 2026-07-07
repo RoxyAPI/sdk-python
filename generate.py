@@ -17,12 +17,27 @@ SPEC_PATH = Path("specs/openapi.json")
 GENERATED_DIR = Path("src/roxy_sdk/_generated")
 
 
-def fetch_spec() -> dict:
+def _fetch_with_retry(url: str, attempts: int = 5) -> bytes:
+    """Retry with backoff: a transient upstream error (CDN 520) must not fail the release run."""
+    import time
     import urllib.request
 
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(url) as resp:
+                return resp.read()
+        except Exception as err:
+            if attempt == attempts:
+                raise
+            delay = 2**attempt
+            print(f"Fetch attempt {attempt}/{attempts} failed ({err}), retrying in {delay}s")
+            time.sleep(delay)
+    raise RuntimeError("unreachable")
+
+
+def fetch_spec() -> dict:
     print(f"Fetching OpenAPI spec from {SPEC_URL}")
-    with urllib.request.urlopen(SPEC_URL) as resp:
-        spec = json.loads(resp.read())
+    spec = json.loads(_fetch_with_retry(SPEC_URL))
 
     # Patch server URL to absolute prod URL
     if spec.get("servers") and spec["servers"][0].get("url") == "/api/v2":
