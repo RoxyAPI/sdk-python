@@ -86,6 +86,9 @@ jobs:
       - name: Publish to PyPI
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # a crashed run can publish and then fail before the git push lands, leaving the registry ahead of the repo; skip-existing makes the rerun converge instead of dying on the duplicate upload
+          skip-existing: true
 
       - name: Commit, tag, push
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
