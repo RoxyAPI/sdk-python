@@ -2645,7 +2645,7 @@ class TarotDomain(_BaseDomain):
 class HumanDesignDomain(_BaseDomain):
     """Generate the full Human Design bodygraph from a birth moment: type, strategy, inner authority, profile, definition, i..."""
 
-    def calculate_centers(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    def calculate_centers(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the nine Human Design centers"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2655,12 +2655,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/human-design/centers", body, params=params or None)
 
-    async def calculate_centers_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    async def calculate_centers_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the nine Human Design centers (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2670,12 +2672,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/human-design/centers", body, params=params or None)
 
-    def calculate_channels(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    def calculate_channels(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the defined Human Design channels"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2685,12 +2689,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/human-design/channels", body, params=params or None)
 
-    async def calculate_channels_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    async def calculate_channels_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the defined Human Design channels (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2700,6 +2706,8 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -2725,7 +2733,7 @@ class HumanDesignDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/human-design/connection", body, params=params or None)
 
-    def calculate_gates(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    def calculate_gates(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the 26 Human Design gate activations"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2735,12 +2743,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/human-design/gates", body, params=params or None)
 
-    async def calculate_gates_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    async def calculate_gates_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the 26 Human Design gate activations (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2750,6 +2760,8 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -2773,7 +2785,7 @@ class HumanDesignDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/human-design/penta", body, params=params or None)
 
-    def calculate_profile(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    def calculate_profile(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the Human Design profile and line keynotes"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2783,12 +2795,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/human-design/profile", body, params=params or None)
 
-    async def calculate_profile_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    async def calculate_profile_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the Human Design profile and line keynotes (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2798,12 +2812,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/human-design/profile", body, params=params or None)
 
-    def calculate_type(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    def calculate_type(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate Human Design type, authority and profile"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2813,12 +2829,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/human-design/type", body, params=params or None)
 
-    async def calculate_type_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    async def calculate_type_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate Human Design type, authority and profile (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2828,12 +2846,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/human-design/type", body, params=params or None)
 
-    def calculate_variables(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    def calculate_variables(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate Human Design Variables - The four arrows and Color, Tone, Base substructure"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2843,12 +2863,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/human-design/variables", body, params=params or None)
 
-    async def calculate_variables_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    async def calculate_variables_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate Human Design Variables - The four arrows and Color, Tone, Base substructure (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2858,12 +2880,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/human-design/variables", body, params=params or None)
 
-    def generate_bodygraph(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    def generate_bodygraph(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Generate full Human Design bodygraph - Type, authority, profile, centers, channels, gates"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2873,12 +2897,14 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/human-design/bodygraph", body, params=params or None)
 
-    async def generate_bodygraph_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, lang: str | None = None) -> Any:
+    async def generate_bodygraph_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Generate full Human Design bodygraph - Type, authority, profile, centers, channels, gates (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -2888,6 +2914,8 @@ class HumanDesignDomain(_BaseDomain):
             body["latitude"] = latitude
         if longitude is not None:
             body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
