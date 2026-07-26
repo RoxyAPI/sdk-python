@@ -1325,8 +1325,8 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         return await self._post_async(f"/vedic-astrology/panchang/choghadiya", body)
 
-    def get_current_dasha(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Get current Mahadasha, Antardasha, Pratyantardasha - Dasha Calculator API"""
+    def get_current_dasha(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
+        """Get current Mahadasha, Antardasha, Pratyantardasha, Sookshma - Dasha Calculator API"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time
@@ -1334,13 +1334,15 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/vedic-astrology/dasha/current", body, params=params or None)
 
-    async def get_current_dasha_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Get current Mahadasha, Antardasha, Pratyantardasha - Dasha Calculator API (async)"""
+    async def get_current_dasha_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
+        """Get current Mahadasha, Antardasha, Pratyantardasha, Sookshma - Dasha Calculator API (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time
@@ -1348,6 +1350,8 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -1673,7 +1677,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["coordinateSystem"] = coordinate_system
         return await self._post_async(f"/vedic-astrology/aspects/lunar", body)
 
-    def get_major_dashas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
+    def get_major_dashas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
         """Get all 9 Mahadasha periods (120-year cycle)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -1682,12 +1686,14 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/vedic-astrology/dasha/major", body, params=params or None)
 
-    async def get_major_dashas_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
+    async def get_major_dashas_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
         """Get all 9 Mahadasha periods (120-year cycle) (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -1696,6 +1702,8 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -1823,6 +1831,38 @@ class VedicAstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/vedic-astrology/planetary-positions", body, params=params or None)
 
+    def get_pratyantardashas(self, *, mahadasha: str, antardasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
+        """Get all Pratyantardashas (antara periods) for a Mahadasha and Antardasha"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/dasha/sub/{mahadasha}/{antardasha}", body, params=params or None)
+
+    async def get_pratyantardashas_async(self, *, mahadasha: str, antardasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
+        """Get all Pratyantardashas (antara periods) for a Mahadasha and Antardasha (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/dasha/sub/{mahadasha}/{antardasha}", body, params=params or None)
+
     def get_rashi(self, *, id: str, lang: str | None = None) -> Any:
         """Get Rashi by ID - Vedic Zodiac Sign Detail"""
         params: dict[str, Any] = {}
@@ -1837,7 +1877,39 @@ class VedicAstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._get_async(f"/vedic-astrology/rashis/{id}", params=params or None)
 
-    def get_sub_dashas(self, *, mahadasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
+    def get_sookshma_dashas(self, *, mahadasha: str, antardasha: str, pratyantardasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
+        """Get all Sookshma dashas for a Mahadasha, Antardasha and Pratyantardasha"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/dasha/sub/{mahadasha}/{antardasha}/{pratyantardasha}", body, params=params or None)
+
+    async def get_sookshma_dashas_async(self, *, mahadasha: str, antardasha: str, pratyantardasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
+        """Get all Sookshma dashas for a Mahadasha, Antardasha and Pratyantardasha (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/dasha/sub/{mahadasha}/{antardasha}/{pratyantardasha}", body, params=params or None)
+
+    def get_sub_dashas(self, *, mahadasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
         """Get all Antardashas (sub-periods) for a specific Mahadasha"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -1846,12 +1918,14 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/vedic-astrology/dasha/sub/{mahadasha}", body, params=params or None)
 
-    async def get_sub_dashas_async(self, *, mahadasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, lang: str | None = None) -> Any:
+    async def get_sub_dashas_async(self, *, mahadasha: str, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, lang: str | None = None) -> Any:
         """Get all Antardashas (sub-periods) for a specific Mahadasha (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -1860,6 +1934,8 @@ class VedicAstrologyDomain(_BaseDomain):
         body["longitude"] = longitude
         if timezone is not None:
             body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
