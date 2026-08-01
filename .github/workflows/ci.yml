@@ -26,8 +26,13 @@ jobs:
 
       - run: uv sync --locked --all-extras --dev
 
+      # Hermetic: regenerates from the committed spec, so this verifies that the committed
+      # generated code still reproduces from it, with no network dependency. Refreshing the
+      # spec itself is the release workflow's job.
       - name: Codegen drift check
         if: matrix.python == '3.12'
+        env:
+          ROXYAPI_SPEC_FILE: specs/openapi.json
         run: |
           uv run python generate.py
           git diff --exit-code -- specs/openapi.json src/roxy_sdk/factory.py \

@@ -7,6 +7,7 @@ Run with: python generate.py
 """
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -35,9 +36,22 @@ def _fetch_with_retry(url: str, attempts: int = 5) -> bytes:
     raise RuntimeError("unreachable")
 
 
-def fetch_spec() -> dict:
+def _load_raw_spec() -> bytes:
+    """Read the spec from disk when ROXYAPI_SPEC_FILE is set, fetch it otherwise.
+
+    Reading from a file keeps generation offline and byte-reproducible, which is what the
+    codegen drift check in CI relies on.
+    """
+    spec_file = os.environ.get("ROXYAPI_SPEC_FILE")
+    if spec_file:
+        print(f"Reading OpenAPI spec from {spec_file} (offline, ROXYAPI_SPEC_FILE)")
+        return Path(spec_file).read_bytes()
     print(f"Fetching OpenAPI spec from {SPEC_URL}")
-    spec = json.loads(_fetch_with_retry(SPEC_URL))
+    return _fetch_with_retry(SPEC_URL)
+
+
+def fetch_spec() -> dict:
+    spec = json.loads(_load_raw_spec())
 
     # Patch server URL to absolute prod URL
     if spec.get("servers") and spec["servers"][0].get("url") == "/api/v2":
