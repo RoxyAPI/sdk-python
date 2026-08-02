@@ -979,6 +979,62 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         return await self._post_async(f"/vedic-astrology/ashtakavarga", body)
 
+    def calculate_bhav_chalit(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+        """Get the Bhav Chalit (Chalit Kundli) cusp-based house chart - Bhav Chalit API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/bhav-chalit", body, params=params or None)
+
+    async def calculate_bhav_chalit_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+        """Get the Bhav Chalit (Chalit Kundli) cusp-based house chart - Bhav Chalit API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/bhav-chalit", body, params=params or None)
+
+    def calculate_bhava_bala(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+        """Get Bhava Bala (house strength) for all twelve houses - Bhava Bala Calculator API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/bhava-bala", body, params=params or None)
+
+    async def calculate_bhava_bala_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+        """Get Bhava Bala (house strength) for all twelve houses - Bhava Bala Calculator API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/bhava-bala", body, params=params or None)
+
     def calculate_chara_karakas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, scheme: str | None = None, lang: str | None = None) -> Any:
         """Get Chara Karakas including Atmakaraka - Jaimini Karaka Calculator API"""
         body: dict[str, Any] = {}
