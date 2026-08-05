@@ -2526,7 +2526,7 @@ class VedicAstrologyDomain(_BaseDomain):
         return await self._get_async(f"/vedic-astrology/rashis", params=params or None)
 
     def list_yogas(self, *, family: str | None = None, lang: str | None = None) -> Any:
-        """List all planetary yogas - 300+ Vedic Yoga Glossary"""
+        """List all planetary yogas - 301 entry Vedic Yoga Glossary"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -2535,7 +2535,7 @@ class VedicAstrologyDomain(_BaseDomain):
         return self._get(f"/vedic-astrology/yoga", params=params or None)
 
     async def list_yogas_async(self, *, family: str | None = None, lang: str | None = None) -> Any:
-        """List all planetary yogas - 300+ Vedic Yoga Glossary (async)"""
+        """List all planetary yogas - 301 entry Vedic Yoga Glossary (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
