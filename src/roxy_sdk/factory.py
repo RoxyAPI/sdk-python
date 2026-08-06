@@ -2545,7 +2545,7 @@ class VedicAstrologyDomain(_BaseDomain):
 
 
 class ForecastDomain(_BaseDomain):
-    """Merge upcoming transit aspects, sign ingresses, retrograde stations, new and full moons, biorhythm critical days, and..."""
+    """Forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons, biorhythm..."""
 
     def find_significant_dates(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Significant dates - High-significance cross-domain forecast highlights"""
@@ -4473,7 +4473,7 @@ class AngelNumbersDomain(_BaseDomain):
 
 
 class LocationDomain(_BaseDomain):
-    """City search and geocoding API with 23,000+ cities across 240+ countries, returning latitude, longitude, IANA timezone..."""
+    """Location and timezone API with city search and geocoding across 23,000+ cities in 240+ countries, returning latitude,..."""
 
     def get_cities_by_country(self, *, iso2: str, limit: int | None = None, offset: str | None = None) -> Any:
         """Get cities in a country - Geocoding directory sorted by population"""
