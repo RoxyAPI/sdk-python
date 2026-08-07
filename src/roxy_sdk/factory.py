@@ -207,7 +207,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/synastry", body, params=params or None)
 
-    def calculate_transit_aspects(self, *, natal_chart: dict[str, Any], transit_date: str | None = None, transit_time: str | None = None, planets: list[str] | None = None, aspect_types: list[str] | None = None, min_strength: float | None = None, lang: str | None = None) -> Any:
+    def calculate_transit_aspects(self, *, natal_chart: dict[str, Any], transit_date: str | None = None, transit_time: str | None = None, planets: list[str] | None = None, aspect_types: list[str] | None = None, min_strength: float | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Transit Aspects - Detailed transit-to-natal aspect analysis with interpretations"""
         body: dict[str, Any] = {}
         body["natalChart"] = natal_chart
@@ -221,12 +221,14 @@ class AstrologyDomain(_BaseDomain):
             body["aspectTypes"] = aspect_types
         if min_strength is not None:
             body["minStrength"] = min_strength
+        if house_system is not None:
+            body["houseSystem"] = house_system
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/astrology/transit-aspects", body, params=params or None)
 
-    async def calculate_transit_aspects_async(self, *, natal_chart: dict[str, Any], transit_date: str | None = None, transit_time: str | None = None, planets: list[str] | None = None, aspect_types: list[str] | None = None, min_strength: float | None = None, lang: str | None = None) -> Any:
+    async def calculate_transit_aspects_async(self, *, natal_chart: dict[str, Any], transit_date: str | None = None, transit_time: str | None = None, planets: list[str] | None = None, aspect_types: list[str] | None = None, min_strength: float | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Transit Aspects - Detailed transit-to-natal aspect analysis with interpretations (async)"""
         body: dict[str, Any] = {}
         body["natalChart"] = natal_chart
@@ -240,6 +242,8 @@ class AstrologyDomain(_BaseDomain):
             body["aspectTypes"] = aspect_types
         if min_strength is not None:
             body["minStrength"] = min_strength
+        if house_system is not None:
+            body["houseSystem"] = house_system
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
