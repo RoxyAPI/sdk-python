@@ -789,6 +789,30 @@ class AstrologyDomain(_BaseDomain):
             params["timezone"] = timezone
         return await self._get_async(f"/astrology/horoscope/{sign}/monthly", params=params or None)
 
+    def get_monthly_tropical_ephemeris(self, *, year: int | None = None, month: int | None = None, lang: str | None = None) -> Any:
+        """Monthly Ephemeris - Daily tropical planetary positions for a month"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/astrology/planets/monthly", body, params=params or None)
+
+    async def get_monthly_tropical_ephemeris_async(self, *, year: int | None = None, month: int | None = None, lang: str | None = None) -> Any:
+        """Monthly Ephemeris - Daily tropical planetary positions for a month (async)"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/astrology/planets/monthly", body, params=params or None)
+
     def get_moon_calendar(self, *, year: str, month: str, lang: str | None = None) -> Any:
         """Get lunar calendar - Moon phases for entire month"""
         params: dict[str, Any] = {}
@@ -2053,27 +2077,37 @@ class VedicAstrologyDomain(_BaseDomain):
             body["nodeType"] = node_type
         return await self._post_async(f"/vedic-astrology/kp/sublord-changes", body)
 
-    def get_lunar_aspects(self, *, year: int, month: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    def get_lunar_aspects(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Lunar Aspects - Moon aspect events with all planets for a month"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/aspects/lunar", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/aspects/lunar", body, params=params or None)
 
-    async def get_lunar_aspects_async(self, *, year: int, month: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    async def get_lunar_aspects_async(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Lunar Aspects - Moon aspect events with all planets for a month (async)"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/aspects/lunar", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/aspects/lunar", body, params=params or None)
 
     def get_major_dashas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, significators: bool | None = None, node_type: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
         """Get all 9 Mahadasha periods (120-year cycle)"""
@@ -2119,85 +2153,125 @@ class VedicAstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/vedic-astrology/dasha/major", body, params=params or None)
 
-    def get_monthly_aspects(self, *, year: int, month: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    def get_monthly_aspects(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Planetary Aspects - Major and minor aspect events for a month"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/aspects/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/aspects/monthly", body, params=params or None)
 
-    async def get_monthly_aspects_async(self, *, year: int, month: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    async def get_monthly_aspects_async(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Planetary Aspects - Major and minor aspect events for a month (async)"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/aspects/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/aspects/monthly", body, params=params or None)
 
-    def get_monthly_ephemeris(self, *, year: int, month: int, coordinate_system: str | None = None) -> Any:
+    def get_monthly_ephemeris(self, *, year: int | None = None, month: int | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Ephemeris - Daily sidereal planetary positions for a month"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/planetary-positions/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/planetary-positions/monthly", body, params=params or None)
 
-    async def get_monthly_ephemeris_async(self, *, year: int, month: int, coordinate_system: str | None = None) -> Any:
+    async def get_monthly_ephemeris_async(self, *, year: int | None = None, month: int | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Ephemeris - Daily sidereal planetary positions for a month (async)"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/planetary-positions/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/planetary-positions/monthly", body, params=params or None)
 
-    def get_monthly_parallels(self, *, year: int, month: int, timezone: str | None = None) -> Any:
+    def get_monthly_parallels(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
         """Monthly Declination Parallels - Parallel and contraparallel events for a month"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
-        return self._post(f"/vedic-astrology/parallels/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/parallels/monthly", body, params=params or None)
 
-    async def get_monthly_parallels_async(self, *, year: int, month: int, timezone: str | None = None) -> Any:
+    async def get_monthly_parallels_async(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
         """Monthly Declination Parallels - Parallel and contraparallel events for a month (async)"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
-        return await self._post_async(f"/vedic-astrology/parallels/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/parallels/monthly", body, params=params or None)
 
-    def get_monthly_transits(self, *, year: int, month: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    def get_monthly_transits(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Transit - Planetary sign changes for an entire month"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/transit/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/transit/monthly", body, params=params or None)
 
-    async def get_monthly_transits_async(self, *, year: int, month: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    async def get_monthly_transits_async(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Monthly Transit - Planetary sign changes for an entire month (async)"""
         body: dict[str, Any] = {}
-        body["year"] = year
-        body["month"] = month
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
         if timezone is not None:
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/transit/monthly", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/transit/monthly", body, params=params or None)
 
     def get_nakshatra(self, *, id: str, lang: str | None = None) -> Any:
         """Get Nakshatra by ID - Lunar Mansion Detail"""
