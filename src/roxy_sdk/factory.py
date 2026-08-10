@@ -73,7 +73,7 @@ class _BaseDomain:
 class AstrologyDomain(_BaseDomain):
     """Western astrology API for natal birth charts, daily, weekly, and monthly horoscopes with unique content per sign, syn..."""
 
-    def calculate_arabic_lots(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    def calculate_arabic_lots(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Arabic lots calculator - seven Hermetic parts including Part of Fortune and Spirit"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -81,6 +81,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -88,7 +90,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/astrology/arabic-lots", body, params=params or None)
 
-    async def calculate_arabic_lots_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    async def calculate_arabic_lots_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Arabic lots calculator - seven Hermetic parts including Part of Fortune and Spirit (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -96,6 +98,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -249,7 +253,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/transit-aspects", body, params=params or None)
 
-    def calculate_transits(self, *, date: str | None = None, time: str | None = None, timezone: str | None = None, natal_chart: dict[str, Any] | None = None, lang: str | None = None) -> Any:
+    def calculate_transits(self, *, date: str | None = None, time: str | None = None, timezone: str | None = None, node_type: str | None = None, natal_chart: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Calculate planetary transits - Current transits with natal chart comparison"""
         body: dict[str, Any] = {}
         if date is not None:
@@ -258,6 +262,8 @@ class AstrologyDomain(_BaseDomain):
             body["time"] = time
         if timezone is not None:
             body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if natal_chart is not None:
             body["natalChart"] = natal_chart
         params: dict[str, Any] = {}
@@ -265,7 +271,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/astrology/transits", body, params=params or None)
 
-    async def calculate_transits_async(self, *, date: str | None = None, time: str | None = None, timezone: str | None = None, natal_chart: dict[str, Any] | None = None, lang: str | None = None) -> Any:
+    async def calculate_transits_async(self, *, date: str | None = None, time: str | None = None, timezone: str | None = None, node_type: str | None = None, natal_chart: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Calculate planetary transits - Current transits with natal chart comparison (async)"""
         body: dict[str, Any] = {}
         if date is not None:
@@ -274,6 +280,8 @@ class AstrologyDomain(_BaseDomain):
             body["time"] = time
         if timezone is not None:
             body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if natal_chart is not None:
             body["natalChart"] = natal_chart
         params: dict[str, Any] = {}
@@ -281,7 +289,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/transits", body, params=params or None)
 
-    def detect_aspect_patterns(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, strict_orbs: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
+    def detect_aspect_patterns(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, strict_orbs: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
         """Detect aspect patterns - Grand Trine, Kite, T-Square, Grand Cross, Yod, Mystic Rectangle, Stellium"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -289,12 +297,14 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/astrology/aspect-patterns", body, params=params or None)
 
-    async def detect_aspect_patterns_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, strict_orbs: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
+    async def detect_aspect_patterns_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, strict_orbs: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
         """Detect aspect patterns - Grand Trine, Kite, T-Square, Grand Cross, Yod, Mystic Rectangle, Stellium (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -302,12 +312,14 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/astrology/aspect-patterns", body, params=params or None)
 
-    def generate_asteroids(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    def generate_asteroids(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Asteroid goddesses calculator - Ceres, Pallas, Juno, and Vesta natal positions"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -315,6 +327,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -322,7 +336,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/astrology/asteroids", body, params=params or None)
 
-    async def generate_asteroids_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    async def generate_asteroids_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Asteroid goddesses calculator - Ceres, Pallas, Juno, and Vesta natal positions (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -330,6 +344,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -337,7 +353,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/asteroids", body, params=params or None)
 
-    def generate_astrocartography(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, include: str | None = None, lang: str | None = None) -> Any:
+    def generate_astrocartography(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
         """Astrocartography map - planetary lines and relocation calculator"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -345,12 +361,14 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/astrology/astrocartography", body, params=params or None)
 
-    async def generate_astrocartography_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, include: str | None = None, lang: str | None = None) -> Any:
+    async def generate_astrocartography_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, include: str | None = None, lang: str | None = None) -> Any:
         """Astrocartography map - planetary lines and relocation calculator (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -358,6 +376,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -387,7 +407,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/composite-chart", body, params=params or None)
 
-    def generate_fixed_stars(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, orb: str | None = None, lang: str | None = None) -> Any:
+    def generate_fixed_stars(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, orb: str | None = None, lang: str | None = None) -> Any:
         """Fixed stars and star conjunctions calculator - Regulus, Spica, Algol natal report"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -395,12 +415,14 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/astrology/fixed-stars", body, params=params or None)
 
-    async def generate_fixed_stars_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, orb: str | None = None, lang: str | None = None) -> Any:
+    async def generate_fixed_stars_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, orb: str | None = None, lang: str | None = None) -> Any:
         """Fixed stars and star conjunctions calculator - Regulus, Spica, Algol natal report (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -408,12 +430,14 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/astrology/fixed-stars", body, params=params or None)
 
-    def generate_lilith(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    def generate_lilith(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Black Moon Lilith calculator - mean and true lunar apogee in the natal chart"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -421,6 +445,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -428,7 +454,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/astrology/lilith", body, params=params or None)
 
-    async def generate_lilith_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    async def generate_lilith_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Black Moon Lilith calculator - mean and true lunar apogee in the natal chart (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -436,6 +462,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -501,7 +529,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/lunar-return", body, params=params or None)
 
-    def generate_natal_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    def generate_natal_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Generate natal chart - Birth chart calculator API with houses and aspects"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -509,6 +537,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -516,7 +546,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/astrology/natal-chart", body, params=params or None)
 
-    async def generate_natal_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    async def generate_natal_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Generate natal chart - Birth chart calculator API with houses and aspects (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -524,6 +554,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         if house_system is not None:
             body["houseSystem"] = house_system
         params: dict[str, Any] = {}
@@ -565,7 +597,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/planetary-returns", body, params=params or None)
 
-    def generate_profections(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, target_date: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    def generate_profections(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, house_system: str | None = None, lang: str | None = None) -> Any:
         """Annual profections calculator - lord of the year and yearly time lord by age"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -573,6 +605,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["targetDate"] = target_date
         if house_system is not None:
             body["houseSystem"] = house_system
@@ -581,7 +615,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/astrology/profections", body, params=params or None)
 
-    async def generate_profections_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, target_date: str, house_system: str | None = None, lang: str | None = None) -> Any:
+    async def generate_profections_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, house_system: str | None = None, lang: str | None = None) -> Any:
         """Annual profections calculator - lord of the year and yearly time lord by age (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -589,6 +623,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["targetDate"] = target_date
         if house_system is not None:
             body["houseSystem"] = house_system
@@ -597,7 +633,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/profections", body, params=params or None)
 
-    def generate_progressions(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, target_date: str, lang: str | None = None) -> Any:
+    def generate_progressions(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, lang: str | None = None) -> Any:
         """Secondary progressions calculator - progressed chart, progressed Sun and Moon"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -605,13 +641,15 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/astrology/progressions", body, params=params or None)
 
-    async def generate_progressions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, target_date: str, lang: str | None = None) -> Any:
+    async def generate_progressions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, lang: str | None = None) -> Any:
         """Secondary progressions calculator - progressed chart, progressed Sun and Moon (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -619,6 +657,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
@@ -659,7 +699,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/relocation-chart", body, params=params or None)
 
-    def generate_solar_arc(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, target_date: str, lang: str | None = None) -> Any:
+    def generate_solar_arc(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, lang: str | None = None) -> Any:
         """Solar arc directions calculator - directed chart at one degree per year"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -667,13 +707,15 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/astrology/solar-arc", body, params=params or None)
 
-    async def generate_solar_arc_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, target_date: str, lang: str | None = None) -> Any:
+    async def generate_solar_arc_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, lang: str | None = None) -> Any:
         """Solar arc directions calculator - directed chart at one degree per year (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -681,6 +723,8 @@ class AstrologyDomain(_BaseDomain):
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
@@ -841,11 +885,13 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._get_async(f"/astrology/planet-meanings/{id}", params=params or None)
 
-    def get_planetary_positions(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, lang: str | None = None) -> Any:
+    def get_planetary_positions(self, *, date: str, time: str, node_type: str | None = None, latitude: float, longitude: float, timezone: str, lang: str | None = None) -> Any:
         """Get planetary positions - Ephemeris calculator for all planets"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
@@ -854,11 +900,13 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/astrology/planets", body, params=params or None)
 
-    async def get_planetary_positions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, lang: str | None = None) -> Any:
+    async def get_planetary_positions_async(self, *, date: str, time: str, node_type: str | None = None, latitude: float, longitude: float, timezone: str, lang: str | None = None) -> Any:
         """Get planetary positions - Ephemeris calculator for all planets (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time
+        if node_type is not None:
+            body["nodeType"] = node_type
         body["latitude"] = latitude
         body["longitude"] = longitude
         body["timezone"] = timezone
@@ -4551,7 +4599,7 @@ class AngelNumbersDomain(_BaseDomain):
 
 
 class LocationDomain(_BaseDomain):
-    """Location and timezone API with city search and geocoding across 23,000+ cities in 240+ countries, returning latitude,..."""
+    """Location and timezone API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude..."""
 
     def get_cities_by_country(self, *, iso2: str, limit: int | None = None, offset: str | None = None) -> Any:
         """Get cities in a country - Geocoding directory sorted by population"""
