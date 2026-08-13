@@ -4675,6 +4675,20 @@ class UsageDomain(_BaseDomain):
 class LanguagesDomain(_BaseDomain):
     """List the response languages accepted by the `lang` query parameter on every i18n-aware endpoint"""
 
+    def get_field_labels(self, *, lang: str | None = None) -> Any:
+        """Get field labels for a language"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/languages/field-labels", params=params or None)
+
+    async def get_field_labels_async(self, *, lang: str | None = None) -> Any:
+        """Get field labels for a language (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/languages/field-labels", params=params or None)
+
     def list_languages(self) -> Any:
         """List supported response languages"""
         return self._get(f"/languages")
