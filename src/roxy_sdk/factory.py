@@ -2591,6 +2591,42 @@ class VedicAstrologyDomain(_BaseDomain):
             body["ayanamsaValue"] = ayanamsa_value
         return await self._post_async(f"/vedic-astrology/upagraha", body)
 
+    def get_vedic_daily_reading(self, *, birth_date: str, birth_time: str, latitude: float, longitude: float, timezone: str | None = None, date: str | None = None, node_type: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+        """Daily Reading - Composed Gochara, Panchanga and Dasha for one native on one day"""
+        body: dict[str, Any] = {}
+        body["birthDate"] = birth_date
+        body["birthTime"] = birth_time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if date is not None:
+            body["date"] = date
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/daily", body, params=params or None)
+
+    async def get_vedic_daily_reading_async(self, *, birth_date: str, birth_time: str, latitude: float, longitude: float, timezone: str | None = None, date: str | None = None, node_type: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+        """Daily Reading - Composed Gochara, Panchanga and Dasha for one native on one day (async)"""
+        body: dict[str, Any] = {}
+        body["birthDate"] = birth_date
+        body["birthTime"] = birth_time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if date is not None:
+            body["date"] = date
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/daily", body, params=params or None)
+
     def get_yoga(self, *, id: str, lang: str | None = None) -> Any:
         """Get yoga details by ID - Vedic Yoga Glossary Entry"""
         params: dict[str, Any] = {}
