@@ -833,6 +833,38 @@ class AstrologyDomain(_BaseDomain):
             params["timezone"] = timezone
         return await self._get_async(f"/astrology/horoscope/{sign}/monthly", params=params or None)
 
+    def get_monthly_tropical_aspects(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
+        """Monthly Aspects - Tropical aspect calendar for an entire month"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if timezone is not None:
+            body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/astrology/aspects/monthly", body, params=params or None)
+
+    async def get_monthly_tropical_aspects_async(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
+        """Monthly Aspects - Tropical aspect calendar for an entire month (async)"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if timezone is not None:
+            body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/astrology/aspects/monthly", body, params=params or None)
+
     def get_monthly_tropical_ephemeris(self, *, year: int | None = None, month: int | None = None, lang: str | None = None) -> Any:
         """Monthly Ephemeris - Daily tropical planetary positions for a month"""
         body: dict[str, Any] = {}
@@ -856,6 +888,38 @@ class AstrologyDomain(_BaseDomain):
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/astrology/planets/monthly", body, params=params or None)
+
+    def get_monthly_tropical_transits(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
+        """Monthly Transits - Tropical sign ingresses for an entire month"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if timezone is not None:
+            body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/astrology/transits/monthly", body, params=params or None)
+
+    async def get_monthly_tropical_transits_async(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
+        """Monthly Transits - Tropical sign ingresses for an entire month (async)"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if timezone is not None:
+            body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/astrology/transits/monthly", body, params=params or None)
 
     def get_moon_calendar(self, *, year: str, month: str, lang: str | None = None) -> Any:
         """Get lunar calendar - Moon phases for entire month"""
