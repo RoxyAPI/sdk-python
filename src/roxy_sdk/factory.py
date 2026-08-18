@@ -811,6 +811,42 @@ class AstrologyDomain(_BaseDomain):
             params["timezone"] = timezone
         return await self._get_async(f"/astrology/horoscope/{sign}/daily", params=params or None)
 
+    def get_monthly_declination_parallels(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, orb: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
+        """Monthly Parallels - Declination contacts for an entire month"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if timezone is not None:
+            body["timezone"] = timezone
+        if orb is not None:
+            body["orb"] = orb
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/astrology/parallels/monthly", body, params=params or None)
+
+    async def get_monthly_declination_parallels_async(self, *, year: int | None = None, month: int | None = None, timezone: str | None = None, orb: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
+        """Monthly Parallels - Declination contacts for an entire month (async)"""
+        body: dict[str, Any] = {}
+        if year is not None:
+            body["year"] = year
+        if month is not None:
+            body["month"] = month
+        if timezone is not None:
+            body["timezone"] = timezone
+        if orb is not None:
+            body["orb"] = orb
+        if node_type is not None:
+            body["nodeType"] = node_type
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/astrology/parallels/monthly", body, params=params or None)
+
     def get_monthly_horoscope(self, *, sign: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
         """Monthly horoscope by zodiac sign - 30-day transit forecast with key dates"""
         params: dict[str, Any] = {}
@@ -948,6 +984,28 @@ class AstrologyDomain(_BaseDomain):
         if lang is not None:
             params["lang"] = lang
         return await self._get_async(f"/astrology/planet-meanings/{id}", params=params or None)
+
+    def get_planetary_node_passages(self, *, year: int, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Ecliptic Crossings - Node passages for a whole year"""
+        body: dict[str, Any] = {}
+        body["year"] = year
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/astrology/ecliptic-crossings", body, params=params or None)
+
+    async def get_planetary_node_passages_async(self, *, year: int, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Ecliptic Crossings - Node passages for a whole year (async)"""
+        body: dict[str, Any] = {}
+        body["year"] = year
+        if timezone is not None:
+            body["timezone"] = timezone
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/astrology/ecliptic-crossings", body, params=params or None)
 
     def get_planetary_positions(self, *, date: str, time: str, node_type: str | None = None, latitude: float, longitude: float, timezone: str, lang: str | None = None) -> Any:
         """Get planetary positions - Ephemeris calculator for all planets"""
