@@ -3342,6 +3342,674 @@ class HumanDesignDomain(_BaseDomain):
         return await self._get_async(f"/human-design/gates/{number}", params=params or None)
 
 
+class ChineseAstrologyDomain(_BaseDomain):
+    """Calculate BaZi Four Pillars charts, Chinese zodiac signs, and the Chinese lunisolar calendar from any birth moment: y..."""
+
+    def calculate_annual_forecast(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, year: int, lang: str | None = None) -> Any:
+        """Calculate BaZi annual forecast - Liu Nian yearly pillar API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        body["year"] = year
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/bazi/annual-forecast", body, params=params or None)
+
+    async def calculate_annual_forecast_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, year: int, lang: str | None = None) -> Any:
+        """Calculate BaZi annual forecast - Liu Nian yearly pillar API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        body["year"] = year
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/bazi/annual-forecast", body, params=params or None)
+
+    def calculate_bazi_compatibility(self, *, person_a: dict[str, Any], person_b: dict[str, Any], lang: str | None = None) -> Any:
+        """Calculate BaZi compatibility - Four Pillars matchmaking API"""
+        body: dict[str, Any] = {}
+        body["personA"] = person_a
+        body["personB"] = person_b
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/bazi/compatibility", body, params=params or None)
+
+    async def calculate_bazi_compatibility_async(self, *, person_a: dict[str, Any], person_b: dict[str, Any], lang: str | None = None) -> Any:
+        """Calculate BaZi compatibility - Four Pillars matchmaking API (async)"""
+        body: dict[str, Any] = {}
+        body["personA"] = person_a
+        body["personB"] = person_b
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/bazi/compatibility", body, params=params or None)
+
+    def calculate_day_master_strength(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, lang: str | None = None) -> Any:
+        """Calculate Day Master strength - BaZi favorable element API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/bazi/day-master", body, params=params or None)
+
+    async def calculate_day_master_strength_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, lang: str | None = None) -> Any:
+        """Calculate Day Master strength - BaZi favorable element API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/bazi/day-master", body, params=params or None)
+
+    def calculate_luck_pillars(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, gender: str, count: int | None = None, annual_from_year: int | None = None, annual_years: int | None = None, lang: str | None = None) -> Any:
+        """Calculate luck pillars - BaZi Da Yun ten-year cycle API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        body["gender"] = gender
+        if count is not None:
+            body["count"] = count
+        if annual_from_year is not None:
+            body["annualFromYear"] = annual_from_year
+        if annual_years is not None:
+            body["annualYears"] = annual_years
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/bazi/luck-pillars", body, params=params or None)
+
+    async def calculate_luck_pillars_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, gender: str, count: int | None = None, annual_from_year: int | None = None, annual_years: int | None = None, lang: str | None = None) -> Any:
+        """Calculate luck pillars - BaZi Da Yun ten-year cycle API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        body["gender"] = gender
+        if count is not None:
+            body["count"] = count
+        if annual_from_year is not None:
+            body["annualFromYear"] = annual_from_year
+        if annual_years is not None:
+            body["annualYears"] = annual_years
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/bazi/luck-pillars", body, params=params or None)
+
+    def calculate_lunar_date(self, *, date: str | None = None, lunar_year: int | None = None, lunar_month: int | None = None, lunar_day: int | None = None, is_leap_month: bool | None = None, lang: str | None = None) -> Any:
+        """Convert lunar and Gregorian dates - Chinese lunisolar calendar API"""
+        body: dict[str, Any] = {}
+        if date is not None:
+            body["date"] = date
+        if lunar_year is not None:
+            body["lunarYear"] = lunar_year
+        if lunar_month is not None:
+            body["lunarMonth"] = lunar_month
+        if lunar_day is not None:
+            body["lunarDay"] = lunar_day
+        if is_leap_month is not None:
+            body["isLeapMonth"] = is_leap_month
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/calendar/lunar-date", body, params=params or None)
+
+    async def calculate_lunar_date_async(self, *, date: str | None = None, lunar_year: int | None = None, lunar_month: int | None = None, lunar_day: int | None = None, is_leap_month: bool | None = None, lang: str | None = None) -> Any:
+        """Convert lunar and Gregorian dates - Chinese lunisolar calendar API (async)"""
+        body: dict[str, Any] = {}
+        if date is not None:
+            body["date"] = date
+        if lunar_year is not None:
+            body["lunarYear"] = lunar_year
+        if lunar_month is not None:
+            body["lunarMonth"] = lunar_month
+        if lunar_day is not None:
+            body["lunarDay"] = lunar_day
+        if is_leap_month is not None:
+            body["isLeapMonth"] = is_leap_month
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/calendar/lunar-date", body, params=params or None)
+
+    def calculate_zodiac_animal(self, *, date: str, year_boundary: str | None = None, lang: str | None = None) -> Any:
+        """Find the Chinese zodiac animal for a birth date - Sheng Xiao calculator"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/zodiac/sign", body, params=params or None)
+
+    async def calculate_zodiac_animal_async(self, *, date: str, year_boundary: str | None = None, lang: str | None = None) -> Any:
+        """Find the Chinese zodiac animal for a birth date - Sheng Xiao calculator (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/zodiac/sign", body, params=params or None)
+
+    def generate_bazi_chart(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, lang: str | None = None) -> Any:
+        """Generate BaZi chart - Four Pillars of Destiny calculator API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/bazi/chart", body, params=params or None)
+
+    async def generate_bazi_chart_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, lang: str | None = None) -> Any:
+        """Generate BaZi chart - Four Pillars of Destiny calculator API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/bazi/chart", body, params=params or None)
+
+    def get_almanac_day(self, *, date: str, lang: str | None = None) -> Any:
+        """Get the almanac for a day - Tong Shu API with day officers and mansions"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/chinese-astrology/calendar/day/{date}", params=params or None)
+
+    async def get_almanac_day_async(self, *, date: str, lang: str | None = None) -> Any:
+        """Get the almanac for a day - Tong Shu API with day officers and mansions (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/chinese-astrology/calendar/day/{date}", params=params or None)
+
+    def get_daily_zodiac_reading(self, *, id: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Daily Chinese zodiac reading - Day pillar forecast by animal sign"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if date is not None:
+            params["date"] = date
+        if timezone is not None:
+            params["timezone"] = timezone
+        return self._get(f"/chinese-astrology/zodiac/{id}/daily", params=params or None)
+
+    async def get_daily_zodiac_reading_async(self, *, id: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Daily Chinese zodiac reading - Day pillar forecast by animal sign (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if date is not None:
+            params["date"] = date
+        if timezone is not None:
+            params["timezone"] = timezone
+        return await self._get_async(f"/chinese-astrology/zodiac/{id}/daily", params=params or None)
+
+    def get_monthly_almanac(self, *, year: float | None = None, month: float | None = None, lang: str | None = None) -> Any:
+        """Get a month of almanac days - Chinese calendar month view API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if year is not None:
+            params["year"] = year
+        if month is not None:
+            params["month"] = month
+        return self._get(f"/chinese-astrology/calendar/monthly", params=params or None)
+
+    async def get_monthly_almanac_async(self, *, year: float | None = None, month: float | None = None, lang: str | None = None) -> Any:
+        """Get a month of almanac days - Chinese calendar month view API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if year is not None:
+            params["year"] = year
+        if month is not None:
+            params["month"] = month
+        return await self._get_async(f"/chinese-astrology/calendar/monthly", params=params or None)
+
+    def get_zodiac_animal(self, *, id: str, lang: str | None = None) -> Any:
+        """Get one Chinese zodiac animal - Full sign profile with compatibility partners"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/chinese-astrology/zodiac/animals/{id}", params=params or None)
+
+    async def get_zodiac_animal_async(self, *, id: str, lang: str | None = None) -> Any:
+        """Get one Chinese zodiac animal - Full sign profile with compatibility partners (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/chinese-astrology/zodiac/animals/{id}", params=params or None)
+
+    def get_zodiac_compatibility(self, *, sign1: str, sign2: str, lang: str | None = None) -> Any:
+        """Chinese zodiac compatibility - Trine, six harmony, clash and harm analysis"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/chinese-astrology/zodiac/compatibility/{sign1}/{sign2}", params=params or None)
+
+    async def get_zodiac_compatibility_async(self, *, sign1: str, sign2: str, lang: str | None = None) -> Any:
+        """Chinese zodiac compatibility - Trine, six harmony, clash and harm analysis (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/chinese-astrology/zodiac/compatibility/{sign1}/{sign2}", params=params or None)
+
+    def list_five_elements(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List the five elements - Wu Xing API with generating and controlling cycles"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return self._get(f"/chinese-astrology/elements", params=params or None)
+
+    async def list_five_elements_async(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List the five elements - Wu Xing API with generating and controlling cycles (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return await self._get_async(f"/chinese-astrology/elements", params=params or None)
+
+    def list_solar_terms(self, *, year: str, lang: str | None = None) -> Any:
+        """List the 24 solar terms - Jie Qi calendar API with exact instants"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/chinese-astrology/calendar/solar-terms/{year}", params=params or None)
+
+    async def list_solar_terms_async(self, *, year: str, lang: str | None = None) -> Any:
+        """List the 24 solar terms - Jie Qi calendar API with exact instants (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/chinese-astrology/calendar/solar-terms/{year}", params=params or None)
+
+    def list_zodiac_animals(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List the 12 Chinese zodiac animals - Sheng Xiao sign catalogue"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return self._get(f"/chinese-astrology/zodiac/animals", params=params or None)
+
+    async def list_zodiac_animals_async(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List the 12 Chinese zodiac animals - Sheng Xiao sign catalogue (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return await self._get_async(f"/chinese-astrology/zodiac/animals", params=params or None)
+
+    def lookup_auspicious_days(self, *, activity: str, start_date: str, end_date: str, avoid_animal: str | None = None, lang: str | None = None) -> Any:
+        """Find auspicious days - Chinese date selection API for weddings and openings"""
+        body: dict[str, Any] = {}
+        body["activity"] = activity
+        body["startDate"] = start_date
+        body["endDate"] = end_date
+        if avoid_animal is not None:
+            body["avoidAnimal"] = avoid_animal
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/chinese-astrology/calendar/auspicious-days", body, params=params or None)
+
+    async def lookup_auspicious_days_async(self, *, activity: str, start_date: str, end_date: str, avoid_animal: str | None = None, lang: str | None = None) -> Any:
+        """Find auspicious days - Chinese date selection API for weddings and openings (async)"""
+        body: dict[str, Any] = {}
+        body["activity"] = activity
+        body["startDate"] = start_date
+        body["endDate"] = end_date
+        if avoid_animal is not None:
+            body["avoidAnimal"] = avoid_animal
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/chinese-astrology/calendar/auspicious-days", body, params=params or None)
+
+
+class FengShuiDomain(_BaseDomain):
+    """Compute classical feng shui from one API: Xuan Kong flying star natal charts for any of the nine periods and 24 mount..."""
+
+    def calculate_kua_number(self, *, date: str, gender: str, year_boundary: str | None = None, lang: str | None = None) -> Any:
+        """Calculate Kua number - Feng shui personal direction calculator API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["gender"] = gender
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/feng-shui/kua", body, params=params or None)
+
+    async def calculate_kua_number_async(self, *, date: str, gender: str, year_boundary: str | None = None, lang: str | None = None) -> Any:
+        """Calculate Kua number - Feng shui personal direction calculator API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["gender"] = gender
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/feng-shui/kua", body, params=params or None)
+
+    def generate_eight_mansions(self, *, kua: float | None = None, date: str | None = None, gender: str | None = None, year_boundary: str | None = None, facing: str | None = None, lang: str | None = None) -> Any:
+        """Generate Eight Mansions map - Ba Zhai lucky direction API"""
+        body: dict[str, Any] = {}
+        if kua is not None:
+            body["kua"] = kua
+        if date is not None:
+            body["date"] = date
+        if gender is not None:
+            body["gender"] = gender
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if facing is not None:
+            body["facing"] = facing
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/feng-shui/eight-mansions", body, params=params or None)
+
+    async def generate_eight_mansions_async(self, *, kua: float | None = None, date: str | None = None, gender: str | None = None, year_boundary: str | None = None, facing: str | None = None, lang: str | None = None) -> Any:
+        """Generate Eight Mansions map - Ba Zhai lucky direction API (async)"""
+        body: dict[str, Any] = {}
+        if kua is not None:
+            body["kua"] = kua
+        if date is not None:
+            body["date"] = date
+        if gender is not None:
+            body["gender"] = gender
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if facing is not None:
+            body["facing"] = facing
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/feng-shui/eight-mansions", body, params=params or None)
+
+    def generate_flying_star_chart(self, *, period: int | None = None, facing: str | None = None, facing_degrees: str | None = None, lang: str | None = None) -> Any:
+        """Generate flying star natal chart - Xuan Kong Fei Xing API"""
+        body: dict[str, Any] = {}
+        if period is not None:
+            body["period"] = period
+        if facing is not None:
+            body["facing"] = facing
+        if facing_degrees is not None:
+            body["facingDegrees"] = facing_degrees
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/feng-shui/flying-stars/natal", body, params=params or None)
+
+    async def generate_flying_star_chart_async(self, *, period: int | None = None, facing: str | None = None, facing_degrees: str | None = None, lang: str | None = None) -> Any:
+        """Generate flying star natal chart - Xuan Kong Fei Xing API (async)"""
+        body: dict[str, Any] = {}
+        if period is not None:
+            body["period"] = period
+        if facing is not None:
+            body["facing"] = facing
+        if facing_degrees is not None:
+            body["facingDegrees"] = facing_degrees
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/feng-shui/flying-stars/natal", body, params=params or None)
+
+    def get_annual_afflictions(self, *, year: str, lang: str | None = None) -> Any:
+        """Annual afflictions - Tai Sui, San Sha and Five Yellow API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/feng-shui/afflictions/{year}", params=params or None)
+
+    async def get_annual_afflictions_async(self, *, year: str, lang: str | None = None) -> Any:
+        """Annual afflictions - Tai Sui, San Sha and Five Yellow API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/feng-shui/afflictions/{year}", params=params or None)
+
+    def get_annual_flying_stars(self, *, year: str, lang: str | None = None) -> Any:
+        """Annual flying stars - Yearly feng shui star chart API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/feng-shui/flying-stars/annual/{year}", params=params or None)
+
+    async def get_annual_flying_stars_async(self, *, year: str, lang: str | None = None) -> Any:
+        """Annual flying stars - Yearly feng shui star chart API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/feng-shui/flying-stars/annual/{year}", params=params or None)
+
+    def get_bagua_sector(self, *, id: str, lang: str | None = None) -> Any:
+        """Look up a Bagua sector - Life area reference API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/feng-shui/bagua/{id}", params=params or None)
+
+    async def get_bagua_sector_async(self, *, id: str, lang: str | None = None) -> Any:
+        """Look up a Bagua sector - Life area reference API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/feng-shui/bagua/{id}", params=params or None)
+
+    def get_kua_number(self, *, number: str, lang: str | None = None) -> Any:
+        """Look up a Kua number - Eight Mansions reference API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._get(f"/feng-shui/kua/{number}", params=params or None)
+
+    async def get_kua_number_async(self, *, number: str, lang: str | None = None) -> Any:
+        """Look up a Kua number - Eight Mansions reference API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._get_async(f"/feng-shui/kua/{number}", params=params or None)
+
+    def get_monthly_flying_stars(self, *, year: int | None = None, month: int | None = None, lang: str | None = None) -> Any:
+        """Monthly flying stars - Month by month feng shui overlay API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if year is not None:
+            params["year"] = year
+        if month is not None:
+            params["month"] = month
+        return self._get(f"/feng-shui/flying-stars/monthly", params=params or None)
+
+    async def get_monthly_flying_stars_async(self, *, year: int | None = None, month: int | None = None, lang: str | None = None) -> Any:
+        """Monthly flying stars - Month by month feng shui overlay API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if year is not None:
+            params["year"] = year
+        if month is not None:
+            params["month"] = month
+        return await self._get_async(f"/feng-shui/flying-stars/monthly", params=params or None)
+
+    def list_bagua_sectors(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List Bagua sectors - Feng shui bagua map API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return self._get(f"/feng-shui/bagua", params=params or None)
+
+    async def list_bagua_sectors_async(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List Bagua sectors - Feng shui bagua map API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return await self._get_async(f"/feng-shui/bagua", params=params or None)
+
+    def list_flying_stars(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List the nine flying stars - Xuan Kong star reference API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return self._get(f"/feng-shui/flying-stars/stars", params=params or None)
+
+    async def list_flying_stars_async(self, *, limit: int | None = None, offset: str | None = None, lang: str | None = None) -> Any:
+        """List the nine flying stars - Xuan Kong star reference API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        return await self._get_async(f"/feng-shui/flying-stars/stars", params=params or None)
+
+    def list_nine_periods(self, *, date: str | None = None, lang: str | None = None) -> Any:
+        """List the nine periods - San Yuan period table API"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if date is not None:
+            params["date"] = date
+        return self._get(f"/feng-shui/periods", params=params or None)
+
+    async def list_nine_periods_async(self, *, date: str | None = None, lang: str | None = None) -> Any:
+        """List the nine periods - San Yuan period table API (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if date is not None:
+            params["date"] = date
+        return await self._get_async(f"/feng-shui/periods", params=params or None)
+
+
 class NumerologyDomain(_BaseDomain):
     """Numerology API to calculate life path, expression, soul urge, personality, and maturity numbers, with Pinnacle and Ch..."""
 
@@ -4877,6 +5545,8 @@ class Roxy:
         self.vedic_astrology = VedicAstrologyDomain(self._client, self._async_client)
         self.forecast = ForecastDomain(self._client, self._async_client)
         self.human_design = HumanDesignDomain(self._client, self._async_client)
+        self.chinese_astrology = ChineseAstrologyDomain(self._client, self._async_client)
+        self.feng_shui = FengShuiDomain(self._client, self._async_client)
         self.numerology = NumerologyDomain(self._client, self._async_client)
         self.tarot = TarotDomain(self._client, self._async_client)
         self.biorhythm = BiorhythmDomain(self._client, self._async_client)
