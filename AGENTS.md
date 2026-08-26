@@ -1,6 +1,6 @@
 # roxy-sdk (Python) - Agent Guide
 
-Python SDK for RoxyAPI. 12+ domains (Western astrology, Vedic astrology, numerology, tarot, human design, forecast, biorhythm, I Ching, crystals, dreams, angel numbers, location) plus utility namespaces (usage, languages). One API key, sync and async.
+Python SDK for RoxyAPI. 14+ domains (Western astrology, Vedic astrology, forecast, human design, Chinese astrology, feng shui, numerology, tarot, biorhythm, I Ching, crystals, dreams, angel numbers, location) plus utility namespaces (usage, languages). One API key, sync and async.
 
 ## Install and initialize
 
@@ -126,7 +126,7 @@ card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
 life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
 ```
 
-Supported: `astrology`, `vedic_astrology`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`, `languages`. To list supported codes at runtime, call `roxy.languages.list_languages()`.
+Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`, `languages`. The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. To list supported codes at runtime, call `roxy.languages.list_languages()`.
 
 ### Error handling
 
@@ -156,7 +156,7 @@ except RoxyAPIError as e:
 
 ## Common tasks
 
-Ordered by domain priority (Western, Vedic, Numerology, Tarot, Human Design, Forecast, Biorhythm, I Ching, Crystals, Dreams, Angel Numbers, Location, Usage, Languages).
+Ordered by domain priority (Western, Vedic, Forecast, Human Design, Chinese Astrology, Feng Shui, Numerology, Tarot, Biorhythm, I Ching, Crystals, Dreams, Angel Numbers, Location, Usage, Languages).
 
 | Task | Code |
 |------|------|

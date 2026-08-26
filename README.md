@@ -16,7 +16,7 @@ Python SDK for astrology, Vedic astrology, tarot, numerology, and more.
 
 One API key. Sync and async (every method has an `_async` suffix). Verified against NASA JPL Horizons.
 
-The fastest way to add natal charts, daily horoscopes, synastry, Vedic kundli, tarot spreads, numerology, human design bodygraphs, and transit forecasts to FastAPI, Django, Flask, or any Python project. 12+ domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in eight languages.
+The fastest way to add natal charts, daily horoscopes, synastry, Vedic kundli, tarot spreads, numerology, human design bodygraphs, and transit forecasts to FastAPI, Django, Flask, or any Python project. 14+ domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in 10+ languages.
 
 ## Install
 
@@ -92,10 +92,12 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 |--------|----------|----------------|
 | Western Astrology | `roxy.astrology` | Natal charts, daily / weekly / monthly horoscopes, synastry, compatibility score, transits, moon phases |
 | Vedic Astrology | `roxy.vedic_astrology` | Kundli, panchang, Vimshottari dasha, nakshatras, Mangal / Kaal Sarp / Sade Sati doshas, Guna Milan, navamsa, KP chart and ruling planets |
+| Forecast | `roxy.forecast` | Cross-domain timeline: transits, ingresses, stations, dasha changes, critical days |
+| Human Design | `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates |
+| Chinese Astrology | `roxy.chinese_astrology` | BaZi Four Pillars, Chinese zodiac, lunisolar calendar, hidden stems, Na Yin, Ten Gods, luck pillars, animal compatibility |
+| Feng Shui | `roxy.feng_shui` | Xuan Kong flying star charts, Kua number, Eight Mansions, annual and monthly plates, afflictions, Bagua map |
 | Numerology | `roxy.numerology` | Life path, expression, soul urge, personal year, full chart, compatibility, karmic lessons |
 | Tarot | `roxy.tarot` | Daily card, custom draws, three-card, Celtic Cross, yes / no, love spread, 78-card catalog |
-| Human Design | `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates |
-| Forecast | `roxy.forecast` | Cross-domain timeline: transits, ingresses, stations, dasha changes, critical days |
 | Biorhythm | `roxy.biorhythm` | Daily check-in, multi-day forecast, critical days, couples compatibility, phases |
 | I Ching | `roxy.iching` | Daily hexagram, three-coin cast, 64 hexagrams, trigrams |
 | Crystals | `roxy.crystals` | By zodiac, by chakra, birthstone, search, daily, pairings |
@@ -246,7 +248,50 @@ event = timeline["events"][0]
 print(event["date"], event["domain"], event["type"], event["description"], event["significance"])
 ```
 
-### 7. Biorhythm API (daily check-in, forecast, compatibility)
+### 7. Chinese astrology API (BaZi four pillars, zodiac sign)
+
+BaZi (Four Pillars of Destiny), the twelve-animal zodiac, and the lunisolar calendar with its almanac. The school splits that make two calculators disagree are typed request parameters with named defaults, echoed back in a `conventions` object on every response, so a chart can be reproduced rather than guessed at. The zodiac routes answer the high-volume consumer questions; BaZi and the almanac are where an app goes deeper.
+
+```python
+# BaZi Four Pillars. The anchor call: the rest of the domain reads off these four pillars.
+# `timezone` takes the IANA name, resolved to the DST-correct offset for the birth date.
+bazi = roxy.chinese_astrology.generate_bazi_chart(
+    date="1990-07-04", time="10:12:00", timezone="America/New_York",
+)
+# bazi["pillars"][n]["position"] ("year" | "month" | "day" | "hour")
+# ...["stem"]["element"], ["branch"]["animal"], ["tenGod"]["name"], ["hiddenStems"], ["naYin"]
+print(bazi["dayMaster"]["element"], bazi["zodiacAnimal"])
+# bazi["fiveElements"], bazi["conventions"], bazi["summary"]
+
+# Chinese zodiac sign. Defaults `year_boundary` to "lunar-new-year", the folk rule people mean
+# when they say which animal they are. Pass "li-chun" to match the classical BaZi boundary.
+sign = roxy.chinese_astrology.calculate_zodiac_animal(date="1990-07-04")
+# sign["animal"]["name"] ("Horse"), ["element"] ("Fire"), ["polarity"]
+# sign["element"] is the YEAR STEM element ("Metal"), not the element of the animal.
+# sign["yearPillar"], sign["interpretation"]
+```
+
+### 8. Feng shui API (Kua number, flying star chart)
+
+Kua numbers with the full Eight Mansions map ranked best to worst, Xuan Kong flying star natal charts for any of the nine periods and 24 mountains, annual and monthly star plates, and the four annual afflictions with exact degree spans. Chinese years resolve at Li Chun, computed astronomically rather than assumed, so the annual charts change over on the real boundary.
+
+```python
+# Kua number: one birth date and a gender gives the personal directions everything else reads off.
+kua = roxy.feng_shui.calculate_kua_number(date="1990-07-04", gender="female")
+print(kua["kua"], kua["group"], kua["trigram"]["english"])   # 8 west Mountain
+# kua["sectors"][n]["direction"], ["starName"], ["nature"] ("auspicious" | "inauspicious"),
+# ["rank"], ["domain"]
+
+# Flying star natal chart. Period plus facing gives the nine palaces with base, mountain
+# and water stars. Send `facing` (a mountain id like "bing" or a compass label like "S2")
+# or `facing_degrees`, not neither.
+chart = roxy.feng_shui.generate_flying_star_chart(period=9, facing="S2")
+# chart["facing"]["label"] ("S2"), chart["sitting"]["label"], chart["structure"]["name"]
+# chart["palaces"][n]["palace"], ["base"], ["mountain"], ["water"], ["reading"]
+# chart["mountainCenterStar"], chart["waterCenterStar"], chart["straddling"]
+```
+
+### 9. Biorhythm API (daily check-in, forecast, compatibility)
 
 Zero competition domain. Steady search volume with the top Google result being a static calculator page. Pure land-grab for wellness, productivity, sports, and couples apps.
 
@@ -260,7 +305,7 @@ forecast = roxy.biorhythm.get_forecast(
 )
 ```
 
-### 8. I Ching API (daily hexagram, coin cast, 64-hexagram catalog)
+### 10. I Ching API (daily hexagram, coin cast, 64-hexagram catalog)
 
 Meditation apps, decision-making tools, and wisdom chatbots. `i ching API` and `hexagram API` are the keywords.
 
@@ -274,7 +319,7 @@ hexagrams = roxy.iching.list_hexagrams()
 # hexagrams["hexagrams"] has 64 entries
 ```
 
-### 9. Crystals API (by zodiac, by chakra, birthstone)
+### 11. Crystals API (by zodiac, by chakra, birthstone)
 
 Crystal retail and metaphysical shops use these to build "crystals for [sign]" and "[chakra] chakra stones" pages.
 
@@ -290,7 +335,7 @@ by_chakra = roxy.crystals.get_crystals_by_chakra(chakra="heart")
 birthstone = roxy.crystals.get_birthstones(month="4")
 ```
 
-### 10. Dream interpretation API (symbol dictionary, search)
+### 12. Dream interpretation API (symbol dictionary, search)
 
 Thousands of dream symbols. `dream meaning` is among the highest-volume spiritual searches on Google. Journal apps, AI therapy chatbots, and self-discovery products are the buyers.
 
@@ -304,7 +349,7 @@ results = roxy.dreams.search_dream_symbols(q="flying")
 # results["symbols"] is an array of matching symbols
 ```
 
-### 11. Angel Numbers API (1111, 222, 333 meanings plus universal lookup)
+### 13. Angel Numbers API (1111, 222, 333 meanings plus universal lookup)
 
 Gen Z spiritual-tok fuel. `111 meaning`, `222 meaning`, `333 angel number` are evergreen viral queries with massive shareability.
 
@@ -351,14 +396,14 @@ asyncio.run(main())
 
 ## Multi-language responses
 
-Interpretations and editorial text are available in eight languages: English (`en`), Turkish (`tr`), German (`de`), Spanish (`es`), French (`fr`), Hindi (`hi`), Portuguese (`pt`), Russian (`ru`). Pass `lang` as a keyword argument on any supported method:
+Interpretations and editorial text are available in 10 languages: English (`en`), Turkish (`tr`), German (`de`), Spanish (`es`), French (`fr`), Hindi (`hi`), Portuguese (`pt`), Russian (`ru`), Chinese Simplified (`zh-Hans`), Chinese Traditional (`zh-Hant`). Pass `lang` as a keyword argument on any supported method:
 
 ```python
 card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
 life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
 ```
 
-Supported: `astrology`, `vedic_astrology`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`. Untranslated fields fall back to English.
+Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`. The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. Untranslated fields fall back to English.
 
 ## Framework examples
 
