@@ -71,7 +71,7 @@ class _BaseDomain:
 
 
 class AstrologyDomain(_BaseDomain):
-    """Western astrology API for natal birth charts, daily, weekly, and monthly horoscopes with unique content per sign, syn..."""
+    """Western astrology API for natal birth charts, daily, weekly, monthly, and yearly horoscopes with unique content per s..."""
 
     def calculate_arabic_lots(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Arabic lots calculator - seven Hermetic parts including Part of Fortune and Spirit"""
@@ -790,7 +790,7 @@ class AstrologyDomain(_BaseDomain):
         return await self._get_async(f"/astrology/moon-phase/current", params=params or None)
 
     def get_daily_horoscope(self, *, sign: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Daily horoscope by zodiac sign - Transit-based forecast with house activations"""
+        """Daily horoscope by zodiac sign - Transit-based editorial columns"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -801,7 +801,7 @@ class AstrologyDomain(_BaseDomain):
         return self._get(f"/astrology/horoscope/{sign}/daily", params=params or None)
 
     async def get_daily_horoscope_async(self, *, sign: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Daily horoscope by zodiac sign - Transit-based forecast with house activations (async)"""
+        """Daily horoscope by zodiac sign - Transit-based editorial columns (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -848,7 +848,7 @@ class AstrologyDomain(_BaseDomain):
         return await self._post_async(f"/astrology/parallels/monthly", body, params=params or None)
 
     def get_monthly_horoscope(self, *, sign: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Monthly horoscope by zodiac sign - 30-day transit forecast with key dates"""
+        """Monthly horoscope by zodiac sign - Editorial column with key dates"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -859,7 +859,7 @@ class AstrologyDomain(_BaseDomain):
         return self._get(f"/astrology/horoscope/{sign}/monthly", params=params or None)
 
     async def get_monthly_horoscope_async(self, *, sign: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Monthly horoscope by zodiac sign - 30-day transit forecast with key dates (async)"""
+        """Monthly horoscope by zodiac sign - Editorial column with key dates (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -1060,7 +1060,7 @@ class AstrologyDomain(_BaseDomain):
         return await self._get_async(f"/astrology/moon-phase/upcoming", params=params or None)
 
     def get_weekly_horoscope(self, *, sign: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Weekly horoscope by zodiac sign - 7-day transit forecast"""
+        """Weekly horoscope by zodiac sign - Seven-day editorial column"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -1071,7 +1071,7 @@ class AstrologyDomain(_BaseDomain):
         return self._get(f"/astrology/horoscope/{sign}/weekly", params=params or None)
 
     async def get_weekly_horoscope_async(self, *, sign: str, date: str | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
-        """Weekly horoscope by zodiac sign - 7-day transit forecast (async)"""
+        """Weekly horoscope by zodiac sign - Seven-day editorial column (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -1080,6 +1080,28 @@ class AstrologyDomain(_BaseDomain):
         if timezone is not None:
             params["timezone"] = timezone
         return await self._get_async(f"/astrology/horoscope/{sign}/weekly", params=params or None)
+
+    def get_yearly_horoscope(self, *, sign: str, year: float | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Yearly horoscope by zodiac sign - Year ahead forecast with themes, key periods, eclipses and retrogrades"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if year is not None:
+            params["year"] = year
+        if timezone is not None:
+            params["timezone"] = timezone
+        return self._get(f"/astrology/horoscope/{sign}/yearly", params=params or None)
+
+    async def get_yearly_horoscope_async(self, *, sign: str, year: float | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
+        """Yearly horoscope by zodiac sign - Year ahead forecast with themes, key periods, eclipses and retrogrades (async)"""
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        if year is not None:
+            params["year"] = year
+        if timezone is not None:
+            params["timezone"] = timezone
+        return await self._get_async(f"/astrology/horoscope/{sign}/yearly", params=params or None)
 
     def get_zodiac_sign(self, *, id: str, lang: str | None = None) -> Any:
         """Get zodiac sign details - Complete astrology sign profile with personality traits"""
