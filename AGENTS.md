@@ -1,6 +1,6 @@
 # roxy-sdk (Python) - Agent Guide
 
-Python SDK for RoxyAPI. 14+ domains (Western astrology, Vedic astrology, forecast, human design, Chinese astrology, feng shui, numerology, tarot, biorhythm, I Ching, crystals, dreams, angel numbers, location) plus utility namespaces (usage, languages). One API key, sync and async.
+Python SDK for RoxyAPI. 18+ domains (Western astrology, Vedic astrology, forecast, human design, Chinese astrology, feng shui, Mesoamerican astrology, Vastu, numerology, Kabbalah, tarot, biorhythm, Ayurveda, I Ching, crystals, dreams, angel numbers, location) plus utility namespaces (usage, languages). One API key, sync and async.
 
 ## Install and initialize
 

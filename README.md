@@ -16,7 +16,7 @@ Python SDK for astrology, Vedic astrology, tarot, numerology, and more.
 
 One API key. Sync and async (every method has an `_async` suffix). Verified against NASA JPL Horizons.
 
-The fastest way to add natal charts, daily horoscopes, synastry, Vedic kundli, tarot spreads, numerology, human design bodygraphs, and transit forecasts to FastAPI, Django, Flask, or any Python project. 14+ domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in 10+ languages.
+The fastest way to add natal charts, daily horoscopes, synastry, Vedic kundli, tarot spreads, numerology, human design bodygraphs, and transit forecasts to FastAPI, Django, Flask, or any Python project. 18+ domains behind a single [Roxy](https://roxyapi.com) subscription, interpretations in 10+ languages.
 
 ## Install
 

@@ -1,7 +1,7 @@
 """
 Example FastAPI server using the roxy-sdk Python package.
 
-Demonstrates nine of the fourteen domains with async endpoints, error handling,
+Demonstrates nine of the eighteen domains with async endpoints, error handling,
 connection lifecycle, and environment-based API key configuration.
 
 Setup:
