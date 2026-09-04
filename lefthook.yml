@@ -15,6 +15,10 @@ pre-commit:
         - "codegen.py"
       run: uv run ruff check --fix {staged_files}
       stage_fixed: true
+    docs-sync:
+      glob: "{specs/openapi.json,codegen.py,sync_docs.py,README.md,AGENTS.md}"
+      run: uv run python sync_docs.py && git add README.md AGENTS.md
+      stage_fixed: true
 
 pre-push:
   parallel: true
@@ -23,5 +27,7 @@ pre-push:
       run: uv run ruff check .
     type-check:
       run: uv run mypy src/roxy_sdk/__init__.py
+    docs-drift:
+      run: uv run python sync_docs.py && git diff --exit-code -- README.md AGENTS.md || { echo "✗ README.md/AGENTS.md drifted from spec — commit the sync output"; exit 1; }
     pytest:
       run: uv run pytest tests/test_factory.py -q

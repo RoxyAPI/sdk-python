@@ -128,12 +128,29 @@ def run_codegen() -> None:
         sys.exit(result.returncode)
 
 
+def run_sync_docs() -> None:
+    """Run sync_docs.py to refresh the spec-derived regions of README.md and AGENTS.md."""
+    print("\nSyncing docs...")
+    result = subprocess.run(
+        [sys.executable, "sync_docs.py"],
+        capture_output=True,
+        text=True,
+    )
+    print(result.stdout, end="")
+    if result.returncode != 0:
+        print(result.stderr, end="", file=sys.stderr)
+        sys.exit(result.returncode)
+
+
 def main() -> None:
     # 1. Fetch spec from production API
     fetch_spec()
 
     # 2. Generate factory.py from spec (domain classes, methods, Roxy aggregate)
     run_codegen()
+
+    # 3. Refresh the domain table and language note in README.md / AGENTS.md
+    run_sync_docs()
 
     # Optional: run openapi-python-client for typed models (not used by factory.py yet)
     # Uncomment when wiring typed return types:

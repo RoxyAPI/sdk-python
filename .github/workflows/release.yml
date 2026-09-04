@@ -36,6 +36,8 @@ jobs:
       - name: Install deps
         run: uv sync --all-extras --dev
 
+      # Also runs sync_docs.py internally (generate.py), so README/AGENTS are already
+      # refreshed by the time the commit step below stages them.
       - name: Regenerate SDK from live spec
         run: uv run python generate.py
 
@@ -116,7 +118,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           VERSION=$(cat /tmp/new_version.txt)
           uv lock
-          git add pyproject.toml uv.lock src/roxy_sdk/version.py specs/openapi.json src/roxy_sdk/factory.py
+          git add pyproject.toml uv.lock src/roxy_sdk/version.py specs/openapi.json src/roxy_sdk/factory.py README.md AGENTS.md
           git commit -m "release: v$VERSION"
           git tag "v$VERSION"
           git push --follow-tags

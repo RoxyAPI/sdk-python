@@ -46,28 +46,30 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 
 Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE with a Python LSP to see every method.
 
-| Namespace | What it covers |
-|-----------|----------------|
-| `roxy.astrology` | Western astrology: natal charts, daily / weekly / monthly horoscopes, synastry, compatibility score, transits, moon phases |
-| `roxy.vedic_astrology` | Vedic / Jyotish: kundli, panchang, Vimshottari dasha, nakshatras, Mangal / Kaal Sarp / Sade Sati doshas, Guna Milan, navamsa, KP chart and ruling planets |
-| `roxy.forecast` | Cross-domain timeline: transits, ingresses, retrograde stations, dasha changes, biorhythm critical days |
-| `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates. No coordinates needed |
-| `roxy.chinese_astrology` | BaZi Four Pillars, Day Master strength, luck pillars, annual forecast, Chinese zodiac and compatibility, lunisolar calendar, the 24 solar terms, Tong Shu almanac and date selection |
-| `roxy.feng_shui` | Kua number, Eight Mansions map, Xuan Kong flying star charts, annual and monthly overlays, annual afflictions, Bagua sectors, the nine periods |
-| `roxy.mesoamerican_astrology` | Tzolkin day signs, the Mayan chart with Haab and Long Count, Long Count conversion, nawal compatibility, trecenas, the Aztec tonalpohualli |
-| `roxy.vastu` | Entrance pada, the Vastu Purusha Mandala, plot analysis, Ayadi shadvarga, room compliance, griha pravesh muhurta, directions and devatas |
-| `roxy.numerology` | Life path, expression, soul urge, personal year, full chart, compatibility, karmic lessons |
-| `roxy.kabbalah` | Gematria with every Hebrew spelling shown, name and birth profiles, the 72 names, the Tree of Life, the Hebrew letters |
-| `roxy.tarot` | Daily card, custom draws, three-card, Celtic Cross, yes / no, love spread, 78-card catalog |
-| `roxy.biorhythm` | Daily check-in, multi-day forecast, critical days, couples compatibility, phases |
-| `roxy.ayurveda` | Constitution from the birth chart, dinacharya, ritucharya, daily reading, the three doshas, the six tastes, the twenty qualities |
-| `roxy.iching` | Daily hexagram, three-coin cast, 64 hexagrams, trigrams |
-| `roxy.crystals` | By zodiac, by chakra, birthstone, search, daily, pairings |
-| `roxy.dreams` | Dream symbol dictionary (3,000+ interpretations), daily prompt |
-| `roxy.angel_numbers` | Number meanings, universal digit-root lookup, daily |
-| `roxy.location` | City search with coordinates and timezone, countries |
-| `roxy.usage` | API usage stats and subscription info |
-| `roxy.languages` | Supported response languages for the `lang` kwarg (code, English name, native name) |
+<!-- BEGIN:DOMAINS -->
+| Namespace | Methods | What it covers |
+|-----------|---------|----------------|
+| `roxy.astrology` | 39 | Western astrology API for natal birth charts, daily, weekly, monthly, and yearly horoscopes with unique content per s... |
+| `roxy.vedic_astrology` | 55 | Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), Ashtakoot Gun Milan ku... |
+| `roxy.forecast` | 5 | Forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons, biorhythm... |
+| `roxy.human_design` | 12 | Generate the full Human Design bodygraph from a birth moment: type, strategy, inner authority, profile, definition, i... |
+| `roxy.chinese_astrology` | 16 | Calculate BaZi Four Pillars charts, Chinese zodiac signs, and the Chinese lunisolar calendar from any birth moment: y... |
+| `roxy.feng_shui` | 11 | Compute classical feng shui from one API: Xuan Kong flying star natal charts for any of the nine periods and 24 mount... |
+| `roxy.mesoamerican_astrology` | 18 | Calculate Mayan astrology day signs, the Tzolkin sacred round, the Haab year, the full Long Count and the Aztec tonal... |
+| `roxy.vastu` | 10 | Vastu Shastra API for directional home and plot analysis: entrance padas with the classical effect of each of the 32... |
+| `roxy.numerology` | 20 | Numerology API to calculate life path, expression, soul urge, personality, and maturity numbers, with Pinnacle and Ch... |
+| `roxy.kabbalah` | 12 | Kabbalah API for gematria, the 72 names, the Tree of Life and the Hebrew birthday, from one key |
+| `roxy.tarot` | 10 | Tarot reading API with the complete 78-card Rider-Waite-Smith deck and card meanings for love, career, health, and sp... |
+| `roxy.biorhythm` | 6 | The most complete biorhythm API: 10 cycle types across 3 primary (physical, emotional, intellectual), 4 secondary (in... |
+| `roxy.ayurveda` | 8 | Ayurveda API for dosha profiles, the dinacharya daily routine and the ritucharya seasonal regimen, with a verse cited... |
+| `roxy.iching` | 9 | I-Ching oracle API with all 64 hexagrams, 384 changing lines, 8 trigrams, and modern interpretations for love, career... |
+| `roxy.crystals` | 12 | Crystal healing API covering the most popular and widely-searched healing crystals and gemstones, from Amethyst and R... |
+| `roxy.dreams` | 5 | Dream interpretation API with a 2,000+ symbol dream dictionary and psychological meanings covering animals, objects,... |
+| `roxy.angel_numbers` | 4 | Angel numbers API with meanings for 111, 222, 333, 444, 555, 666, 777, 888, 999, 1111, and 75+ sequences covering eve... |
+| `roxy.location` | 3 | Location and timezone API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude... |
+| `roxy.usage` | 1 | Monitor your API usage, check rate limits, and track request consumption |
+| `roxy.languages` | 2 | List the response languages accepted by the `lang` query parameter on every i18n-aware endpoint |
+<!-- END:DOMAINS -->
 
 ## Critical patterns
 
@@ -125,14 +127,16 @@ numerology = roxy.numerology.generate_numerology_chart(
 
 ### Multi-language via `lang` kwarg
 
-Ten languages: `en`, `tr`, `de`, `es`, `fr`, `hi`, `pt`, `ru`, `zh-Hans`, `zh-Hant`. Defaults to `en`.
+<!-- BEGIN:LANGS -->
+10 languages: `en`, `tr`, `de`, `es`, `hi`, `pt`, `fr`, `ru`, `zh-Hans`, `zh-Hant`. Defaults to `en`. Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `mesoamerican_astrology`, `vastu`, `numerology`, `kabbalah`, `tarot`, `biorhythm`, `ayurveda`, `iching`, `crystals`, `angel_numbers`, `languages`. English-only: `dreams`, `location`, `usage`.
+<!-- END:LANGS -->
 
 ```python
 card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
 life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
 ```
 
-Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `mesoamerican_astrology`, `vastu`, `numerology`, `kabbalah`, `tarot`, `biorhythm`, `ayurveda`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`, `languages`. The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. To list supported codes at runtime, call `roxy.languages.list_languages()`.
+The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. To list supported codes at runtime, call `roxy.languages.list_languages()`.
 
 ### Error handling
 

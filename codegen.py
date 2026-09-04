@@ -84,6 +84,60 @@ def tag_summary(tag: dict[str, Any]) -> str:
     return flat[:117].rstrip() + "..." if len(flat) > 120 else flat
 
 
+def load_spec() -> dict[str, Any]:
+    """Read the spec written by generate.py's fetch_spec (honors ROXYAPI_SPEC_FILE upstream)."""
+    return json.loads(SPEC_PATH.read_text())
+
+
+def tag_index(spec: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Map tag name -> tag object, for description/summary lookups."""
+    return {t["name"]: t for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t}
+
+
+def spec_tag_order(spec: dict[str, Any]) -> list[str]:
+    """Tag names in the order the spec declares them (the canonical domain order)."""
+    return [t["name"] for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t]
+
+
+def group_by_tag(spec: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+    """Bucket every operation by its first tag, walked once and shared by every consumer."""
+    domains: dict[str, list[dict[str, Any]]] = {}
+    for path, path_item in spec.get("paths", {}).items():
+        for http_method in ("get", "post"):
+            operation = path_item.get(http_method)
+            if not operation:
+                continue
+            tags = operation.get("tags", ["Other"])
+            tag = tags[0]
+            oid = operation.get("operationId", "")
+            if not oid:
+                continue
+
+            body_props, body_req = extract_body(spec, operation)
+
+            domains.setdefault(tag, []).append(
+                {
+                    "operationId": oid,
+                    "method": http_method,
+                    "path": path,
+                    "summary": operation.get("summary", ""),
+                    "parameters": operation.get("parameters", []),
+                    "body_properties": body_props,
+                    "body_required_fields": body_req,
+                }
+            )
+    return domains
+
+
+def ordered_tags_for(spec: dict[str, Any], domains: dict[str, list[Any]]) -> list[str]:
+    """Tags with operations, in spec order; brand-new tags not yet in the spec's own
+    tags[] array sort alphabetically after, so they still get a deterministic position."""
+    order = spec_tag_order(spec)
+    ordered = [t for t in order if t in domains]
+    ordered += sorted(t for t in domains if t not in order)
+    return ordered
+
+
 def camel_to_snake(name: str) -> str:
     s1 = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
     return re.sub(r"([a-z\d])([A-Z])", r"\1_\2", s1).lower()
@@ -225,55 +279,18 @@ def build_method(op: dict) -> str:
 
 
 def main() -> None:
-    spec = json.loads(SPEC_PATH.read_text())
-
-    # Index tag objects (with descriptions) for summary extraction.
-    tag_objects: dict[str, dict[str, Any]] = {
-        t["name"]: t for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t
-    }
+    spec = load_spec()
+    tag_objects = tag_index(spec)
+    domains = group_by_tag(spec)
 
     # Warn on stale NAMESPACE_ALIASES — aliases pointing at tags no longer in
     # the spec. New tags are fine; they auto-derive via tag_to_attr / tag_to_class.
-    spec_tag_names: set[str] = set(tag_objects.keys())
-    for _, path_item in spec.get("paths", {}).items():
-        for http_method in ("get", "post"):
-            op = path_item.get(http_method)
-            if op:
-                spec_tag_names.add((op.get("tags", ["Other"]) or ["Other"])[0])
+    spec_tag_names = set(tag_objects) | set(domains)
     for alias_tag in NAMESPACE_ALIASES:
         if alias_tag not in spec_tag_names:
             print(
                 f"WARNING: NAMESPACE_ALIASES entry '{alias_tag}' is stale — "
                 "no such tag in the OpenAPI spec. Remove it from codegen.py."
-            )
-
-    # Group operations by tag
-    domains: dict[str, list[dict]] = {}
-    for path, path_item in spec.get("paths", {}).items():
-        for http_method in ("get", "post"):
-            operation = path_item.get(http_method)
-            if not operation:
-                continue
-            tags = operation.get("tags", ["Other"])
-            tag = tags[0]
-            oid = operation.get("operationId", "")
-            if not oid:
-                continue
-
-            body_props, body_req = extract_body(spec, operation)
-
-            if tag not in domains:
-                domains[tag] = []
-            domains[tag].append(
-                {
-                    "operationId": oid,
-                    "method": http_method,
-                    "path": path,
-                    "summary": operation.get("summary", ""),
-                    "parameters": operation.get("parameters", []),
-                    "body_properties": body_props,
-                    "body_required_fields": body_req,
-                }
             )
 
     # Write output
@@ -353,11 +370,7 @@ def main() -> None:
 
     # Domain classes. Emit in spec tag order when available; fall back to
     # alphabetical so brand-new endpoints get a deterministic position.
-    spec_tag_order = [
-        t["name"] for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t
-    ]
-    ordered_tags = [t for t in spec_tag_order if t in domains]
-    ordered_tags += sorted(t for t in domains if t not in spec_tag_order)
+    ordered_tags = ordered_tags_for(spec, domains)
 
     domain_classes: list[tuple[str, str]] = []
     for tag in ordered_tags:
