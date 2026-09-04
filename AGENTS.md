@@ -50,11 +50,17 @@ Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE wi
 |-----------|----------------|
 | `roxy.astrology` | Western astrology: natal charts, daily / weekly / monthly horoscopes, synastry, compatibility score, transits, moon phases |
 | `roxy.vedic_astrology` | Vedic / Jyotish: kundli, panchang, Vimshottari dasha, nakshatras, Mangal / Kaal Sarp / Sade Sati doshas, Guna Milan, navamsa, KP chart and ruling planets |
-| `roxy.numerology` | Life path, expression, soul urge, personal year, full chart, compatibility, karmic lessons |
-| `roxy.tarot` | Daily card, custom draws, three-card, Celtic Cross, yes / no, love spread, 78-card catalog |
-| `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates. No coordinates needed |
 | `roxy.forecast` | Cross-domain timeline: transits, ingresses, retrograde stations, dasha changes, biorhythm critical days |
+| `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates. No coordinates needed |
+| `roxy.chinese_astrology` | BaZi Four Pillars, Day Master strength, luck pillars, annual forecast, Chinese zodiac and compatibility, lunisolar calendar, the 24 solar terms, Tong Shu almanac and date selection |
+| `roxy.feng_shui` | Kua number, Eight Mansions map, Xuan Kong flying star charts, annual and monthly overlays, annual afflictions, Bagua sectors, the nine periods |
+| `roxy.mesoamerican_astrology` | Tzolkin day signs, the Mayan chart with Haab and Long Count, Long Count conversion, nawal compatibility, trecenas, the Aztec tonalpohualli |
+| `roxy.vastu` | Entrance pada, the Vastu Purusha Mandala, plot analysis, Ayadi shadvarga, room compliance, griha pravesh muhurta, directions and devatas |
+| `roxy.numerology` | Life path, expression, soul urge, personal year, full chart, compatibility, karmic lessons |
+| `roxy.kabbalah` | Gematria with every Hebrew spelling shown, name and birth profiles, the 72 names, the Tree of Life, the Hebrew letters |
+| `roxy.tarot` | Daily card, custom draws, three-card, Celtic Cross, yes / no, love spread, 78-card catalog |
 | `roxy.biorhythm` | Daily check-in, multi-day forecast, critical days, couples compatibility, phases |
+| `roxy.ayurveda` | Constitution from the birth chart, dinacharya, ritucharya, daily reading, the three doshas, the six tastes, the twenty qualities |
 | `roxy.iching` | Daily hexagram, three-coin cast, 64 hexagrams, trigrams |
 | `roxy.crystals` | By zodiac, by chakra, birthstone, search, daily, pairings |
 | `roxy.dreams` | Dream symbol dictionary (3,000+ interpretations), daily prompt |
@@ -119,14 +125,14 @@ numerology = roxy.numerology.generate_numerology_chart(
 
 ### Multi-language via `lang` kwarg
 
-Eight languages: `en`, `tr`, `de`, `es`, `fr`, `hi`, `pt`, `ru`. Defaults to `en`.
+Ten languages: `en`, `tr`, `de`, `es`, `fr`, `hi`, `pt`, `ru`, `zh-Hans`, `zh-Hant`. Defaults to `en`.
 
 ```python
 card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
 life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
 ```
 
-Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`, `languages`. The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. To list supported codes at runtime, call `roxy.languages.list_languages()`.
+Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `mesoamerican_astrology`, `vastu`, `numerology`, `kabbalah`, `tarot`, `biorhythm`, `ayurveda`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`, `languages`. The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. To list supported codes at runtime, call `roxy.languages.list_languages()`.
 
 ### Error handling
 

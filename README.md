@@ -96,9 +96,13 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 | Human Design | `roxy.human_design` | Full bodygraph: type, strategy, authority, profile, definition, centers, channels, gates |
 | Chinese Astrology | `roxy.chinese_astrology` | BaZi Four Pillars, Chinese zodiac, lunisolar calendar, hidden stems, Na Yin, Ten Gods, luck pillars, animal compatibility |
 | Feng Shui | `roxy.feng_shui` | Xuan Kong flying star charts, Kua number, Eight Mansions, annual and monthly plates, afflictions, Bagua map |
+| Mesoamerican Astrology | `roxy.mesoamerican_astrology` | Tzolkin day signs, the Mayan chart with Haab and Long Count, Long Count conversion, nawal compatibility, trecenas, the Aztec tonalpohualli |
+| Vastu | `roxy.vastu` | Entrance pada, the Vastu Purusha Mandala, plot analysis, Ayadi shadvarga, room compliance, griha pravesh muhurta, directions and devatas |
 | Numerology | `roxy.numerology` | Life path, expression, soul urge, personal year, full chart, compatibility, karmic lessons |
+| Kabbalah | `roxy.kabbalah` | Gematria with every Hebrew spelling shown, name and birth profiles, the 72 names, the Tree of Life, the Hebrew letters |
 | Tarot | `roxy.tarot` | Daily card, custom draws, three-card, Celtic Cross, yes / no, love spread, 78-card catalog |
 | Biorhythm | `roxy.biorhythm` | Daily check-in, multi-day forecast, critical days, couples compatibility, phases |
+| Ayurveda | `roxy.ayurveda` | Constitution from the birth chart, dinacharya, ritucharya, daily reading, the three doshas, the six tastes, the twenty qualities |
 | I Ching | `roxy.iching` | Daily hexagram, three-coin cast, 64 hexagrams, trigrams |
 | Crystals | `roxy.crystals` | By zodiac, by chakra, birthstone, search, daily, pairings |
 | Dreams | `roxy.dreams` | Dream symbol dictionary (3,000+ interpretations), daily prompt |
@@ -403,7 +407,7 @@ card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
 life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
 ```
 
-Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `numerology`, `tarot`, `biorhythm`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`. The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. Untranslated fields fall back to English.
+Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `mesoamerican_astrology`, `vastu`, `numerology`, `kabbalah`, `tarot`, `biorhythm`, `ayurveda`, `iching`, `crystals`, `angel_numbers`. English-only: `dreams`, `location`, `usage`. The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. Untranslated fields fall back to English.
 
 ## Framework examples
 

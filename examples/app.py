@@ -88,7 +88,7 @@ async def handle_roxy_error(request, exc: RoxyAPIError):
 
 @app.get("/horoscope/{sign}")
 async def daily_horoscope(sign: str, lang: str | None = None):
-    """Daily horoscope for any zodiac sign. Supports 8 languages via ?lang= query param."""
+    """Daily horoscope for any zodiac sign. Supports 10 languages via ?lang= query param."""
     return await roxy.astrology.get_daily_horoscope_async(sign=sign, lang=lang)
 
 
