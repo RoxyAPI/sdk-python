@@ -10,10 +10,10 @@ endpoints belong to each. This file only configures how tag names map to
 public SDK namespaces:
 
   1. Most tags derive their snake_case attribute and PascalCase class name
-     automatically — e.g. "Vedic Astrology" -> vedic_astrology / VedicAstrologyDomain,
+     automatically, e.g. "Vedic Astrology" -> vedic_astrology / VedicAstrologyDomain,
      "Numerology" -> numerology / NumerologyDomain, "Languages" -> languages /
      LanguagesDomain. New tags need NO change here.
-  2. A handful of tags use a curated short-form for branding — the public SDK
+  2. A handful of tags use a curated short-form for branding: the public SDK
      exposes ``roxy.astrology``, not ``roxy.western_astrology``. Those overrides
      live in NAMESPACE_ALIASES below.
 
@@ -283,13 +283,13 @@ def main() -> None:
     tag_objects = tag_index(spec)
     domains = group_by_tag(spec)
 
-    # Warn on stale NAMESPACE_ALIASES — aliases pointing at tags no longer in
+    # Warn on stale NAMESPACE_ALIASES: aliases pointing at tags no longer in
     # the spec. New tags are fine; they auto-derive via tag_to_attr / tag_to_class.
     spec_tag_names = set(tag_objects) | set(domains)
     for alias_tag in NAMESPACE_ALIASES:
         if alias_tag not in spec_tag_names:
             print(
-                f"WARNING: NAMESPACE_ALIASES entry '{alias_tag}' is stale — "
+                f"WARNING: NAMESPACE_ALIASES entry '{alias_tag}' is stale: "
                 "no such tag in the OpenAPI spec. Remove it from codegen.py."
             )
 

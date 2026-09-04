@@ -28,6 +28,6 @@ pre-push:
     type-check:
       run: uv run mypy src/roxy_sdk/__init__.py
     docs-drift:
-      run: uv run python sync_docs.py && git diff --exit-code -- README.md AGENTS.md || { echo "✗ README.md/AGENTS.md drifted from spec — commit the sync output"; exit 1; }
+      run: uv run python sync_docs.py && git diff --exit-code -- README.md AGENTS.md || { echo "✗ README.md/AGENTS.md drifted from spec, commit the sync output"; exit 1; }
     pytest:
       run: uv run pytest tests/test_factory.py -q
