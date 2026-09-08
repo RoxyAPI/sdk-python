@@ -527,5 +527,5 @@ with create_roxy("your-api-key") as roxy:
 - [Interactive API Reference](https://roxyapi.com/api-reference)
 - [Pricing](https://roxyapi.com/pricing)
 - [MCP for AI Agents](https://roxyapi.com/docs/mcp)
-- [Starter Apps](https://roxyapi.com/starters)
+- [Starter Apps](https://roxyapi.com/templates)
 - [TypeScript SDK](https://www.npmjs.com/package/@roxyapi/sdk)
