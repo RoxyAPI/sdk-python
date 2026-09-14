@@ -1881,7 +1881,7 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         return await self._post_async(f"/vedic-astrology/panchang/choghadiya", body)
 
-    def get_current_dasha(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, significators: bool | None = None, node_type: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+    def get_current_dasha(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, significators: bool | None = None, node_type: str | None = None, datetime: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
         """Get current Mahadasha, Antardasha, Pratyantardasha, Sookshma, Prana - Dasha Calculator API"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -1898,12 +1898,14 @@ class VedicAstrologyDomain(_BaseDomain):
             body["significators"] = significators
         if node_type is not None:
             body["nodeType"] = node_type
+        if datetime is not None:
+            body["datetime"] = datetime
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/vedic-astrology/dasha/current", body, params=params or None)
 
-    async def get_current_dasha_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, significators: bool | None = None, node_type: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
+    async def get_current_dasha_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, significators: bool | None = None, node_type: str | None = None, datetime: str | None = None, focus: str | None = None, lang: str | None = None) -> Any:
         """Get current Mahadasha, Antardasha, Pratyantardasha, Sookshma, Prana - Dasha Calculator API (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -1920,6 +1922,8 @@ class VedicAstrologyDomain(_BaseDomain):
             body["significators"] = significators
         if node_type is not None:
             body["nodeType"] = node_type
+        if datetime is not None:
+            body["datetime"] = datetime
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
