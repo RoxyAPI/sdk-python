@@ -50,7 +50,7 @@ Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE wi
 | Namespace | Methods | What it covers |
 |-----------|---------|----------------|
 | `roxy.astrology` | 39 | Western astrology API for natal birth charts, daily, weekly, monthly, and yearly horoscopes with unique content per s... |
-| `roxy.vedic_astrology` | 55 | Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), Ashtakoot Gun Milan ku... |
+| `roxy.vedic_astrology` | 56 | Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), Ashtakoot Gun Milan ku... |
 | `roxy.forecast` | 5 | Forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons, biorhythm... |
 | `roxy.human_design` | 12 | Generate the full Human Design bodygraph from a birth moment: type, strategy, inner authority, profile, definition, i... |
 | `roxy.chinese_astrology` | 16 | Calculate BaZi Four Pillars charts, Chinese zodiac signs, and the Chinese lunisolar calendar from any birth moment: y... |

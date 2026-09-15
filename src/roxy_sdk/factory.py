@@ -2073,6 +2073,56 @@ class VedicAstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/vedic-astrology/kp/cusps", body, params=params or None)
 
+    def get_kp_daily_finance(self, *, birth_date: str, birth_time: str, latitude: float, longitude: float, timezone: str | None = None, date: str | None = None, time: str | None = None, ayanamsa: str | None = None, node_type: str | None = None, gain_houses: list[int] | None = None, loss_houses: list[int] | None = None, weights: dict[str, Any] | None = None) -> Any:
+        """Score the day for money with four sub lord layers - KP Daily Finance API"""
+        body: dict[str, Any] = {}
+        body["birthDate"] = birth_date
+        body["birthTime"] = birth_time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if date is not None:
+            body["date"] = date
+        if time is not None:
+            body["time"] = time
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if node_type is not None:
+            body["nodeType"] = node_type
+        if gain_houses is not None:
+            body["gainHouses"] = gain_houses
+        if loss_houses is not None:
+            body["lossHouses"] = loss_houses
+        if weights is not None:
+            body["weights"] = weights
+        return self._post(f"/vedic-astrology/kp/daily-finance", body)
+
+    async def get_kp_daily_finance_async(self, *, birth_date: str, birth_time: str, latitude: float, longitude: float, timezone: str | None = None, date: str | None = None, time: str | None = None, ayanamsa: str | None = None, node_type: str | None = None, gain_houses: list[int] | None = None, loss_houses: list[int] | None = None, weights: dict[str, Any] | None = None) -> Any:
+        """Score the day for money with four sub lord layers - KP Daily Finance API (async)"""
+        body: dict[str, Any] = {}
+        body["birthDate"] = birth_date
+        body["birthTime"] = birth_time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if date is not None:
+            body["date"] = date
+        if time is not None:
+            body["time"] = time
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if node_type is not None:
+            body["nodeType"] = node_type
+        if gain_houses is not None:
+            body["gainHouses"] = gain_houses
+        if loss_houses is not None:
+            body["lossHouses"] = loss_houses
+        if weights is not None:
+            body["weights"] = weights
+        return await self._post_async(f"/vedic-astrology/kp/daily-finance", body)
+
     def get_kp_planets(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, node_type: str | None = None) -> Any:
         """Get KP planetary positions with sub-lords"""
         body: dict[str, Any] = {}
