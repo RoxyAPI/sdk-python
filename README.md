@@ -92,10 +92,10 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 | Domain | Property | Methods | What it covers |
 |--------|----------|---------|----------------|
 | Western Astrology | `roxy.astrology` | 39 | Western astrology API for natal birth charts, daily, weekly, monthly, and yearly horoscopes with unique content per s... |
-| Vedic Astrology | `roxy.vedic_astrology` | 56 | Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), Ashtakoot Gun Milan ku... |
-| Forecast | `roxy.forecast` | 5 | Forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons, biorhythm... |
-| Human Design | `roxy.human_design` | 12 | Generate the full Human Design bodygraph from a birth moment: type, strategy, inner authority, profile, definition, i... |
-| Chinese Astrology | `roxy.chinese_astrology` | 16 | Calculate BaZi Four Pillars charts, Chinese zodiac signs, and the Chinese lunisolar calendar from any birth moment: y... |
+| Vedic Astrology | `roxy.vedic_astrology` | 56 | Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), panchang with choghadi... |
+| Forecast | `roxy.forecast` | 5 | Astrology forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons,... |
+| Human Design | `roxy.human_design` | 12 | Human Design API that generates the full bodygraph from a birth moment: type, strategy, inner authority, profile, def... |
+| Chinese Astrology | `roxy.chinese_astrology` | 16 | Chinese zodiac and BaZi astrology API: Four Pillars charts, Chinese zodiac signs and the Chinese lunisolar calendar f... |
 | Feng Shui | `roxy.feng_shui` | 11 | Compute classical feng shui from one API: Xuan Kong flying star natal charts for any of the nine periods and 24 mount... |
 | Mesoamerican Astrology | `roxy.mesoamerican_astrology` | 18 | Calculate Mayan astrology day signs, the Tzolkin sacred round, the Haab year, the full Long Count and the Aztec tonal... |
 | Vastu | `roxy.vastu` | 10 | Vastu Shastra API for directional home and plot analysis: entrance padas with the classical effect of each of the 32... |
@@ -108,7 +108,7 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 | Crystals | `roxy.crystals` | 12 | Crystal healing API covering the most popular and widely-searched healing crystals and gemstones, from Amethyst and R... |
 | Dreams | `roxy.dreams` | 5 | Dream interpretation API with a 2,000+ symbol dream dictionary and psychological meanings covering animals, objects,... |
 | Angel Numbers | `roxy.angel_numbers` | 4 | Angel numbers API with meanings for 111, 222, 333, 444, 555, 666, 777, 888, 999, 1111, and 75+ sequences covering eve... |
-| Location | `roxy.location` | 3 | Location and timezone API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude... |
+| Location | `roxy.location` | 3 | Timezone and location API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude... |
 | Usage | `roxy.usage` | 1 | Monitor your API usage, check rate limits, and track request consumption |
 | Languages | `roxy.languages` | 2 | List the response languages accepted by the `lang` query parameter on every i18n-aware endpoint |
 <!-- END:DOMAINS -->

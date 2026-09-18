@@ -1147,7 +1147,7 @@ class AstrologyDomain(_BaseDomain):
 
 
 class VedicAstrologyDomain(_BaseDomain):
-    """Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), Ashtakoot Gun Milan ku..."""
+    """Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), panchang with choghadi..."""
 
     def calculate_arudha_padas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, lang: str | None = None) -> Any:
         """Get the twelve Arudha padas - Arudha Lagna Calculator API"""
@@ -2905,7 +2905,7 @@ class VedicAstrologyDomain(_BaseDomain):
 
 
 class ForecastDomain(_BaseDomain):
-    """Forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons, biorhythm..."""
+    """Astrology forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons,..."""
 
     def find_significant_dates(self, *, birth_data: dict[str, Any], start_date: str | None = None, end_date: str | None = None, domains: list[str] | None = None, min_significance: float | None = None, domain_weights: dict[str, Any] | None = None, lang: str | None = None) -> Any:
         """Significant dates - High-significance cross-domain forecast highlights"""
@@ -3085,7 +3085,7 @@ class ForecastDomain(_BaseDomain):
 
 
 class HumanDesignDomain(_BaseDomain):
-    """Generate the full Human Design bodygraph from a birth moment: type, strategy, inner authority, profile, definition, i..."""
+    """Human Design API that generates the full bodygraph from a birth moment: type, strategy, inner authority, profile, def..."""
 
     def calculate_centers(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, lang: str | None = None) -> Any:
         """Calculate the nine Human Design centers"""
@@ -3419,7 +3419,7 @@ class HumanDesignDomain(_BaseDomain):
 
 
 class ChineseAstrologyDomain(_BaseDomain):
-    """Calculate BaZi Four Pillars charts, Chinese zodiac signs, and the Chinese lunisolar calendar from any birth moment: y..."""
+    """Chinese zodiac and BaZi astrology API: Four Pillars charts, Chinese zodiac signs and the Chinese lunisolar calendar f..."""
 
     def calculate_annual_forecast(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, year: int, lang: str | None = None) -> Any:
         """Calculate BaZi annual forecast - Liu Nian yearly pillar API"""
@@ -6723,7 +6723,7 @@ class AngelNumbersDomain(_BaseDomain):
 
 
 class LocationDomain(_BaseDomain):
-    """Location and timezone API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude..."""
+    """Timezone and location API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude..."""
 
     def get_cities_by_country(self, *, iso2: str, limit: int | None = None, offset: str | None = None) -> Any:
         """Get cities in a country - Geocoding directory sorted by population"""
