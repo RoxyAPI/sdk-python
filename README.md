@@ -165,7 +165,7 @@ dasha = roxy.vedic_astrology.get_current_dasha(**birth)
 
 # Mangal Dosha. The most asked matrimonial check.
 dosha = roxy.vedic_astrology.check_manglik_dosha(**birth)
-# dosha["present"], dosha["severity"], dosha["remedies"]
+# dosha["present"]; dosha["severity"] and dosha["remedies"] are set only when present is true
 
 # Guna Milan. The 36-point Ashtakoota score behind kundli matching, both people from the lookups above.
 milan = roxy.vedic_astrology.calculate_gun_milan(person1=birth, person2=partner)
@@ -308,7 +308,7 @@ Gematria of a Latin name under a declared transliteration convention, the 72 nam
 ```python
 # Gematria. A Latin name transliterated under a declared convention, ten ciphers, each with its tradition and source.
 gematria = roxy.kabbalah.calculate_gematria(text="Sarah")
-# gematria["chosen"], gematria["values"][n]["cipher"], ["value"], gematria["matches"], gematria["conventions"]
+# gematria["chosen"]["hebrew"], gematria["values"][n]["id"], ["name"], ["value"], ["tradition"]; gematria["matches"], gematria["conventions"]
 
 # Birth profile. The Hebrew date and birthday, the three birth angels and the birth sephirah from the instant above.
 kabbalah = roxy.kabbalah.generate_birth_profile(date=birth["date"], time=birth["time"], timezone=birth["timezone"])
@@ -393,7 +393,7 @@ by_chakra = roxy.crystals.get_crystals_by_chakra(chakra="Heart")
 # by_chakra["crystals"][n]["name"], ["colors"]
 
 # Birthstone. Evergreen gift and jewelry pages.
-birthstone = roxy.crystals.get_birthstones(month="4")
+birthstone = roxy.crystals.get_birthstones(month="1")
 ```
 
 ### 16. Dream interpretation API (symbol dictionary, search)
@@ -539,7 +539,7 @@ except RoxyAPIError as e:
 | 401 | `subscription_inactive` | Subscription cancelled, expired, or suspended |
 | 401 | `api_key_revoked` | Key was deleted from the account |
 | 404 | `not_found` | Resource not found |
-| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a future birth date |
+| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a date window whose `endDate` precedes `startDate` |
 | 429 | `rate_limit_exceeded` | Monthly quota reached |
 | 500 | `internal_error` | Server error |
 

@@ -23,7 +23,7 @@ roxy = create_roxy("your-api-key")
 - Param names are snake_case versions of the spec param names (`fullName` -> `full_name`, `birthDate` -> `birth_date`, `houseSystem` -> `house_system`). All params are keyword-only.
 - When in doubt about a method or kwarg, check `roxy_sdk.factory` directly or run `python -c "from roxy_sdk import Roxy; help(Roxy)"` - the generated signatures are the contract.
 - Response field names match the response schema of the OpenAPI spec exactly. Never invent or pluralize. If a field is not in the spec, it is not in the response.
-- Strings everywhere: `date` is `"YYYY-MM-DD"`, `time` is `"HH:MM:SS"`, `timezone` is an IANA name (`"Asia/Kolkata"`, `"America/New_York"`) - the server resolves DST for the chart date. `number` (angel) is `"1111"`, `month` (birthstone) is `"4"`, `number` (hexagram) is `"1"`. Numeric kwargs are only `latitude`, `longitude`, `year`, `month` (numerology), `day`, `count` (tarot draw).
+- Strings everywhere: `date` is `"YYYY-MM-DD"`, `time` is `"HH:MM:SS"`, `timezone` is an IANA name (`"Asia/Kolkata"`, `"America/New_York"`) - the server resolves DST for the chart date. `number` (angel) is `"1111"`, `month` (birthstone) is `"1"`, `number` (hexagram) is `"1"`. Numeric kwargs are only `latitude`, `longitude`, `year`, `month` (numerology), `day`, `count` (tarot draw).
 - Inside `person1` / `person2` dicts any value type works because the kwarg is typed `dict[str, Any]`; only the top-level `timezone` kwarg needs string form.
 
 ## Critical rule: geocode before any chart endpoint
@@ -164,7 +164,7 @@ except RoxyAPIError as e:
 | 401 | `subscription_inactive` | Subscription cancelled, expired, or suspended |
 | 401 | `api_key_revoked` | Key was deleted from the account |
 | 404 | `not_found` | Resource not found |
-| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a future birth date |
+| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a date window whose `endDate` precedes `startDate` |
 | 429 | `rate_limit_exceeded` | Monthly quota reached |
 | 500 | `internal_error` | Server error |
 
@@ -213,6 +213,7 @@ In the catalog order (Western astrology, Vedic astrology, forecast, Human Design
 | Three-card spread | `roxy.tarot.cast_three_card(question=question)` |
 | Celtic Cross | `roxy.tarot.cast_celtic_cross(question=question)` |
 | Yes / no tarot | `roxy.tarot.cast_yes_no(question=question)` |
+| Biorhythm reading | `roxy.biorhythm.get_reading(birth_date=birth_date)` |
 | Daily biorhythm reading | `roxy.biorhythm.get_daily_biorhythm(seed=seed)` |
 | Biorhythm forecast | `roxy.biorhythm.get_forecast(birth_date=birth_date)` |
 | Biorhythm compatibility | `roxy.biorhythm.calculate_bio_compatibility(person1=person1, person2=person2)` |
