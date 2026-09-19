@@ -52,7 +52,7 @@ city = result["cities"][0]
 lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 
 # Step 2: Western natal chart. `timezone` can be the IANA string ("Europe/London").
-# The server resolves it to the DST-correct offset for the chart's own date.
+# The server resolves it to the DST-correct offset for the date of the chart.
 natal = roxy.astrology.generate_natal_chart(
     date="1990-01-15",
     time="14:30:00",
@@ -72,19 +72,6 @@ kundli = roxy.vedic_astrology.generate_birth_chart(
 ```
 
 Get your API key at [roxyapi.com/pricing](https://roxyapi.com/pricing). Free test keys available on the [interactive docs](https://roxyapi.com/api-reference).
-
-## Location first
-
-Every chart, horoscope, panchang, dasha, dosha, navamsa, KP, synastry, compatibility, and natal endpoint needs `latitude`, `longitude`, and (for Western) `timezone`. **Never ask users to type coordinates.** Always call `roxy.location.search_cities(q=city)` first and feed the result into the chart call.
-
-```python
-result = roxy.location.search_cities(q="Tokyo")
-city = result["cities"][0]
-lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
-# `tz` is the IANA string ("Asia/Tokyo"). Pass it straight into any chart
-# endpoint and the server resolves it to the DST-correct offset for the chart's
-# own date. If you prefer a decimal, city["utcOffset"] also works.
-```
 
 ## Domain reference
 
@@ -115,258 +102,326 @@ lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 
 ## Most-used endpoints
 
-The highest-demand endpoints by domain, in the order you are most likely to ship them. Each block shows the most-searched API call in that domain so you can pick the feature that drives the most user value first. Full endpoint catalog in the [API reference](https://roxyapi.com/api-reference).
+The highest-demand endpoints by domain, in the order you are most likely to ship them. Every example below reads the same birth through a different domain, and every coordinate comes from one location lookup at the top: one API key, one lookup, and eighteen domains that compose into a single product instead of eighteen separate ones. Full catalog in the [API reference](https://roxyapi.com/api-reference).
+
+### Location first: one lookup feeds every chart
+
+Every chart, horoscope, panchang, dasha, dosha, synastry and compatibility endpoint needs `latitude`, `longitude` and `timezone`. Never ask users to type coordinates. Look the city up once and reuse the result in every domain below.
+
+```python
+# One lookup feeds every chart below. `timezone` is the IANA name from the city
+# record; the server resolves it to the DST-correct offset for the date of each chart.
+place = roxy.location.search_cities(q="New York")
+city = place["cities"][0]
+latitude, longitude, timezone = city["latitude"], city["longitude"], city["timezone"]
+birth = {"date": "1990-01-15", "time": "14:30:00", "latitude": latitude, "longitude": longitude, "timezone": timezone}
+
+# A second person for the two-chart calls (synastry, Guna Milan, Human Design connection).
+london = roxy.location.search_cities(q="London")
+london_city = london["cities"][0]
+lat2, lon2, tz2 = london_city["latitude"], london_city["longitude"], london_city["timezone"]
+partner = {"date": "1992-07-22", "time": "09:00:00", "latitude": lat2, "longitude": lon2, "timezone": tz2}
+```
 
 ### 1. Western astrology API (natal chart, daily horoscope, synastry)
 
-The global astrology app market is $6.27B and almost entirely Western. These endpoints power zodiac dating apps, Co-Star-style natal chart products, daily horoscope features, and lunar-cycle wellness apps.
+Natal chart products, daily horoscope features, dating and compatibility apps, and lunar-cycle wellness apps start here.
 
 ```python
-# Natal chart. The #1 Western query, called on every onboarding.
-natal = roxy.astrology.generate_natal_chart(
-    date="1990-01-15", time="14:30:00",
-    latitude=40.7128, longitude=-74.006, timezone="America/New_York",
-)
+# Natal chart. The most requested Western call, run once at onboarding.
+# `birth` carries the latitude, longitude and timezone from the location lookup above.
+natal = roxy.astrology.generate_natal_chart(**birth)
+# natal["planets"][n]["name"], ["sign"], ["house"], ["interpretation"]["summary"]; natal["ascendant"]["sign"]; natal["aspects"]
 
-# Daily horoscope. Highest per-user call frequency in the catalog, drives DAUs and push.
+# Daily horoscope. The highest per-user call frequency in the catalog: daily content, streaks, push.
 horoscope = roxy.astrology.get_daily_horoscope(sign="aries")
-# horoscope["overview"], horoscope["love"], horoscope["career"], horoscope["luckyNumber"]
+# horoscope["overview"], horoscope["love"], horoscope["career"], horoscope["column"], horoscope["events"], horoscope["luckyNumber"]
 
-# Synastry. The dating-app pro-tier feature, full inter-aspect analysis.
-synastry = roxy.astrology.calculate_synastry(
-    person1={"date": "1990-01-15", "time": "14:30:00", "latitude": 40.71, "longitude": -74.01, "timezone": -5},
-    person2={"date": "1992-07-22", "time": "09:00:00", "latitude": 51.51, "longitude": -0.13, "timezone": 1},
-)
+# Synastry. Full inter-aspect analysis between two charts, the relationship feature of dating apps.
+synastry = roxy.astrology.calculate_synastry(person1=birth, person2=partner)
 # synastry["compatibilityScore"], synastry["interAspects"], synastry["analysis"]["strengths"]
 
-# Moon phase. Viral for wellness, cycle-tracking, meditation apps.
+# Moon phase. A zero-setup call for wellness, cycle-tracking and meditation apps.
 moon = roxy.astrology.get_current_moon_phase()
+# moon["phase"], moon["illumination"], moon["sign"], moon["meaning"]["description"]
 ```
 
 ### 2. Vedic astrology API (kundli, panchang, dasha, Guna Milan, KP)
 
-The depth moat. India astrology market: $163M in 2024, projected $1.8B by 2030 (49% CAGR). Kundli, panchang, dasha, dosha, and KP are the five Google-dominant queries for every matrimonial platform, kundli generator, and muhurat app.
+Kundli generators, matrimonial matching, muhurta and panchang apps, and KP practitioners. The same `birth` object, read sidereally.
 
 ```python
-# Vedic kundli. Top India astrology keyword. Entry point for every Jyotish product.
-kundli = roxy.vedic_astrology.generate_birth_chart(
-    date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
-)
+# Vedic kundli. The same birth read sidereally: `birth` reuses the location lookup above.
+kundli = roxy.vedic_astrology.generate_birth_chart(**birth)
+# kundli["meta"]["Moon"]["rashi"], kundli["meta"]["Moon"]["nakshatra"], kundli["houses"], kundli["combustion"]
 
-# Panchang. Tithi, nakshatra, yoga, karana, rahu kaal, abhijit muhurta in one call.
-panchang = roxy.vedic_astrology.get_detailed_panchang(
-    date="2026-04-22", latitude=28.6139, longitude=77.209,
-)
+# Detailed panchang. Tithi, nakshatra, yoga, karana, rahu kaal and the muhurtas for a date and place.
+panchang = roxy.vedic_astrology.get_detailed_panchang(date="2026-10-01", latitude=latitude, longitude=longitude, timezone=timezone)
+# panchang["tithi"], panchang["nakshatra"], panchang["rahuKaal"], panchang["abhijitMuhurta"]
 
-# Vimshottari dasha. Highest-value single-shot Vedic query.
-dasha = roxy.vedic_astrology.get_current_dasha(
-    date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
-)
+# Vimshottari dasha. The mahadasha, antardasha and pratyantardasha running right now.
+dasha = roxy.vedic_astrology.get_current_dasha(**birth)
+# dasha["mahadasha"], dasha["antardasha"], dasha["remainingInMahadasha"]
 
-# Mangal Dosha. Most-asked matrimonial question in India.
-dosha = roxy.vedic_astrology.check_manglik_dosha(
-    date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
-)
+# Mangal Dosha. The most asked matrimonial check.
+dosha = roxy.vedic_astrology.check_manglik_dosha(**birth)
+# dosha["present"], dosha["severity"], dosha["remedies"]
 
-# Guna Milan. 36-point Ashtakoota matrimonial compatibility score.
-milan = roxy.vedic_astrology.calculate_gun_milan(
-    person1={"date": "1990-01-15", "time": "14:30:00", "latitude": 28.61, "longitude": 77.20},
-    person2={"date": "1992-07-22", "time": "09:00:00", "latitude": 19.07, "longitude": 72.87},
-)
+# Guna Milan. The 36-point Ashtakoota score behind kundli matching, both people from the lookups above.
+milan = roxy.vedic_astrology.calculate_gun_milan(person1=birth, person2=partner)
+# milan["total"], milan["percentage"], milan["isCompatible"], milan["breakdown"]
 
-# KP ruling planets. Horary answers for "will X happen" questions in real time.
-kp = roxy.vedic_astrology.get_kp_ruling_planets(
-    latitude=28.6139, longitude=77.209, timezone="Asia/Kolkata",
-)
+# KP ruling planets. Horary answers at the moment of the question, for the place looked up above.
+kp = roxy.vedic_astrology.get_kp_ruling_planets(latitude=latitude, longitude=longitude, timezone=timezone)
+# kp["dayLord"], kp["moonSublord"], kp["rulingPlanets"]
 ```
 
-### 3. Numerology API (life path, full chart, personal year)
+### 3. Astrology forecast API (transit forecast, cross-domain timeline)
 
-Commodity content with durable demand. `life path number calculator` is among the highest-volume spiritual searches globally. Works without birth time, the easiest domain to integrate.
+Forecast feeds, transit alerts and timing tools. One call returns a dated, significance-scored event list; the timeline variant merges Vedic dasha boundaries and biorhythm critical days into the same list, which no single-domain API can do.
 
 ```python
-# Life Path. The #1 numerology keyword, every calculator page starts here.
-lp = roxy.numerology.calculate_life_path(year=1990, month=1, day=15)
-# lp["number"], lp["type"] ("single" | "master"), lp["meaning"]
+# Transit forecast. Transit-to-natal aspects, sign ingresses and retrograde stations over a window.
+# `birth_data` is the same `birth` object: date, time, latitude, longitude, timezone.
+transits = roxy.forecast.forecast_transits(birth_data=birth, start_date="2026-10-01", end_date="2026-10-31")
+# transits["count"], transits["events"][n]["date"], ["type"], ["body"], ["target"], ["aspect"], ["significance"]
 
-# Full numerology chart. Premium one-shot: all six core numbers plus karmic, personal year.
-chart = roxy.numerology.generate_numerology_chart(
-    full_name="Jane Smith", year=1990, month=1, day=15,
-)
-
-# Personal Year. Annual forecast, drives January traffic spikes.
-pyear = roxy.numerology.calculate_personal_year(month=1, day=15, year=2026)
+# Cross-domain timeline. The same window with Vedic dasha boundaries and biorhythm critical days merged in.
+timeline = roxy.forecast.generate_timeline(birth_data=birth, start_date="2026-10-01", end_date="2026-10-31")
+# timeline["events"][n]["domain"] ("western" | "vedic" | "biorhythm"), ["description"], ["significance"]
 ```
 
-### 4. Tarot API (daily card, Celtic Cross, three-card, yes / no)
+### 4. Human Design API (bodygraph, connection)
 
-High search volume, evergreen. The tarot card database is the highest per-endpoint call count in the catalog because apps fetch once and cache.
+Self-discovery apps, coaching bots and compatibility products. The full bodygraph is one call, and the Design side is solved on the exact 88-degree solar arc rather than approximated as calendar days.
 
 ```python
-# Daily card. Stickiest tarot feature. Seed per user for deterministic once-per-day behavior.
+# Bodygraph. Type, strategy, authority, profile, definition, centers, channels and all 26 gates in one call.
+# Human Design needs only the birth instant, so it takes the date, time and timezone from the lookup above.
+hd = roxy.human_design.generate_bodygraph(date=birth["date"], time=birth["time"], timezone=birth["timezone"])
+# hd["type"], hd["strategy"], hd["authority"], hd["profile"], hd["definition"], hd["incarnationCross"]["name"], hd["centers"], hd["channels"], hd["gates"]
+
+# Connection. Two bodygraphs combined, each of the 36 channels classified by how the pair forms it.
+connection = roxy.human_design.calculate_connection(
+    person_a={"date": birth["date"], "time": birth["time"], "timezone": birth["timezone"]},
+    person_b={"date": partner["date"], "time": partner["time"], "timezone": partner["timezone"]},
+)
+# connection["totalChannels"], connection["summary"]["electromagnetic"], connection["combinedDefinition"]
+```
+
+### 5. Chinese zodiac API (BaZi four pillars, zodiac animal, almanac)
+
+BaZi readings, zodiac content and Tong Shu date pages. The school splits that make two calculators disagree (`day_boundary`, `year_boundary`, `hour_clock`) are typed keyword arguments with named defaults.
+
+```python
+# BaZi Four Pillars. The anchor call of the domain, from the same birth instant as every chart above.
+# Each response echoes the `conventions` it was computed under, so a chart can be reproduced, not guessed.
+bazi = roxy.chinese_astrology.generate_bazi_chart(date=birth["date"], time=birth["time"], timezone=birth["timezone"])
+# bazi["pillars"][n]["position"] ("year" | "month" | "day" | "hour"), ["stem"]["element"], ["branch"]["animal"], ["tenGod"]["name"]
+# bazi["dayMaster"]["element"], bazi["zodiacAnimal"], bazi["fiveElements"], bazi["conventions"]
+
+# Chinese zodiac animal. Defaults `year_boundary` to the Lunar New Year, the folk rule people mean
+# when they ask which animal they are. Pass "li-chun" for the classical BaZi boundary.
+animal = roxy.chinese_astrology.calculate_zodiac_animal(date=birth["date"])
+# animal["animal"]["name"], animal["animal"]["element"], animal["element"] (the year stem element), animal["interpretation"]
+
+# Almanac day. The Tong Shu view of a date: day officer, mansion, clash animal, favours and avoids.
+almanac = roxy.chinese_astrology.get_almanac_day(date="2026-10-01")
+# almanac["dayPillar"], almanac["dayOfficer"], almanac["clashAnimal"], almanac["favours"], almanac["avoids"]
+```
+
+### 6. Feng shui API (Kua number, flying star chart)
+
+Kua numbers with the Eight Mansions map, Xuan Kong flying star charts for any of the nine periods and 24 mountains, annual and monthly star plates, and the annual afflictions.
+
+```python
+# Kua number. One birth date and a gender give the personal directions everything else reads off.
+kua = roxy.feng_shui.calculate_kua_number(date=birth["date"], gender="female")
+# kua["kua"], kua["group"] ("east" | "west"), kua["trigram"]["english"], kua["sectors"][n]["direction"], ["nature"], ["rank"]
+
+# Flying star natal chart. Period plus facing gives the nine palaces with base, mountain and water stars.
+# Send `facing` (a mountain id like "bing" or a compass label like "S2") or `facing_degrees`, not neither.
+stars = roxy.feng_shui.generate_flying_star_chart(period=9, facing="S2")
+# stars["facing"]["label"], stars["sitting"]["label"], stars["structure"]["name"], stars["palaces"][n]["palace"], ["base"], ["mountain"], ["water"], ["reading"]
+```
+
+### 7. Mayan astrology API (Tzolkin day sign, full Maya chart)
+
+Maya day signs, the Haab and Long Count, and the Aztec tonalpohualli, every value a function of the date under a typed `correlation` convention echoed back in `conventions`.
+
+```python
+# Tzolkin day sign. The most asked Maya question, answered from a date alone.
+tzolkin = roxy.mesoamerican_astrology.calculate_tzolkin(date=birth["date"])
+# tzolkin["daySign"], tzolkin["daySignName"], tzolkin["number"], tzolkin["trecena"], tzolkin["reading"]
+
+# Full Maya chart. Tzolkin, Haab, Long Count, Calendar Round, Lord of the Night, Year Bearer and the Cruz Maya.
+maya = roxy.mesoamerican_astrology.generate_mayan_chart(date=birth["date"])
+# maya["tzolkin"], maya["haab"], maya["longCount"], maya["calendarRound"], maya["yearBearer"], maya["cross"], maya["conventions"]["correlation"]
+```
+
+### 8. Vastu Shastra API (entrance analysis, room compliance)
+
+Home and plot analysis from typed geometry. Every verdict carries a `source` object naming the text, chapter and verse it rests on, or a convention label where the texts are silent.
+
+```python
+# Entrance analysis. Plot, facing and door in; the pada, its devata, the classical effect and the recommended padas out.
+entrance = roxy.vastu.calculate_entrance_pada(
+    plot={"width": 30, "depth": 40, "unit": "feet"}, facing="North", door_position=0.4,
+)
+# entrance["pada"], entrance["devata"], entrance["effect"], entrance["auspiciousness"], entrance["recommendedPadas"], entrance["source"]
+
+# Room compliance. A verdict per room with the verse or the convention it rests on, and a scored composite.
+rooms = roxy.vastu.calculate_room_compliance(
+    plot={"width": 30, "depth": 40, "unit": "feet"},
+    facing="North",
+    rooms=[
+        {"type": "kitchen", "direction": "Southeast"},
+        {"type": "master-bedroom", "direction": "Southwest"},
+        {"type": "puja", "direction": "Northeast"},
+    ],
+)
+# rooms["score"], rooms["rooms"][n]["type"], ["verdict"], ["idealDirections"], ["source"]
+```
+
+### 9. Numerology API (life path, full chart, personal year)
+
+Works from the birth date and name alone, no coordinates, which makes it the easiest domain to integrate.
+
+```python
+# Life Path. The most searched numerology number, from the birth date alone.
+life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15)
+# life_path["number"], life_path["type"] ("single" | "master"), life_path["meaning"]
+
+# Full numerology chart. All six core numbers plus karmic lessons, pinnacles and the personal year in one call.
+numerology = roxy.numerology.generate_numerology_chart(full_name="Jane Smith", year=1990, month=1, day=15)
+# numerology["coreNumbers"]["lifePath"], ["expression"], ["soulUrge"], numerology["additionalInsights"]["personalYear"]
+
+# Personal Year. The annual theme, the January feature of every numerology app.
+personal_year = roxy.numerology.calculate_personal_year(month=1, day=15, year=2026)
+# personal_year["personalYear"], personal_year["theme"], personal_year["advice"]
+```
+
+### 10. Kabbalah API (gematria, birth profile)
+
+Gematria of a Latin name under a declared transliteration convention, the 72 names, the Tree of Life, and a Hebrew birthday computed from the same birth instant as every chart above.
+
+```python
+# Gematria. A Latin name transliterated under a declared convention, ten ciphers, each with its tradition and source.
+gematria = roxy.kabbalah.calculate_gematria(text="Sarah")
+# gematria["chosen"], gematria["values"][n]["cipher"], ["value"], gematria["matches"], gematria["conventions"]
+
+# Birth profile. The Hebrew date and birthday, the three birth angels and the birth sephirah from the instant above.
+kabbalah = roxy.kabbalah.generate_birth_profile(date=birth["date"], time=birth["time"], timezone=birth["timezone"])
+# kabbalah["hebrewDate"], kabbalah["hebrewBirthday"], kabbalah["angels"], kabbalah["sephirah"]
+```
+
+### 11. Tarot API (daily card, three-card, Celtic Cross, yes or no)
+
+The complete 78-card deck with meanings for love, career, health and spirit. Pass a `seed` per user for deterministic once-per-day draws.
+
+```python
+# Daily card. Deterministic per (seed, date), so one user sees one card per day.
 card = roxy.tarot.get_daily_card(seed="user-42")
-# card["card"]["name"], card["card"]["imageUrl"], card["dailyMessage"]
+# card["card"]["name"], card["card"]["reversed"], card["card"]["imageUrl"], card["dailyMessage"]
 
-# Celtic Cross. Professional-reader spread. Premium-tier, ten positions.
-cc = roxy.tarot.cast_celtic_cross(question="What should I focus on?", seed="user-42")
-
-# Three-card past-present-future. Most-drawn spread on every tarot platform.
+# Three-card spread. Past, present, future: the most drawn spread on every tarot platform.
 three = roxy.tarot.cast_three_card(question="My next quarter", seed="user-42")
+# three["positions"][n]["name"], ["card"]["name"], ["interpretation"]; three["summary"]
 
-# Yes / No. Impulse micro-query, highest conversion-to-first-call on tarot surfaces.
+# Celtic Cross. The ten-position professional reading.
+celtic = roxy.tarot.cast_celtic_cross(question="What should I focus on?", seed="user-42")
+# celtic["positions"][n]["name"], ["card"]["name"], ["interpretation"]; celtic["summary"]
+
+# Yes or no. One card, one answer, with its strength.
 answer = roxy.tarot.cast_yes_no(question="Should I take the offer?")
-# answer["answer"] ("Yes" | "No" | "Maybe"), answer["strength"]
+# answer["answer"] ("Yes" | "No" | "Maybe"), answer["strength"], answer["card"]["name"]
 ```
 
-### 5. Human Design API (full bodygraph: type, strategy, authority, profile)
+### 12. Biorhythm API (reading, forecast)
 
-The breakout 2026 spiritual category, computed from the same ephemeris as Western astrology plus the I Ching gate wheel and chakra-style centers. Self-discovery apps, dating and compatibility products, and AI coaching bots are the buyers. The full bodygraph is the chart, returned in one call. No coordinates needed: Human Design uses the birth instant and ecliptic longitudes, so there is no city-search setup step.
+Ten cycle types across primary, secondary and extended cycles, for wellness, productivity, sports and couples apps.
 
 ```python
-# Full bodygraph. The #1 Human Design query, the whole chart in one call.
-# `timezone` is the IANA string ("America/New_York"), same as the chart endpoints.
-bodygraph = roxy.human_design.generate_bodygraph(
-    date="1990-07-04", time="10:12:00", timezone="America/New_York",
-)
-# bodygraph["type"] ("Generator", "Projector", "Manifestor", ...)
-print(bodygraph["type"], bodygraph["strategy"], bodygraph["profile"], bodygraph["definition"])
-# bodygraph["authority"], bodygraph["centers"], bodygraph["channels"], bodygraph["gates"]
+# Biorhythm reading. All ten cycles for a date, from the same birth date as every chart above.
+bio = roxy.biorhythm.get_reading(birth_date=birth["date"], target_date="2026-10-01")
+# bio["cycles"]["physical"]["value"], ["phase"]; bio["energyRating"], bio["overallPhase"], bio["criticalAlerts"], bio["interpretation"]
+
+# Forecast. Every cycle for every day of a window, with the best and worst days named.
+bio_forecast = roxy.biorhythm.get_forecast(birth_date=birth["date"], start_date="2026-10-01", end_date="2026-10-31")
+# bio_forecast["summary"]["bestDay"], ["worstDay"], ["averageEnergy"]; bio_forecast["days"][n]["date"], ["physical"], ["emotional"], ["intellectual"], ["isCritical"]
 ```
 
-### 6. Forecast API (cross-domain transit timeline, significance-scored)
+### 13. Ayurveda API (dosha constitution, dinacharya)
 
-The first cross-domain, stateless forecast in the catalog. One call merges Western transit-to-natal aspects, sign ingresses, retrograde stations, Vedic Vimshottari dasha boundaries, and biorhythm critical days into a single significance-scored, time-ordered timeline. Forecast feeds, transit alerts, and timing tools are the buyers. The window is clamped to a 90-day horizon.
+The dosha profile read from a verified sidereal chart with the verse on each factor, a daily routine anchored on the local sunrise, and the six seasons from real solar ingresses. Every response carries `meta.disclaimer`.
 
 ```python
-# Cross-domain timeline. Acquire on the transit keyword, convert on this breadth.
-# Response keys are camelCase passthrough: result["count"], result["events"].
-timeline = roxy.forecast.generate_timeline(
-    birth_data={
-        "date": "1990-07-04", "time": "10:12:00", "timezone": "America/New_York",
-        "latitude": 40.7128, "longitude": -74.006,
-    },
-    start_date="2026-06-01", end_date="2026-06-30",
-)
-print(timeline["count"])  # number of events in the window
-event = timeline["events"][0]
-print(event["date"], event["domain"], event["type"], event["description"], event["significance"])
+# Constitution. The dosha profile read from the sidereal chart of the same birth, each factor with its verse.
+constitution = roxy.ayurveda.calculate_ayurvedic_constitution(**birth)
+# constitution["composite"], constitution["factors"][n]["id"], ["doshas"], ["source"], constitution["meta"]["disclaimer"]
+
+# Dinacharya. Brahma muhurta, the dosha periods and the routine for a date at the place looked up above.
+dinacharya = roxy.ayurveda.get_dinacharya_schedule(date="2026-10-01", latitude=latitude, longitude=longitude, timezone=timezone)
+# dinacharya["brahmaMuhurta"], dinacharya["doshaPeriods"], dinacharya["routine"]
 ```
 
-### 7. Chinese astrology API (BaZi four pillars, zodiac sign)
+### 14. I Ching API (cast a reading, hexagram catalog)
 
-BaZi (Four Pillars of Destiny), the twelve-animal zodiac, and the lunisolar calendar with its almanac. The school splits that make two calculators disagree are typed request parameters with named defaults, echoed back in a `conventions` object on every response, so a chart can be reproduced rather than guessed at. The zodiac routes answer the high-volume consumer questions; BaZi and the almanac are where an app goes deeper.
-
-```python
-# BaZi Four Pillars. The anchor call: the rest of the domain reads off these four pillars.
-# `timezone` takes the IANA name, resolved to the DST-correct offset for the birth date.
-bazi = roxy.chinese_astrology.generate_bazi_chart(
-    date="1990-07-04", time="10:12:00", timezone="America/New_York",
-)
-# bazi["pillars"][n]["position"] ("year" | "month" | "day" | "hour")
-# ...["stem"]["element"], ["branch"]["animal"], ["tenGod"]["name"], ["hiddenStems"], ["naYin"]
-print(bazi["dayMaster"]["element"], bazi["zodiacAnimal"])
-# bazi["fiveElements"], bazi["conventions"], bazi["summary"]
-
-# Chinese zodiac sign. Defaults `year_boundary` to "lunar-new-year", the folk rule people mean
-# when they say which animal they are. Pass "li-chun" to match the classical BaZi boundary.
-sign = roxy.chinese_astrology.calculate_zodiac_animal(date="1990-07-04")
-# sign["animal"]["name"] ("Horse"), ["element"] ("Fire"), ["polarity"]
-# sign["element"] is the YEAR STEM element ("Metal"), not the element of the animal.
-# sign["yearPillar"], sign["interpretation"]
-```
-
-### 8. Feng shui API (Kua number, flying star chart)
-
-Kua numbers with the full Eight Mansions map ranked best to worst, Xuan Kong flying star natal charts for any of the nine periods and 24 mountains, annual and monthly star plates, and the four annual afflictions with exact degree spans. Chinese years resolve at Li Chun, computed astronomically rather than assumed, so the annual charts change over on the real boundary.
+All 64 hexagrams, 384 changing lines and 8 trigrams, for meditation apps, decision tools and wisdom chatbots.
 
 ```python
-# Kua number: one birth date and a gender gives the personal directions everything else reads off.
-kua = roxy.feng_shui.calculate_kua_number(date="1990-07-04", gender="female")
-print(kua["kua"], kua["group"], kua["trigram"]["english"])   # 8 west Mountain
-# kua["sectors"][n]["direction"], ["starName"], ["nature"] ("auspicious" | "inauspicious"),
-# ["rank"], ["domain"]
-
-# Flying star natal chart. Period plus facing gives the nine palaces with base, mountain
-# and water stars. Send `facing` (a mountain id like "bing" or a compass label like "S2")
-# or `facing_degrees`, not neither.
-chart = roxy.feng_shui.generate_flying_star_chart(period=9, facing="S2")
-# chart["facing"]["label"] ("S2"), chart["sitting"]["label"], chart["structure"]["name"]
-# chart["palaces"][n]["palace"], ["base"], ["mountain"], ["water"], ["reading"]
-# chart["mountainCenterStar"], chart["waterCenterStar"], chart["straddling"]
-```
-
-### 9. Biorhythm API (daily check-in, forecast, compatibility)
-
-Zero competition domain. Steady search volume with the top Google result being a static calculator page. Pure land-grab for wellness, productivity, sports, and couples apps.
-
-```python
-# Daily biorhythm. Physical, emotional, intellectual, intuitive, plus seven extended cycles.
-bio = roxy.biorhythm.get_daily_biorhythm(seed="user-1", date="2026-04-23")
-
-# Multi-day forecast. Best-day / worst-day planner for calendar and coaching products.
-forecast = roxy.biorhythm.get_forecast(
-    birth_date="1990-01-15", start_date="2026-04-01", end_date="2026-04-30",
-)
-```
-
-### 10. I Ching API (daily hexagram, coin cast, 64-hexagram catalog)
-
-Meditation apps, decision-making tools, and wisdom chatbots. `i ching API` and `hexagram API` are the keywords.
-
-```python
-# Cast a reading. Active divination, primary hexagram plus changing lines and transformed hexagram.
+# Cast a reading. Three coins six times: the primary hexagram, the changing lines and the resulting hexagram.
 reading = roxy.iching.cast_reading(seed="user-42")
-# reading["hexagram"], reading["changingLinePositions"], reading["resultingHexagram"]
+# reading["hexagram"]["number"], ["english"], reading["lines"], reading["changingLinePositions"], reading["resultingHexagram"]
 
-# Hexagram catalog. Cache once for all 64 hexagrams.
-hexagrams = roxy.iching.list_hexagrams()
-# hexagrams["hexagrams"] has 64 entries
+# Hexagram catalog. Paginated, 20 per page by default; ask for all 64 once and cache them.
+hexagrams = roxy.iching.list_hexagrams(limit=64)
+# hexagrams["total"], hexagrams["hexagrams"][n]["number"], ["english"], ["pinyin"]; roxy.iching.get_hexagram(number=n) for the judgment and lines
 ```
 
-### 11. Crystals API (by zodiac, by chakra, birthstone)
+### 15. Crystal healing API (by zodiac, by chakra, birthstone)
 
-Crystal retail and metaphysical shops use these to build "crystals for [sign]" and "[chakra] chakra stones" pages.
+Crystal retail and metaphysical content: "crystals for [sign]" and "[chakra] chakra stones" pages, plus the birthstone for each month.
 
 ```python
-# By zodiac. Highest-search crystal query pattern.
+# By zodiac. The most searched crystal query pattern.
 by_sign = roxy.crystals.get_crystals_by_zodiac(sign="scorpio")
-# by_sign["crystals"] is a list of id, name, color, chakra, properties
+# by_sign["crystals"][n]["id"], ["name"], ["imageUrl"], ["colors"]; roxy.crystals.get_crystal(id=id) for full properties
 
-# By chakra. Second-highest crystal query pattern.
-by_chakra = roxy.crystals.get_crystals_by_chakra(chakra="heart")
+# By chakra. Wellness and yoga content pages.
+by_chakra = roxy.crystals.get_crystals_by_chakra(chakra="Heart")
+# by_chakra["crystals"][n]["name"], ["colors"]
 
-# Birthstone. Evergreen gift and jewelry SEO.
+# Birthstone. Evergreen gift and jewelry pages.
 birthstone = roxy.crystals.get_birthstones(month="4")
 ```
 
-### 12. Dream interpretation API (symbol dictionary, search)
+### 16. Dream interpretation API (symbol dictionary, search)
 
-Thousands of dream symbols. `dream meaning` is among the highest-volume spiritual searches on Google. Journal apps, AI therapy chatbots, and self-discovery products are the buyers.
+A 2,000+ symbol dream dictionary for journal apps, AI companions and self-discovery products.
 
 ```python
 # Symbol detail. Every "what does it mean to dream about X" page lands here.
 symbol = roxy.dreams.get_dream_symbol(id="flying")
 # symbol["id"], symbol["name"], symbol["meaning"]
 
-# Symbol search. Chatbots cache the dictionary locally after one call.
-results = roxy.dreams.search_dream_symbols(q="flying")
-# results["symbols"] is an array of matching symbols
+# Symbol search. Chatbots fetch the dictionary once and keep it locally.
+symbols = roxy.dreams.search_dream_symbols(q="water")
+# symbols["symbols"][n]["id"], ["name"]
 ```
 
-### 13. Angel Numbers API (1111, 222, 333 meanings plus universal lookup)
+### 17. Angel numbers API (1111, 222, 333 meanings plus universal lookup)
 
-Gen Z spiritual-tok fuel. `111 meaning`, `222 meaning`, `333 angel number` are evergreen viral queries with massive shareability.
+Meanings for every common sequence, and a lookup that answers any positive integer through its digit root.
 
 ```python
-# By number. Every "meaning of 1111" page is backed by this.
+# By number. Every "meaning of 1111" page is backed by this. The path param is a string.
 angel = roxy.angel_numbers.get_angel_number(number="1111")
-# angel["meaning"]["spiritual"], angel["meaning"]["love"], angel["affirmation"]
+# angel["title"], angel["coreMessage"], angel["meaning"]["spiritual"], angel["meaning"]["love"], angel["affirmation"]
 
-# Universal lookup. Works for any positive integer via digit-root fallback.
-any_number = roxy.angel_numbers.analyze_number_sequence(number="4242")
+# Universal lookup. Any positive integer, with the digit root carrying the answer when no curated entry exists.
+sequence = roxy.angel_numbers.analyze_number_sequence(number="4242")
+# sequence["digitRoot"], sequence["isRepeating"], sequence["knownMeaning"] (None when not curated), sequence["digitRootMeaning"]["title"]
 ```
 
 ## Built for AI agents (Claude Code, Cursor, Copilot, Codex, Gemini CLI)
@@ -482,7 +537,9 @@ except RoxyAPIError as e:
 | 401 | `invalid_api_key` | Key format invalid or tampered |
 | 401 | `subscription_not_found` | Key references non-existent subscription |
 | 401 | `subscription_inactive` | Subscription cancelled, expired, or suspended |
+| 401 | `api_key_revoked` | Key was deleted from the account |
 | 404 | `not_found` | Resource not found |
+| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a future birth date |
 | 429 | `rate_limit_exceeded` | Monthly quota reached |
 | 500 | `internal_error` | Server error |
 
@@ -527,5 +584,5 @@ with create_roxy("your-api-key") as roxy:
 - [Interactive API Reference](https://roxyapi.com/api-reference)
 - [Pricing](https://roxyapi.com/pricing)
 - [MCP for AI Agents](https://roxyapi.com/docs/mcp)
-- [Starter Apps](https://roxyapi.com/templates)
+- [Templates](https://roxyapi.com/templates)
 - [TypeScript SDK](https://www.npmjs.com/package/@roxyapi/sdk)

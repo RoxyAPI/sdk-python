@@ -22,7 +22,7 @@ roxy = create_roxy("your-api-key")
 - Method names are snake_case versions of the OpenAPI operationId (e.g. `castThreeCard` -> `cast_three_card`, `analyzeNumberSequence` -> `analyze_number_sequence`). Every sync method has an `_async` variant; use `await` with the async variants.
 - Param names are snake_case versions of the spec param names (`fullName` -> `full_name`, `birthDate` -> `birth_date`, `houseSystem` -> `house_system`). All params are keyword-only.
 - When in doubt about a method or kwarg, check `roxy_sdk.factory` directly or run `python -c "from roxy_sdk import Roxy; help(Roxy)"` - the generated signatures are the contract.
-- Response field names match the OpenAPI spec's response schema exactly. Never invent or pluralize. If a field isn't in the spec, it isn't in the response.
+- Response field names match the response schema of the OpenAPI spec exactly. Never invent or pluralize. If a field is not in the spec, it is not in the response.
 - Strings everywhere: `date` is `"YYYY-MM-DD"`, `time` is `"HH:MM:SS"`, `timezone` is an IANA name (`"Asia/Kolkata"`, `"America/New_York"`) - the server resolves DST for the chart date. `number` (angel) is `"1111"`, `month` (birthstone) is `"4"`, `number` (hexagram) is `"1"`. Numeric kwargs are only `latitude`, `longitude`, `year`, `month` (numerology), `day`, `count` (tarot draw).
 - Inside `person1` / `person2` dicts any value type works because the kwarg is typed `dict[str, Any]`; only the top-level `timezone` kwarg needs string form.
 
@@ -35,7 +35,7 @@ result = roxy.location.search_cities(q="New York")
 city = result["cities"][0]
 lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 # `timezone` is the IANA string ("America/New_York"). Pass it directly to any chart endpoint.
-# The server resolves it to the DST-correct decimal offset using the request's own date,
+# The server resolves it to the DST-correct decimal offset using the date of the request itself,
 # so a January 1990 New York chart gets EST (-5) even when you looked the city up in July.
 # If you prefer numbers, city["utcOffset"] (decimal: 5.5, -5, ...) also works.
 ```
@@ -85,6 +85,8 @@ chart = roxy.astrology.generate_natal_chart(
     timezone=city["timezone"],  # IANA string, server resolves DST for the date
 )
 ```
+
+One lookup feeds every domain. The same `birth` dict, spread with `**birth`, is the kwargs for `astrology.generate_natal_chart`, `vedic_astrology.generate_birth_chart`, `vedic_astrology.get_current_dasha`, `ayurveda.calculate_ayurvedic_constitution`, and it is the `birth_data` kwarg of `forecast.forecast_transits`; the instant alone (`date`, `time`, `timezone`) is the kwargs for `human_design.generate_bodygraph`, `chinese_astrology.generate_bazi_chart`, and `kabbalah.generate_birth_profile`. Never look the city up twice for one person.
 
 ### Sync calls (default)
 
@@ -160,52 +162,70 @@ except RoxyAPIError as e:
 | 401 | `invalid_api_key` | Key format invalid or tampered |
 | 401 | `subscription_not_found` | Key references non-existent subscription |
 | 401 | `subscription_inactive` | Subscription cancelled, expired, or suspended |
+| 401 | `api_key_revoked` | Key was deleted from the account |
 | 404 | `not_found` | Resource not found |
+| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a future birth date |
 | 429 | `rate_limit_exceeded` | Monthly quota reached |
 | 500 | `internal_error` | Server error |
 
 ## Common tasks
 
-Ordered by domain priority (Western, Vedic, Forecast, Human Design, Chinese Astrology, Feng Shui, Numerology, Tarot, Biorhythm, I Ching, Crystals, Dreams, Angel Numbers, Location, Usage, Languages).
+In the catalog order (Western astrology, Vedic astrology, forecast, Human Design, Chinese astrology, feng shui, Mesoamerican astrology, Vastu, numerology, Kabbalah, tarot, biorhythm, Ayurveda, I Ching, crystals, dreams, angel numbers, location, usage, languages). `birth` is `{"date": ..., "time": ..., "latitude": ..., "longitude": ..., "timezone": ...}` from the two-step pattern above.
 
 | Task | Code |
 |------|------|
-| Daily horoscope | `roxy.astrology.get_daily_horoscope(sign="aries")` |
-| Natal chart (Western) | `roxy.astrology.generate_natal_chart(date, time, latitude, longitude, timezone)` |
-| Synastry | `roxy.astrology.calculate_synastry(person1, person2)` |
-| Compatibility score | `roxy.astrology.calculate_compatibility(person1, person2)` |
+| Find city coordinates (do this first) | `roxy.location.search_cities(q="Berlin")` |
+| Daily horoscope | `roxy.astrology.get_daily_horoscope(sign=sign)` |
+| Natal chart (Western) | `roxy.astrology.generate_natal_chart(**birth)` |
+| Synastry | `roxy.astrology.calculate_synastry(person1=person1, person2=person2)` |
+| Compatibility score | `roxy.astrology.calculate_compatibility(person1=person1, person2=person2)` |
 | Current moon phase | `roxy.astrology.get_current_moon_phase()` |
-| Transits | `roxy.astrology.calculate_transits(natal_chart=...)` |
-| Kundli (Vedic birth chart) | `roxy.vedic_astrology.generate_birth_chart(date, time, latitude, longitude)` |
-| Panchang (detailed) | `roxy.vedic_astrology.get_detailed_panchang(date, latitude, longitude)` |
-| Choghadiya | `roxy.vedic_astrology.get_choghadiya(date, latitude, longitude)` |
-| Current dasha | `roxy.vedic_astrology.get_current_dasha(date, time, latitude, longitude)` |
-| Mangal Dosha | `roxy.vedic_astrology.check_manglik_dosha(date, time, latitude, longitude)` |
-| Guna Milan (matching) | `roxy.vedic_astrology.calculate_gun_milan(person1, person2)` |
-| Navamsa (D9) | `roxy.vedic_astrology.generate_navamsa(date, time, latitude, longitude)` |
-| KP chart | `roxy.vedic_astrology.generate_kp_chart(date, time, latitude, longitude)` |
+| Transits | `roxy.astrology.calculate_transits(natal_chart=natal_chart)` |
+| Kundli (Vedic birth chart) | `roxy.vedic_astrology.generate_birth_chart(**birth)` |
+| Panchang (detailed) | `roxy.vedic_astrology.get_detailed_panchang(date=date, latitude=latitude, longitude=longitude, timezone=timezone)` |
+| Choghadiya | `roxy.vedic_astrology.get_choghadiya(date=date, latitude=latitude, longitude=longitude, timezone=timezone)` |
+| Current dasha | `roxy.vedic_astrology.get_current_dasha(**birth)` |
+| Mangal Dosha | `roxy.vedic_astrology.check_manglik_dosha(**birth)` |
+| Guna Milan (matching) | `roxy.vedic_astrology.calculate_gun_milan(person1=person1, person2=person2)` |
+| Navamsa (D9) | `roxy.vedic_astrology.generate_navamsa(**birth)` |
+| KP chart | `roxy.vedic_astrology.generate_kp_chart(**birth)` |
+| KP ruling planets | `roxy.vedic_astrology.get_kp_ruling_planets(latitude=latitude, longitude=longitude, timezone=timezone)` |
 | Nakshatra detail | `roxy.vedic_astrology.get_nakshatra(id="ashwini")` |
-| Life path number | `roxy.numerology.calculate_life_path(year, month, day)` |
-| Full numerology chart | `roxy.numerology.generate_numerology_chart(full_name, year, month, day)` |
-| Personal year | `roxy.numerology.calculate_personal_year(month, day)` |
-| Daily tarot card | `roxy.tarot.get_daily_card(seed="user-123")` |
-| Three-card spread | `roxy.tarot.cast_three_card(question="...")` |
-| Celtic Cross | `roxy.tarot.cast_celtic_cross(question="...")` |
-| Yes / no tarot | `roxy.tarot.cast_yes_no(question="...")` |
-| Human Design bodygraph | `roxy.human_design.generate_bodygraph(date, time, timezone)` |
-| Forecast timeline | `roxy.forecast.generate_timeline(birth_data=...)` |
-| Daily biorhythm | `roxy.biorhythm.get_daily_biorhythm(seed="user-123")` |
-| Biorhythm forecast | `roxy.biorhythm.get_forecast(birth_date="1990-01-15")` |
-| Biorhythm compatibility | `roxy.biorhythm.calculate_bio_compatibility(person1, person2)` |
-| Daily hexagram | `roxy.iching.get_daily_hexagram(seed="user-123")` |
+| Transit forecast | `roxy.forecast.forecast_transits(birth_data=birth, start_date=start_date, end_date=end_date)` |
+| Cross-domain timeline | `roxy.forecast.generate_timeline(birth_data=birth, start_date=start_date, end_date=end_date)` |
+| Human Design bodygraph | `roxy.human_design.generate_bodygraph(date=date, time=time, timezone=timezone)` |
+| Human Design connection | `roxy.human_design.calculate_connection(person_a=person_a, person_b=person_b)` |
+| BaZi Four Pillars | `roxy.chinese_astrology.generate_bazi_chart(date=date, time=time, timezone=timezone)` |
+| Chinese zodiac animal | `roxy.chinese_astrology.calculate_zodiac_animal(date=date)` |
+| Almanac day (Tong Shu) | `roxy.chinese_astrology.get_almanac_day(date=date)` |
+| Kua number | `roxy.feng_shui.calculate_kua_number(date=date, gender=gender)` |
+| Flying star natal chart | `roxy.feng_shui.generate_flying_star_chart(period=period, facing=facing)` |
+| Tzolkin day sign | `roxy.mesoamerican_astrology.calculate_tzolkin(date=date)` |
+| Full Maya chart | `roxy.mesoamerican_astrology.generate_mayan_chart(date=date)` |
+| Vastu entrance | `roxy.vastu.calculate_entrance_pada(plot=plot, facing=facing, door_position=door_position)` |
+| Vastu room compliance | `roxy.vastu.calculate_room_compliance(plot=plot, facing=facing, rooms=rooms)` |
+| Life path number | `roxy.numerology.calculate_life_path(year=year, month=month, day=day)` |
+| Full numerology chart | `roxy.numerology.generate_numerology_chart(full_name=full_name, year=year, month=month, day=day)` |
+| Personal year | `roxy.numerology.calculate_personal_year(month=month, day=day)` |
+| Gematria | `roxy.kabbalah.calculate_gematria(text=text)` |
+| Kabbalah birth profile | `roxy.kabbalah.generate_birth_profile(date=date, time=time, timezone=timezone)` |
+| Daily tarot card | `roxy.tarot.get_daily_card(seed=seed)` |
+| Three-card spread | `roxy.tarot.cast_three_card(question=question)` |
+| Celtic Cross | `roxy.tarot.cast_celtic_cross(question=question)` |
+| Yes / no tarot | `roxy.tarot.cast_yes_no(question=question)` |
+| Daily biorhythm reading | `roxy.biorhythm.get_daily_biorhythm(seed=seed)` |
+| Biorhythm forecast | `roxy.biorhythm.get_forecast(birth_date=birth_date)` |
+| Biorhythm compatibility | `roxy.biorhythm.calculate_bio_compatibility(person1=person1, person2=person2)` |
+| Ayurvedic constitution | `roxy.ayurveda.calculate_ayurvedic_constitution(**birth)` |
+| Dinacharya | `roxy.ayurveda.get_dinacharya_schedule(date=date, latitude=latitude, longitude=longitude, timezone=timezone)` |
+| Daily hexagram | `roxy.iching.get_daily_hexagram(seed=seed)` |
 | Cast I Ching reading | `roxy.iching.cast_reading()` |
 | Hexagram detail | `roxy.iching.get_hexagram(number="1")` |
-| Crystal by zodiac | `roxy.crystals.get_crystals_by_zodiac(sign="aries")` |
-| Crystal by chakra | `roxy.crystals.get_crystals_by_chakra(chakra="heart")` |
+| Crystal by zodiac | `roxy.crystals.get_crystals_by_zodiac(sign=sign)` |
+| Crystal by chakra | `roxy.crystals.get_crystals_by_chakra(chakra=chakra)` |
 | Dream symbol lookup | `roxy.dreams.get_dream_symbol(id="flying")` |
 | Angel number meaning | `roxy.angel_numbers.get_angel_number(number="1111")` |
 | Universal number lookup | `roxy.angel_numbers.analyze_number_sequence(number="1234")` |
-| Find city coordinates | `roxy.location.search_cities(q="Berlin")` |
 | Check API usage | `roxy.usage.get_usage_stats()` |
 | List supported languages | `roxy.languages.list_languages()` |
 
@@ -227,7 +247,7 @@ These are the fields AI agents most often get wrong. Copy the format column exac
 | `id` (nakshatra / dream / tarot) | Slug | `"ashwini"`, `"flying"`, `"the-fool"`, `"three-of-cups"` | Display names, uppercase, spaces |
 | `house_system` | Enum string | `"placidus"` (default), `"whole-sign"`, `"equal"`, `"koch"` | `"Placidus"`, `"whole_sign"`, `"WS"` |
 | `ayanamsa` (KP) | Enum string | `"kp-newcomb"` (default), `"kp-old"`, `"lahiri"`, `"custom"` | `"KP"`, `"New Comb"`, `"Lahiri"` |
-| `node_type` | Enum string | `"true-node"`, `"mean-node"` | `"true"`, `"mean"`, `"True Node"` |
+| `node_type` | Enum string | `"mean"` (smoothed node, traditional Vedic default), `"true"` (osculating node with perturbation corrections) | `"true-node"`, `"mean-node"`, `"True Node"` |
 | `count` (tarot draw) | Integer 1 to 78 | `3`, `10`, `78` | `0`, `79`, strings, floats |
 | `mahadasha` (path) | Planet name | `"Ketu"`, `"Venus"`, `"Sun"`, `"Moon"`, `"Mars"`, `"Rahu"`, `"Jupiter"`, `"Saturn"`, `"Mercury"` | `"KETU"` (works, case-insensitive), `"ke"`, `"Ke-tu"` |
 | `person1` / `person2` | Dict with full birth data | `{"date": ..., "time": ..., "latitude": ..., "longitude": ..., "timezone": ...}` (Western) or same without timezone (Vedic) | Separate top-level kwargs, missing time, partial dict |
@@ -243,7 +263,7 @@ Values are decimal hours. For the typed top-level `timezone=` kwarg, pass the IA
 |--------|---------|--------|---------|
 | UTC / London (winter) | `0` | Dubai | `4` |
 | London (summer, BST) | `1` | Karachi | `5` |
-| Berlin / Paris | `1` (winter) / `2` (summer) | Delhi / Mumbai (IST) | `5.5` |
+| Berlin / Paris | `1` (winter) / `2` (summer) | Delhi (IST) | `5.5` |
 | Istanbul | `3` | Kathmandu (NPT) | `5.75` |
 | Moscow | `3` | Dhaka | `6` |
 | Tehran | `3.5` (winter) / `4.5` (summer) | Bangkok | `7` |
@@ -253,7 +273,7 @@ Values are decimal hours. For the typed top-level `timezone=` kwarg, pass the IA
 | Denver (MST / MDT) | `-7` / `-6` | Auckland | `12` (winter) / `13` (summer) |
 | Los Angeles (PST / PDT) | `-8` / `-7` | Honolulu | `-10` |
 
-DST matters. If the birth date falls inside a daylight-saving window, use the summer / DST offset. For Vedic endpoints this is rarely an issue (most users are in India, fixed 5.5), but Western natal charts must respect DST at the time of birth.
+DST matters. If the birth date falls inside a daylight-saving window, use the summer / DST offset, or pass the IANA string from the location lookup and let the server resolve it. India observes no DST, so a fixed `5.5` is always right there; anywhere else, a natal chart must carry the offset in force at the time of birth.
 
 ## Astrology domain gotchas for LLMs
 
@@ -261,13 +281,13 @@ LLMs hallucinate confidently in this category. These are the specific traps you 
 
 - **Ayanamsa is server-side in Vedic.** LLMs default to tropical / Western math. Vedic endpoints apply sidereal Lahiri ayanamsa server-side. KP endpoints accept `ayanamsa` of `kp-newcomb` (default), `kp-old`, `lahiri`, or `custom`. Do not try to "correct" server output by subtracting ayanamsa in client code.
 - **Tithi count is 30, not 2.** 15 Shukla (waxing) plus 15 Krishna (waning). Older LLM training data conflates Purnima and Amavasya as single tithis. Our panchang response carries a `paksha` field (`"Shukla"` or `"Krishna"`) plus a tithi number, so there are 30 distinct tithis in a lunar month.
-- **Rahu and Ketu are shadow points, not planets.** They do not appear in a real ephemeris. Endpoints accept `node_type` of `true-node` or `mean-node` to select which calculation to use.
+- **Rahu and Ketu are shadow points, not planets.** They do not appear in a real ephemeris. Endpoints accept `node_type` of `"mean"` (smoothed mean node, traditional Vedic default) or `"true"` (osculating node with perturbation corrections) to select which calculation to use.
 - **Nakshatra count is 27.** Abhijit is sometimes treated as a 28th in some schools, but this API uses the standard 27. `roxy.vedic_astrology.list_nakshatras()` returns a list of length 27.
 - **Retrograde is per-planet, not global.** Natal chart planets and Vedic `meta` include `isRetrograde: bool` per planet. KP planet lists use `retrograde`. Never generate "Mercury retrograde globally" UI copy, check the specific planet in the response.
 - **Tarot reversals are a product choice.** `allow_reversals=False` on a tarot draw means no reversed cards in that draw, period. It is not cosmically meaningful, it is a config flag.
 - **Angel number lookup works for any positive integer.** Digit-root fallback covers non-canonical numbers. Do not generate validation logic that rejects anything other than `111` / `222` / `333`.
 - **Seed-based daily endpoints are DETERMINISTIC per `(seed, date)` pair.** Same seed plus same date returns the same reading. This is by design for push-notification consistency. Do not describe it as "cached" or retry on stale responses.
-- **Timezone affects Western calculations more than Vedic.** Western natal charts must respect DST at time of birth. Vedic endpoints default to IST (`5.5`) which is DST-free. Use `utcOffset` from the Location API response as your `timezone` kwarg, not the user's current clock.
+- **Timezone affects Western calculations more than Vedic.** Western natal charts must respect DST at time of birth. Vedic endpoints default to IST (`5.5`) which is DST-free. Use `utcOffset` from the Location API response as your `timezone` kwarg, not whatever clock the user is in right now.
 
 ## MCP equivalents
 
@@ -290,6 +310,7 @@ Use the SDK for typed Python apps. Use MCP for AI agents (Claude Desktop, Cursor
 - **Western `timezone` is required** as an IANA string (`"Asia/Kolkata"`, `"America/New_York"`, `"Europe/London"`, `"UTC"`); the server resolves it to the DST-correct offset for the chart date. Vedic endpoints accept an optional `timezone` (same form) that defaults to IST when omitted. The decimal-number form (`5.5`) is also accepted by the API, but only inside `person1`/`person2` dicts - the top-level `timezone=` kwarg is typed `str`.
 - **Errors raise `RoxyAPIError`.** Catch it and check `e.code`, `e.error`, and `e.status_code`.
 - **Switch on `code`, not `error`.** Codes are stable. Messages may change.
+- **List endpoints return a paginated envelope**, `{"total": ..., "limit": ..., "offset": ...}` plus a named list (`cities`, `crystals`, `hexagrams`, `symbols`), never a bare list. Pass `limit=` to widen a page; `list_hexagrams` defaults to 20 of 64.
 
 ## Links
 
