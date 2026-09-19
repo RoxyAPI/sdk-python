@@ -25,7 +25,7 @@ Test with curl:
     curl localhost:8001/dreams/symbol/water
     curl localhost:8001/angel-number/1111
     curl localhost:8001/vedic/nakshatras
-    curl localhost:8001/location/search?q=Mumbai
+    curl localhost:8001/location/search?q=London
     curl localhost:8001/usage
 """
 
@@ -88,7 +88,7 @@ async def handle_roxy_error(request, exc: RoxyAPIError):
 
 @app.get("/horoscope/{sign}")
 async def daily_horoscope(sign: str, lang: str | None = None):
-    """Daily horoscope for any zodiac sign. Supports 10 languages via ?lang= query param."""
+    """Daily horoscope for any zodiac sign. Pass ?lang= for a translated reading."""
     return await roxy.astrology.get_daily_horoscope_async(sign=sign, lang=lang)
 
 
@@ -97,7 +97,7 @@ class ChartRequest(BaseModel):
     time: str  # HH:MM:SS
     latitude: float
     longitude: float
-    timezone: float = 0.0  # UTC offset in hours (e.g., -5 for EST, 5.5 for IST)
+    timezone: str = "America/New_York"  # IANA name; the server resolves the DST-correct offset
 
 
 @app.post("/chart")

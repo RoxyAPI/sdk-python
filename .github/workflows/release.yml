@@ -28,7 +28,7 @@ jobs:
           # first release.
           fetch-depth: 0
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v10.1.0
         with:
           python-version: '3.12'
           enable-cache: true
@@ -71,7 +71,7 @@ jobs:
 
       - name: Typecheck
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
-        run: uv run mypy src/roxy_sdk/__init__.py
+        run: uv run mypy
 
       - name: Test
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'

@@ -91,11 +91,11 @@ Get your API key at [roxyapi.com/pricing](https://roxyapi.com/pricing). Free tes
 | Tarot | `roxy.tarot` | 10 | Tarot reading API with the complete 78-card Rider-Waite-Smith deck and card meanings for love, career, health, and sp... |
 | Biorhythm | `roxy.biorhythm` | 6 | The most complete biorhythm API: 10 cycle types across 3 primary (physical, emotional, intellectual), 4 secondary (in... |
 | Ayurveda | `roxy.ayurveda` | 8 | Ayurveda API for dosha profiles, the dinacharya daily routine and the ritucharya seasonal regimen, with a verse cited... |
-| I Ching | `roxy.iching` | 9 | I-Ching oracle API with all 64 hexagrams, 384 changing lines, 8 trigrams, and modern interpretations for love, career... |
-| Crystals | `roxy.crystals` | 12 | Crystal healing API covering the most popular and widely-searched healing crystals and gemstones, from Amethyst and R... |
+| I-Ching | `roxy.iching` | 9 | I-Ching oracle API with all 64 hexagrams, 384 changing lines, 8 trigrams, and modern interpretations for love, career... |
+| Crystals and Healing Stones | `roxy.crystals` | 12 | Crystal healing API covering the most popular and widely-searched healing crystals and gemstones, from Amethyst and R... |
 | Dreams | `roxy.dreams` | 5 | Dream interpretation API with a 2,000+ symbol dream dictionary and psychological meanings covering animals, objects,... |
 | Angel Numbers | `roxy.angel_numbers` | 4 | Angel numbers API with meanings for 111, 222, 333, 444, 555, 666, 777, 888, 999, 1111, and 75+ sequences covering eve... |
-| Location | `roxy.location` | 3 | Timezone and location API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude... |
+| Location and Timezone | `roxy.location` | 3 | Timezone and location API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude... |
 | Usage | `roxy.usage` | 1 | Monitor your API usage, check rate limits, and track request consumption |
 | Languages | `roxy.languages` | 2 | List the response languages accepted by the `lang` query parameter on every i18n-aware endpoint |
 <!-- END:DOMAINS -->

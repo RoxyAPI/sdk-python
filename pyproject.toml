@@ -1,5 +1,5 @@
 [build-system]
-requires = ["uv_build>=0.11.6,<0.12"]
+requires = ["uv_build>=0.11.6,<0.13"]
 build-backend = "uv_build"
 
 [project]
@@ -44,6 +44,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
 
@@ -51,11 +52,6 @@ classifiers = [
 Homepage = "https://roxyapi.com"
 Repository = "https://github.com/RoxyAPI/sdk-python"
 Documentation = "https://roxyapi.com/docs"
-
-[tool.uv.build-backend]
-module-name = "roxy_sdk"
-module-root = "src"
-source-exclude = ["**/_generated/**", "**/__pycache__/**"]
 
 [dependency-groups]
 dev = [
@@ -69,14 +65,21 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-exclude = ["src/roxy_sdk/factory.py", "codegen.py"]
+# Generated output is never linted or formatted, also when a hook passes it explicitly.
+exclude = ["src/roxy_sdk/factory.py"]
+force-exclude = true
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.per-file-ignores]
+# The long lines are the factory.py lines the generator emits verbatim.
+"codegen.py" = ["E501"]
+
 [tool.mypy]
 python_version = "3.10"
 strict = true
+files = ["src/roxy_sdk", "codegen.py", "sync_docs.py", "generate.py", "tests/test_factory.py"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

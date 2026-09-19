@@ -1,25 +1,18 @@
 #!/usr/bin/env python3
 """
-Generate factory.py from OpenAPI spec.
+Generate factory.py from the OpenAPI spec.
 
-Reads specs/openapi.json and auto-generates src/roxy_sdk/factory.py with all
-domain namespace classes, Roxy aggregate, and create_roxy() factory.
+Reads specs/openapi.json and writes src/roxy_sdk/factory.py: the error type, the HTTP base
+class, one domain class per spec tag, the Roxy aggregate and create_roxy().
 
-The OpenAPI spec is the only source of truth for *which* tags exist and what
-endpoints belong to each. This file only configures how tag names map to
-public SDK namespaces:
-
-  1. Most tags derive their snake_case attribute and PascalCase class name
-     automatically, e.g. "Vedic Astrology" -> vedic_astrology / VedicAstrologyDomain,
-     "Numerology" -> numerology / NumerologyDomain, "Languages" -> languages /
-     LanguagesDomain. New tags need NO change here.
-  2. A handful of tags use a curated short-form for branding: the public SDK
-     exposes ``roxy.astrology``, not ``roxy.western_astrology``. Those overrides
-     live in NAMESPACE_ALIASES below.
-
-Adding a brand-new tag with a non-default short-form (e.g. "Crystals and Healing
-Stones" -> ``crystals``) is the only reason to touch this file. Otherwise
-codegen handles it.
+The spec is the only input. The namespace of a tag is the first segment of the URL path of
+its operations, snake_cased: /vedic-astrology/birth-chart -> roxy.vedic_astrology,
+/crystals/{id} -> roxy.crystals. The generator, the docs sync and the tests all derive it
+from the one walk in ``domains()``, so a new package in the spec needs no configuration
+anywhere in this repo. The walk fails loudly on anything it cannot map: an operation
+without an operationId or a tag, a tag whose operations sit under two path segments, a
+declared tag with no operations, an operation whose tag is not declared, and a path item
+key other than get or post.
 
 Run: python codegen.py
 """
@@ -28,54 +21,36 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
-SPEC_PATH = Path("specs/openapi.json")
-OUTPUT_PATH = Path("src/roxy_sdk/factory.py")
+ROOT = Path(__file__).resolve().parent
+SPEC_PATH = ROOT / "specs" / "openapi.json"
+OUTPUT_PATH = ROOT / "src" / "roxy_sdk" / "factory.py"
 
-# Curated short-form namespaces for product branding. Keys are exact tag names
-# from the OpenAPI spec; values are the desired snake_case attribute name on
-# the Roxy aggregate. The class name is derived from the attribute name (see
-# tag_to_class). Any tag not listed here uses snake_case(tag_name) automatically.
-NAMESPACE_ALIASES: dict[str, str] = {
-    "Western Astrology": "astrology",
-    "Crystals and Healing Stones": "crystals",
-    "Location and Timezone": "location",
-    "I-Ching": "iching",
-}
+HTTP_METHODS = ("get", "post")
 
 
-def _snake_case(name: str) -> str:
-    """Split on non-alphanumerics, lowercase, join with underscores."""
-    parts = [p for p in re.split(r"[^a-zA-Z0-9]+", str(name)) if p]
-    if not parts:
-        return str(name).lower()
-    return "_".join(p.lower() for p in parts)
+def fail(msg: str) -> NoReturn:
+    raise SystemExit(f"\n✗ {msg}\n")
 
 
-def tag_to_attr(name: str) -> str:
-    """Return the snake_case attribute name on the Roxy aggregate for a tag."""
-    return NAMESPACE_ALIASES.get(name, _snake_case(name))
+def path_namespace(path: str) -> str:
+    """The SDK namespace of an operation: its first URL segment, snake_cased."""
+    segment = next((s for s in path.split("/") if s), None)
+    if not segment:
+        fail(f"codegen: cannot derive a namespace from path {path!r}")
+    return segment.replace("-", "_")
 
 
-def tag_to_class(name: str) -> str:
-    """Return the PascalCase domain class name for a tag, suffixed with Domain."""
-    attr = tag_to_attr(name)
-    pascal = attr.title().replace("_", "")
-    return f"{pascal}Domain"
+def camel_to_snake(name: str) -> str:
+    s1 = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
+    return re.sub(r"([a-z\d])([A-Z])", r"\1_\2", s1).lower()
 
 
 def tag_summary(tag: dict[str, Any]) -> str:
-    """Extract a short, dev-facing summary from the spec's tag object.
-
-    Prefers ``x-sdk-summary`` if present (forward-compat for when the server adds
-    explicit SDK summaries per tag). Otherwise takes the first sentence of
-    ``description``, capped at ~120 chars.
-    """
-    sdk_summary = tag.get("x-sdk-summary")
-    if isinstance(sdk_summary, str) and sdk_summary.strip():
-        return sdk_summary.strip()
+    """First sentence of the tag description, capped at 120 chars, for docstrings and tables."""
     desc = (tag.get("description") or "").strip()
     if not desc:
         return str(tag.get("name") or "")
@@ -85,65 +60,97 @@ def tag_summary(tag: dict[str, Any]) -> str:
 
 
 def load_spec() -> dict[str, Any]:
-    """Read the spec written by generate.py's fetch_spec (honors ROXYAPI_SPEC_FILE upstream)."""
-    return json.loads(SPEC_PATH.read_text())
+    """Read the committed spec; generate.py is the only thing that ever writes it."""
+    spec: dict[str, Any] = json.loads(SPEC_PATH.read_text())
+    return spec
 
 
-def tag_index(spec: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    """Map tag name -> tag object, for description/summary lookups."""
-    return {t["name"]: t for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t}
+def resolve_ref(spec: dict[str, Any], ref: str) -> dict[str, Any]:
+    obj: Any = spec
+    for part in ref.lstrip("#/").split("/"):
+        obj = obj[part]
+    return dict(obj)
 
 
-def spec_tag_order(spec: dict[str, Any]) -> list[str]:
-    """Tag names in the order the spec declares them (the canonical domain order)."""
-    return [t["name"] for t in spec.get("tags", []) if isinstance(t, dict) and "name" in t]
+def extract_body(
+    spec: dict[str, Any], operation: dict[str, Any]
+) -> tuple[dict[str, Any], list[str]]:
+    """Request body properties and required fields, with one level of $ref resolved."""
+    rb = operation.get("requestBody", {})
+    if not rb:
+        return {}, []
+    schema = rb.get("content", {}).get("application/json", {}).get("schema", {})
+    if "$ref" in schema:
+        schema = resolve_ref(spec, schema["$ref"])
+    props = {}
+    for name, prop in schema.get("properties", {}).items():
+        if "$ref" in prop:
+            prop = resolve_ref(spec, prop["$ref"])
+        props[name] = prop
+    return props, list(schema.get("required", []))
 
 
-def group_by_tag(spec: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
-    """Bucket every operation by its first tag, walked once and shared by every consumer."""
-    domains: dict[str, list[dict[str, Any]]] = {}
+@dataclass(frozen=True)
+class Domain:
+    """One spec tag as the SDK exposes it: ``roxy.<attr>`` is a ``<class_name>`` instance."""
+
+    tag: str
+    attr: str
+    summary: str
+    operations: list[dict[str, Any]]
+
+    @property
+    def class_name(self) -> str:
+        return self.attr.title().replace("_", "") + "Domain"
+
+
+def domains(spec: dict[str, Any]) -> list[Domain]:
+    """Every declared tag with its operations, in the order the spec declares them.
+
+    The one walk of the spec that codegen, sync_docs and the tests share.
+    """
+    by_tag: dict[str, list[dict[str, Any]]] = {}
     for path, path_item in spec.get("paths", {}).items():
-        for http_method in ("get", "post"):
-            operation = path_item.get(http_method)
-            if not operation:
-                continue
-            tags = operation.get("tags", ["Other"])
-            tag = tags[0]
-            oid = operation.get("operationId", "")
-            if not oid:
-                continue
-
+        for key, operation in path_item.items():
+            if key not in HTTP_METHODS:
+                fail(f"codegen: {path} has a path item key {key!r} the generator does not handle")
+            oid = operation.get("operationId")
+            tags = operation.get("tags") or []
+            if not oid or not tags:
+                fail(f"codegen: {key.upper()} {path} has no operationId or no tag")
             body_props, body_req = extract_body(spec, operation)
-
-            domains.setdefault(tag, []).append(
+            by_tag.setdefault(tags[0], []).append(
                 {
                     "operationId": oid,
-                    "method": http_method,
+                    "method": key,
                     "path": path,
+                    "namespace": path_namespace(path),
                     "summary": operation.get("summary", ""),
                     "parameters": operation.get("parameters", []),
                     "body_properties": body_props,
                     "body_required_fields": body_req,
                 }
             )
-    return domains
+
+    result: list[Domain] = []
+    for tag in spec.get("tags", []):
+        name = tag["name"]
+        operations = by_tag.pop(name, None)
+        if not operations:
+            fail(f"codegen: tag {name!r} is declared but has no operations")
+        namespaces = sorted({op["namespace"] for op in operations})
+        if len(namespaces) != 1:
+            fail(
+                f"codegen: tag {name!r} maps to {len(namespaces)} path segments "
+                f"({', '.join(namespaces)}); expected exactly one"
+            )
+        result.append(Domain(name, namespaces[0], tag_summary(tag), operations))
+    if by_tag:
+        fail(f"codegen: operations carry undeclared tags: {', '.join(sorted(by_tag))}")
+    return result
 
 
-def ordered_tags_for(spec: dict[str, Any], domains: dict[str, list[Any]]) -> list[str]:
-    """Tags with operations, in spec order; brand-new tags not yet in the spec's own
-    tags[] array sort alphabetically after, so they still get a deterministic position."""
-    order = spec_tag_order(spec)
-    ordered = [t for t in order if t in domains]
-    ordered += sorted(t for t in domains if t not in order)
-    return ordered
-
-
-def camel_to_snake(name: str) -> str:
-    s1 = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
-    return re.sub(r"([a-z\d])([A-Z])", r"\1_\2", s1).lower()
-
-
-def json_type_to_python(schema: dict) -> str:
+def json_type_to_python(schema: dict[str, Any]) -> str:
     t = schema.get("type", "string")
     if t == "integer":
         return "int"
@@ -159,32 +166,7 @@ def json_type_to_python(schema: dict) -> str:
     return "str"
 
 
-def resolve_ref(spec: dict, ref: str) -> dict:
-    parts = ref.lstrip("#/").split("/")
-    obj = spec
-    for part in parts:
-        obj = obj[part]
-    return obj
-
-
-def extract_body(spec: dict, operation: dict) -> tuple[dict, list[str]]:
-    """Extract request body properties and required fields."""
-    rb = operation.get("requestBody", {})
-    if not rb:
-        return {}, []
-    content = rb.get("content", {}).get("application/json", {})
-    schema = content.get("schema", {})
-    if "$ref" in schema:
-        schema = resolve_ref(spec, schema["$ref"])
-    props = {}
-    for name, prop in schema.get("properties", {}).items():
-        if "$ref" in prop:
-            prop = resolve_ref(spec, prop["$ref"])
-        props[name] = prop
-    return props, schema.get("required", [])
-
-
-def build_method(op: dict) -> str:
+def build_method(op: dict[str, Any]) -> str:
     """Generate sync + async wrapper methods for one endpoint."""
     func = camel_to_snake(op["operationId"])
     http = op["method"]
@@ -280,18 +262,6 @@ def build_method(op: dict) -> str:
 
 def main() -> None:
     spec = load_spec()
-    tag_objects = tag_index(spec)
-    domains = group_by_tag(spec)
-
-    # Warn on stale NAMESPACE_ALIASES: aliases pointing at tags no longer in
-    # the spec. New tags are fine; they auto-derive via tag_to_attr / tag_to_class.
-    spec_tag_names = set(tag_objects) | set(domains)
-    for alias_tag in NAMESPACE_ALIASES:
-        if alias_tag not in spec_tag_names:
-            print(
-                f"WARNING: NAMESPACE_ALIASES entry '{alias_tag}' is stale: "
-                "no such tag in the OpenAPI spec. Remove it from codegen.py."
-            )
 
     # Write output
     out: list[str] = [
@@ -368,22 +338,13 @@ def main() -> None:
         "",
     ]
 
-    # Domain classes. Emit in spec tag order when available; fall back to
-    # alphabetical so brand-new endpoints get a deterministic position.
-    ordered_tags = ordered_tags_for(spec, domains)
-
-    domain_classes: list[tuple[str, str]] = []
-    for tag in ordered_tags:
-        class_name = tag_to_class(tag)
-        attr_name = tag_to_attr(tag)
-        summary = tag_summary(tag_objects.get(tag, {"name": tag}))
-        docstring = summary or f"{tag} endpoints."
-        domain_classes.append((class_name, attr_name))
+    all_domains = domains(spec)
+    for domain in all_domains:
         out.append("")
-        out.append(f"class {class_name}(_BaseDomain):")
-        out.append(f'    """{docstring}"""')
+        out.append(f"class {domain.class_name}(_BaseDomain):")
+        out.append(f'    """{domain.summary}"""')
         out.append("")
-        for op in sorted(domains[tag], key=lambda x: x["operationId"]):
+        for op in sorted(domain.operations, key=lambda x: x["operationId"]):
             out.append(build_method(op))
 
     # Roxy class
@@ -413,8 +374,10 @@ def main() -> None:
     out.append(
         "        self._async_client = httpx.AsyncClient(base_url=base_url, headers=headers, timeout=timeout)"
     )
-    for cn, an in domain_classes:
-        out.append(f"        self.{an} = {cn}(self._client, self._async_client)")
+    for domain in all_domains:
+        out.append(
+            f"        self.{domain.attr} = {domain.class_name}(self._client, self._async_client)"
+        )
     out.append("")
     out.append("    def close(self) -> None:")
     out.append('        """Close sync HTTP connections."""')
@@ -460,7 +423,7 @@ def main() -> None:
     out.append("")
 
     OUTPUT_PATH.write_text("\n".join(out))
-    print(f"Generated {OUTPUT_PATH} ({len(out)} lines)")
+    print(f"Generated {OUTPUT_PATH.relative_to(ROOT)} ({len(out)} lines)")
 
 
 if __name__ == "__main__":

@@ -1,135 +1,165 @@
-"""Unit tests for the SDK factory wrapper."""
+"""The generated surface mirrors the committed spec, and the client sends what the API expects.
+
+Offline. The HTTP layer is stubbed at Client.send and AsyncClient.send, so every request is
+seen exactly as it would leave the process: base URL merged, headers merged, body encoded.
+"""
+
+from __future__ import annotations
 
 import inspect
+import json
+import re
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any
 
+import httpx
 import pytest
 
-from roxy_sdk import Roxy, RoxyAPIError, create_roxy
+import roxy_sdk
+from codegen import ROOT, camel_to_snake, domains, load_spec
+from roxy_sdk import Roxy, RoxyAPIError, __version__, create_roxy
+
+DOMAINS = domains(load_spec())
+OPERATIONS = [(domain, op) for domain in DOMAINS for op in domain.operations]
 
 
-def test_create_roxy_returns_roxy_instance():
-    roxy = create_roxy("test-key")
-    assert isinstance(roxy, Roxy)
-    roxy.close()
+def spec_kwargs(op: dict[str, Any]) -> list[str]:
+    """The keyword arguments the generator owes an operation: path params, body properties,
+    query params, with `lang` last."""
+    params = op["parameters"]
+    names = [p["name"] for p in params if p["in"] == "path"]
+    names += list(op["body_properties"])
+    names += [p["name"] for p in params if p["in"] == "query" and p["name"] != "lang"]
+    if any(p["name"] == "lang" for p in params):
+        names.append("lang")
+    return [camel_to_snake(n) for n in names]
 
 
-def test_roxy_has_all_domains():
-    roxy = create_roxy("test-key")
-    for domain in [
-        "astrology",
-        "vedic_astrology",
-        "tarot",
-        "numerology",
-        "iching",
-        "crystals",
-        "angel_numbers",
-        "dreams",
-        "biorhythm",
-        "location",
-        "usage",
-    ]:
-        assert hasattr(roxy, domain), f"Missing domain: {domain}"
-    roxy.close()
+def test_every_operation_is_a_method_on_the_namespace_of_its_path() -> None:
+    assert len(OPERATIONS) > 200
+    roxy = Roxy("test-key")
+    assert {a for a in vars(roxy) if not a.startswith("_")} == {d.attr for d in DOMAINS}
+    for domain, op in OPERATIONS:
+        name = camel_to_snake(op["operationId"])
+        namespace = getattr(roxy, domain.attr)
+        sync = getattr(namespace, name, None)
+        asynchronous = getattr(namespace, f"{name}_async", None)
+        assert callable(sync) and not inspect.iscoroutinefunction(sync), f"{domain.attr}.{name}"
+        assert inspect.iscoroutinefunction(asynchronous), f"{domain.attr}.{name}_async"
 
 
-def test_sdk_header_is_set():
-    roxy = create_roxy("test-key")
-    headers = dict(roxy._client.headers)
-    assert "x-sdk-client" in headers
-    assert headers["x-sdk-client"].startswith("roxy-sdk-python/")
-    roxy.close()
+def test_every_method_takes_exactly_the_kwargs_of_its_operation() -> None:
+    roxy = Roxy("test-key")
+    for domain, op in OPERATIONS:
+        name = camel_to_snake(op["operationId"])
+        for suffix in ("", "_async"):
+            method = getattr(getattr(roxy, domain.attr), name + suffix)
+            params = inspect.signature(method).parameters.values()
+            assert all(p.kind is p.KEYWORD_ONLY for p in params), f"roxy.{domain.attr}.{name}"
+            assert [p.name for p in params] == spec_kwargs(op), f"roxy.{domain.attr}.{name}"
 
 
-def test_api_key_header_is_set():
-    roxy = create_roxy("my-secret-key")
-    headers = dict(roxy._client.headers)
-    assert headers["x-api-key"] == "my-secret-key"
-    roxy.close()
+def test_version_is_one_value() -> None:
+    pyproject = (ROOT / "pyproject.toml").read_text()
+    match = re.search(r'^version = "(.+?)"', pyproject, re.M)
+    assert match and match.group(1) == __version__
 
 
-def test_empty_api_key_raises():
+def test_agent_guide_ships_inside_the_package() -> None:
+    packaged = ROOT / "src" / "roxy_sdk" / "AGENTS.md"
+    assert packaged.read_text() == (ROOT / "AGENTS.md").read_text()
+    assert packaged.parent.samefile(ROOT / "src" / roxy_sdk.__name__)
+
+
+@dataclass
+class Recorder:
+    """Stands in for the network: records every request and answers with the queued response."""
+
+    response: httpx.Response
+    requests: list[httpx.Request] = field(default_factory=list)
+
+    def answer(self, request: httpx.Request) -> httpx.Response:
+        self.requests.append(request)
+        self.response.request = request
+        return self.response
+
+
+@pytest.fixture
+def stub(monkeypatch: pytest.MonkeyPatch) -> Callable[[httpx.Response], Recorder]:
+    def install(response: httpx.Response) -> Recorder:
+        recorder = Recorder(response)
+
+        def send(self: httpx.Client, request: httpx.Request, **kw: Any) -> httpx.Response:
+            return recorder.answer(request)
+
+        async def send_async(
+            self: httpx.AsyncClient, request: httpx.Request, **kw: Any
+        ) -> httpx.Response:
+            return recorder.answer(request)
+
+        monkeypatch.setattr(httpx.Client, "send", send)
+        monkeypatch.setattr(httpx.AsyncClient, "send", send_async)
+        return recorder
+
+    return install
+
+
+def test_get_sends_the_key_and_sdk_headers_to_the_production_base_url(
+    stub: Callable[[httpx.Response], Recorder],
+) -> None:
+    recorder = stub(httpx.Response(200, json={"sign": "Aries"}))
+    with create_roxy("test-key") as roxy:
+        result = roxy.astrology.get_daily_horoscope(sign="aries", lang="es")
+    assert result == {"sign": "Aries"}
+    (request,) = recorder.requests
+    assert request.method == "GET"
+    assert str(request.url) == "https://roxyapi.com/api/v2/astrology/horoscope/aries/daily?lang=es"
+    assert request.headers["X-API-Key"] == "test-key"
+    assert request.headers["X-SDK-Client"] == f"roxy-sdk-python/{__version__}"
+    assert request.headers["Accept"] == "application/json"
+    assert roxy._client.is_closed
+
+
+async def test_post_sends_only_the_given_kwargs_as_json(
+    stub: Callable[[httpx.Response], Recorder],
+) -> None:
+    recorder = stub(httpx.Response(200, json={"card": {"name": "The Fool"}}))
+    async with create_roxy("test-key", base_url="http://localhost:3000/api/v2") as roxy:
+        result = await roxy.tarot.get_daily_card_async(seed="user-42")
+    assert result["card"]["name"] == "The Fool"
+    (request,) = recorder.requests
+    assert request.method == "POST"
+    assert str(request.url) == "http://localhost:3000/api/v2/tarot/daily"
+    assert request.headers["Content-Type"] == "application/json"
+    assert request.headers["X-SDK-Client"] == f"roxy-sdk-python/{__version__}"
+    assert json.loads(request.content) == {"seed": "user-42"}
+    assert roxy._async_client.is_closed
+
+
+def test_an_api_error_raises_with_the_stable_code(
+    stub: Callable[[httpx.Response], Recorder],
+) -> None:
+    stub(httpx.Response(401, json={"error": "API key required", "code": "api_key_required"}))
+    with pytest.raises(RoxyAPIError) as raised:
+        create_roxy("test-key").usage.get_usage_stats()
+    assert raised.value.status_code == 401
+    assert raised.value.code == "api_key_required"
+    assert raised.value.error == "API key required"
+    assert "api_key_required" in str(raised.value)
+
+
+def test_a_non_json_error_body_still_raises(stub: Callable[[httpx.Response], Recorder]) -> None:
+    stub(httpx.Response(502, text="Bad Gateway"))
+    with pytest.raises(RoxyAPIError) as raised:
+        create_roxy("test-key").usage.get_usage_stats()
+    assert (raised.value.status_code, raised.value.code, raised.value.error) == (
+        502,
+        "unknown",
+        "Bad Gateway",
+    )
+
+
+def test_an_empty_key_is_rejected_before_any_request() -> None:
     with pytest.raises(ValueError, match="API key is required"):
         create_roxy("")
-
-
-def test_custom_base_url():
-    roxy = create_roxy("test-key", base_url="http://localhost:3000/api/v2")
-    assert "localhost:3000/api/v2" in str(roxy._client.base_url)
-    roxy.close()
-
-
-def test_context_manager():
-    with create_roxy("test-key") as roxy:
-        assert isinstance(roxy, Roxy)
-
-
-def test_repr():
-    roxy = create_roxy("test-key")
-    assert "roxyapi.com" in repr(roxy)
-    roxy.close()
-
-
-def test_roxy_api_error_attributes():
-    err = RoxyAPIError(error="Bad request", code="validation_error", status_code=400)
-    assert err.error == "Bad request"
-    assert err.code == "validation_error"
-    assert err.status_code == 400
-    assert "validation_error" in str(err)
-
-
-def test_version_exported():
-    import roxy_sdk
-
-    assert hasattr(roxy_sdk, "__version__")
-    assert isinstance(roxy_sdk.__version__, str)
-
-
-def test_async_methods_exist():
-    roxy = create_roxy("test-key")
-    assert inspect.iscoroutinefunction(roxy.astrology.get_daily_horoscope_async)
-    assert inspect.iscoroutinefunction(roxy.tarot.draw_cards_async)
-    assert inspect.iscoroutinefunction(roxy.numerology.calculate_life_path_async)
-    assert inspect.iscoroutinefunction(roxy.iching.cast_reading_async)
-    assert inspect.iscoroutinefunction(roxy.crystals.list_crystals_async)
-    assert inspect.iscoroutinefunction(roxy.angel_numbers.list_angel_numbers_async)
-    assert inspect.iscoroutinefunction(roxy.dreams.search_dream_symbols_async)
-    assert inspect.iscoroutinefunction(roxy.biorhythm.get_daily_biorhythm_async)
-    assert inspect.iscoroutinefunction(roxy.location.search_cities_async)
-    assert inspect.iscoroutinefunction(roxy.usage.get_usage_stats_async)
-    roxy.close()
-
-
-def test_sync_methods_are_not_coroutines():
-    roxy = create_roxy("test-key")
-    assert not inspect.iscoroutinefunction(roxy.astrology.get_daily_horoscope)
-    assert not inspect.iscoroutinefunction(roxy.tarot.draw_cards)
-    assert not inspect.iscoroutinefunction(roxy.numerology.calculate_life_path)
-    roxy.close()
-
-
-def test_domain_method_count():
-    roxy = create_roxy("test-key")
-    mins = {
-        "astrology": 20,
-        "vedic_astrology": 30,
-        "tarot": 8,
-        "numerology": 10,
-        "iching": 7,
-        "crystals": 10,
-        "angel_numbers": 3,
-        "dreams": 4,
-        "biorhythm": 5,
-        "location": 2,
-        "usage": 1,
-    }
-    for domain_name, min_count in mins.items():
-        domain = getattr(roxy, domain_name)
-        methods = [
-            m
-            for m in dir(domain)
-            if not m.startswith("_") and not m.endswith("_async") and callable(getattr(domain, m))
-        ]
-        assert len(methods) >= min_count, (
-            f"{domain_name} has {len(methods)}, expected >= {min_count}"
-        )
-    roxy.close()

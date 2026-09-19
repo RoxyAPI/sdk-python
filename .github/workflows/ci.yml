@@ -15,11 +15,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v7
+      # setup-uv publishes no floating major tag after v7, so this is the full version, which
+      # dependabot tracks; a bare @v7 froze at 7.6.0 and never moved again.
+      - uses: astral-sh/setup-uv@v10.1.0
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
@@ -28,7 +30,7 @@ jobs:
 
       # Hermetic: regenerates from the committed spec, so this verifies that the committed
       # generated code and docs still reproduce from it, with no network dependency.
-      # Refreshing the spec itself is the release workflow's job. generate.py also runs
+      # Refreshing the spec itself is the job of the release workflow. generate.py also runs
       # sync_docs.py, so README/AGENTS are asserted in the same diff rather than a second run.
       - name: Codegen drift check
         if: matrix.python == '3.12'
@@ -45,7 +47,16 @@ jobs:
 
       - name: Typecheck
         if: matrix.python == '3.12'
-        run: uv run mypy src/roxy_sdk/__init__.py
+        run: uv run mypy
 
       - name: Test
         run: uv run pytest tests/test_factory.py -v
+
+      # The wheel is what a customer installs: the typed marker and the agent guide must be in it.
+      - name: Wheel ships the package, the typed marker and the agent guide
+        if: matrix.python == '3.12'
+        run: |
+          uv build
+          for f in roxy_sdk/factory.py roxy_sdk/py.typed roxy_sdk/AGENTS.md; do
+            unzip -l dist/*.whl | grep -q " $f\$" || { echo "wheel is missing $f"; exit 1; }
+          done

@@ -1,11 +1,5 @@
 # Maintainer-only (not published)
 CLAUDE.md
-TODO.md
-test_import.py
-openapi-python-client.toml
-
-# Generated typed models (excluded from wheel, regenerated locally)
-src/roxy_sdk/_generated/
 
 # Environment / secrets
 .env
