@@ -1037,7 +1037,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/planets", body, params=params or None)
 
-    def get_upcoming_moon_phases(self, *, start_date: str | None = None, count: float | None = None, lang: str | None = None) -> Any:
+    def get_upcoming_moon_phases(self, *, start_date: str | None = None, count: int | None = None, lang: str | None = None) -> Any:
         """Get upcoming moon phases - Next new moon, full moon, quarters"""
         params: dict[str, Any] = {}
         if lang is not None:
@@ -1048,7 +1048,7 @@ class AstrologyDomain(_BaseDomain):
             params["count"] = count
         return self._get(f"/astrology/moon-phase/upcoming", params=params or None)
 
-    async def get_upcoming_moon_phases_async(self, *, start_date: str | None = None, count: float | None = None, lang: str | None = None) -> Any:
+    async def get_upcoming_moon_phases_async(self, *, start_date: str | None = None, count: int | None = None, lang: str | None = None) -> Any:
         """Get upcoming moon phases - Next new moon, full moon, quarters (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
@@ -1081,7 +1081,7 @@ class AstrologyDomain(_BaseDomain):
             params["timezone"] = timezone
         return await self._get_async(f"/astrology/horoscope/{sign}/weekly", params=params or None)
 
-    def get_yearly_horoscope(self, *, sign: str, year: float | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
+    def get_yearly_horoscope(self, *, sign: str, year: int | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
         """Yearly horoscope by zodiac sign - Year ahead forecast with themes, key periods, eclipses and retrogrades"""
         params: dict[str, Any] = {}
         if lang is not None:
@@ -1092,7 +1092,7 @@ class AstrologyDomain(_BaseDomain):
             params["timezone"] = timezone
         return self._get(f"/astrology/horoscope/{sign}/yearly", params=params or None)
 
-    async def get_yearly_horoscope_async(self, *, sign: str, year: float | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
+    async def get_yearly_horoscope_async(self, *, sign: str, year: int | None = None, timezone: str | None = None, lang: str | None = None) -> Any:
         """Yearly horoscope by zodiac sign - Year ahead forecast with themes, key periods, eclipses and retrogrades (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
@@ -3719,7 +3719,7 @@ class ChineseAstrologyDomain(_BaseDomain):
             params["timezone"] = timezone
         return await self._get_async(f"/chinese-astrology/zodiac/{id}/daily", params=params or None)
 
-    def get_monthly_almanac(self, *, year: float | None = None, month: float | None = None, lang: str | None = None) -> Any:
+    def get_monthly_almanac(self, *, year: int | None = None, month: int | None = None, lang: str | None = None) -> Any:
         """Get a month of almanac days - Chinese calendar month view API"""
         params: dict[str, Any] = {}
         if lang is not None:
@@ -3730,7 +3730,7 @@ class ChineseAstrologyDomain(_BaseDomain):
             params["month"] = month
         return self._get(f"/chinese-astrology/calendar/monthly", params=params or None)
 
-    async def get_monthly_almanac_async(self, *, year: float | None = None, month: float | None = None, lang: str | None = None) -> Any:
+    async def get_monthly_almanac_async(self, *, year: int | None = None, month: int | None = None, lang: str | None = None) -> Any:
         """Get a month of almanac days - Chinese calendar month view API (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
@@ -5677,7 +5677,7 @@ class TarotDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/tarot/yes-no", body, params=params or None)
 
-    def draw_cards(self, *, count: float, seed: str | None = None, allow_reversals: bool | None = None, allow_duplicates: bool | None = None, lang: str | None = None) -> Any:
+    def draw_cards(self, *, count: int, seed: str | None = None, allow_reversals: bool | None = None, allow_duplicates: bool | None = None, lang: str | None = None) -> Any:
         """Draw tarot cards - Seeded tarot draw API"""
         body: dict[str, Any] = {}
         body["count"] = count
@@ -5692,7 +5692,7 @@ class TarotDomain(_BaseDomain):
             params["lang"] = lang
         return self._post(f"/tarot/draw", body, params=params or None)
 
-    async def draw_cards_async(self, *, count: float, seed: str | None = None, allow_reversals: bool | None = None, allow_duplicates: bool | None = None, lang: str | None = None) -> Any:
+    async def draw_cards_async(self, *, count: int, seed: str | None = None, allow_reversals: bool | None = None, allow_duplicates: bool | None = None, lang: str | None = None) -> Any:
         """Draw tarot cards - Seeded tarot draw API (async)"""
         body: dict[str, Any] = {}
         body["count"] = count
@@ -6583,14 +6583,14 @@ class DreamsDomain(_BaseDomain):
         """Get dream symbol by id - Dream interpretation API (async)"""
         return await self._get_async(f"/dreams/symbols/{id}")
 
-    def get_random_symbols(self, *, count: float | None = None) -> Any:
+    def get_random_symbols(self, *, count: int | None = None) -> Any:
         """Random dream symbols - Dream symbol discovery API"""
         params: dict[str, Any] = {}
         if count is not None:
             params["count"] = count
         return self._get(f"/dreams/symbols/random", params=params or None)
 
-    async def get_random_symbols_async(self, *, count: float | None = None) -> Any:
+    async def get_random_symbols_async(self, *, count: int | None = None) -> Any:
         """Random dream symbols - Dream symbol discovery API (async)"""
         params: dict[str, Any] = {}
         if count is not None:
