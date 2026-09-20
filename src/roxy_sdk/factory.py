@@ -1147,7 +1147,7 @@ class AstrologyDomain(_BaseDomain):
 
 
 class VedicAstrologyDomain(_BaseDomain):
-    """Vedic astrology (Jyotish) and KP API for kundli generation with 15 divisional charts (D1-D60), panchang with choghadi..."""
+    """Vedic astrology (Jyotish) and KP API for kundli generation with the sixteen Shodasavarga divisional charts (D1 to D60..."""
 
     def calculate_arudha_padas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, lang: str | None = None) -> Any:
         """Get the twelve Arudha padas - Arudha Lagna Calculator API"""
@@ -1327,6 +1327,34 @@ class VedicAstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/vedic-astrology/chara-karakas", body, params=params or None)
 
+    def calculate_dashakoot(self, *, person1: dict[str, Any], person2: dict[str, Any], ayanamsa: str | None = None, ayanamsa_value: float | None = None, lang: str | None = None) -> Any:
+        """Calculate ten porutham match - Dashakoot South Indian Kundli Matching API"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/compatibility/dashakoot", body, params=params or None)
+
+    async def calculate_dashakoot_async(self, *, person1: dict[str, Any], person2: dict[str, Any], ayanamsa: str | None = None, ayanamsa_value: float | None = None, lang: str | None = None) -> Any:
+        """Calculate ten porutham match - Dashakoot South Indian Kundli Matching API (async)"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/compatibility/dashakoot", body, params=params or None)
+
     def calculate_drishti(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
         """Get planetary aspects (Drishti) - Mutual aspects between all planets"""
         body: dict[str, Any] = {}
@@ -1380,6 +1408,34 @@ class VedicAstrologyDomain(_BaseDomain):
         if lang is not None:
             params["lang"] = lang
         return await self._post_async(f"/vedic-astrology/compatibility", body, params=params or None)
+
+    def calculate_papasamyam(self, *, person1: dict[str, Any], person2: dict[str, Any], ayanamsa: str | None = None, ayanamsa_value: float | None = None, lang: str | None = None) -> Any:
+        """Compare malefic affliction - Papasamyam Kundli Matching API"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/compatibility/papasamyam", body, params=params or None)
+
+    async def calculate_papasamyam_async(self, *, person1: dict[str, Any], person2: dict[str, Any], ayanamsa: str | None = None, ayanamsa_value: float | None = None, lang: str | None = None) -> Any:
+        """Compare malefic affliction - Papasamyam Kundli Matching API (async)"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/compatibility/papasamyam", body, params=params or None)
 
     def calculate_parallels(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, orb: float | None = None) -> Any:
         """Declination Parallels - Planets at same or opposite declination"""
