@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://roxyapi.com">
-    <img src="https://raw.githubusercontent.com/RoxyAPI/sdk-python/main/assets/hero.png" alt="RoxyAPI Python SDK: the Spiritual OS layer for agentic AI. One key, flat pricing." width="100%">
+    <img src="https://raw.githubusercontent.com/RoxyAPI/sdk-python/main/assets/hero.png" alt="RoxyAPI Python SDK, sync and async. The Spiritual OS layer for agentic AI. One key, flat pricing." width="100%">
   </a>
 </p>
 
