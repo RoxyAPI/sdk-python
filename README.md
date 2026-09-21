@@ -427,12 +427,12 @@ sequence = roxy.angel_numbers.analyze_number_sequence(number="4242")
 ## Built for AI agents (Claude Code, Cursor, Copilot, Codex, Gemini CLI)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/RoxyAPI/sdk-python/main/assets/agents.png" alt="Built for Cursor, Claude, Copilot, Codex. AGENTS.md ships in site-packages, remote MCP, no local setup." width="100%">
+  <img src="https://raw.githubusercontent.com/RoxyAPI/sdk-python/main/assets/agents.png" alt="Your coding agent already knows the API. Built for AI agents, Remote MCP, no local setup." width="100%">
 </p>
 
 This package ships `AGENTS.md` bundled alongside the source so AI coding agents can read the SDK patterns, common tasks, and gotchas directly from `site-packages/`.
 
-Prefer MCP? Every domain has a [remote MCP server](https://roxyapi.com/docs/mcp) at `https://roxyapi.com/mcp/{domain}` (Streamable HTTP, no stdio, no self-hosting). One-line Claude Code setup:
+Prefer MCP? Every domain has a [Remote MCP server](https://roxyapi.com/docs/mcp) at `https://roxyapi.com/mcp/{domain}` (Streamable HTTP, no stdio, no self-hosting). One-line Claude Code setup:
 
 ```bash
 claude mcp add-json --scope user roxy-astrology \
