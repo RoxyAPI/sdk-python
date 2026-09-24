@@ -2011,7 +2011,7 @@ class VedicAstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/vedic-astrology/panchang/detailed", body, params=params or None)
 
-    def get_ecliptic_crossings(self, *, year: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    def get_ecliptic_crossings(self, *, year: int, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Ecliptic Crossings - When planets cross the ecliptic plane"""
         body: dict[str, Any] = {}
         body["year"] = year
@@ -2019,9 +2019,12 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return self._post(f"/vedic-astrology/ecliptic-crossings", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/vedic-astrology/ecliptic-crossings", body, params=params or None)
 
-    async def get_ecliptic_crossings_async(self, *, year: int, timezone: str | None = None, coordinate_system: str | None = None) -> Any:
+    async def get_ecliptic_crossings_async(self, *, year: int, timezone: str | None = None, coordinate_system: str | None = None, lang: str | None = None) -> Any:
         """Ecliptic Crossings - When planets cross the ecliptic plane (async)"""
         body: dict[str, Any] = {}
         body["year"] = year
@@ -2029,7 +2032,10 @@ class VedicAstrologyDomain(_BaseDomain):
             body["timezone"] = timezone
         if coordinate_system is not None:
             body["coordinateSystem"] = coordinate_system
-        return await self._post_async(f"/vedic-astrology/ecliptic-crossings", body)
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/vedic-astrology/ecliptic-crossings", body, params=params or None)
 
     def get_heliacal_visibility(self, *, date: str, latitude: float, longitude: float, timezone: str | None = None) -> Any:
         """Heliacal rising and setting (udaya and asta) - Graha Asta Calculator API"""
