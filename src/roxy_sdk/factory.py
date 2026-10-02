@@ -4817,10 +4817,10 @@ class VastuDomain(_BaseDomain):
 
 
 class NumerologyDomain(_BaseDomain):
-    """Numerology API to calculate life path, expression, soul urge, personality, and maturity numbers, with Pinnacle and Ch..."""
+    """Numerology API for life path numbers, complete numerology charts and compatibility, in both Pythagorean and Chaldean..."""
 
     def analyze_karmic_lessons(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Analyze Karmic Lessons - Life lessons from missing numbers"""
+        """Analyze Karmic Lessons - Missing numbers numerology API"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -4829,7 +4829,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/karmic-lessons", body, params=params or None)
 
     async def analyze_karmic_lessons_async(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Analyze Karmic Lessons - Life lessons from missing numbers (async)"""
+        """Analyze Karmic Lessons - Missing numbers numerology API (async)"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -4838,7 +4838,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/karmic-lessons", body, params=params or None)
 
     def calculate_birth_day(self, *, day: int, lang: str | None = None) -> Any:
-        """Calculate Birth Day number - Special talents from day of birth"""
+        """Calculate Birth Day number - Birthday numerology API"""
         body: dict[str, Any] = {}
         body["day"] = day
         params: dict[str, Any] = {}
@@ -4847,7 +4847,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/birth-day", body, params=params or None)
 
     async def calculate_birth_day_async(self, *, day: int, lang: str | None = None) -> Any:
-        """Calculate Birth Day number - Special talents from day of birth (async)"""
+        """Calculate Birth Day number - Birthday numerology API (async)"""
         body: dict[str, Any] = {}
         body["day"] = day
         params: dict[str, Any] = {}
@@ -4856,7 +4856,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/birth-day", body, params=params or None)
 
     def calculate_bridge_numbers(self, *, full_name: str, year: int, month: int, day: int, lang: str | None = None) -> Any:
-        """Calculate Bridge Numbers - Harmonize different aspects of personality"""
+        """Calculate Bridge Numbers - Numerology bridge numbers API"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         body["year"] = year
@@ -4868,7 +4868,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/bridge", body, params=params or None)
 
     async def calculate_bridge_numbers_async(self, *, full_name: str, year: int, month: int, day: int, lang: str | None = None) -> Any:
-        """Calculate Bridge Numbers - Harmonize different aspects of personality (async)"""
+        """Calculate Bridge Numbers - Numerology bridge numbers API (async)"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         body["year"] = year
@@ -4880,7 +4880,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/bridge", body, params=params or None)
 
     def calculate_business_name(self, *, name: str, lang: str | None = None) -> Any:
-        """Business name numerology - Chaldean brand name analysis and lucky numbers"""
+        """Calculate business name numerology - Brand name numerology API"""
         body: dict[str, Any] = {}
         body["name"] = name
         params: dict[str, Any] = {}
@@ -4889,7 +4889,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/business-name", body, params=params or None)
 
     async def calculate_business_name_async(self, *, name: str, lang: str | None = None) -> Any:
-        """Business name numerology - Chaldean brand name analysis and lucky numbers (async)"""
+        """Calculate business name numerology - Brand name numerology API (async)"""
         body: dict[str, Any] = {}
         body["name"] = name
         params: dict[str, Any] = {}
@@ -4898,7 +4898,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/business-name", body, params=params or None)
 
     def calculate_chaldean(self, *, name: str, lang: str | None = None) -> Any:
-        """Chaldean numerology name reading - Destiny, compound number, planetary ruler"""
+        """Calculate Chaldean numerology - Chaldean name number calculator API"""
         body: dict[str, Any] = {}
         body["name"] = name
         params: dict[str, Any] = {}
@@ -4907,7 +4907,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/chaldean", body, params=params or None)
 
     async def calculate_chaldean_async(self, *, name: str, lang: str | None = None) -> Any:
-        """Chaldean numerology name reading - Destiny, compound number, planetary ruler (async)"""
+        """Calculate Chaldean numerology - Chaldean name number calculator API (async)"""
         body: dict[str, Any] = {}
         body["name"] = name
         params: dict[str, Any] = {}
@@ -4916,7 +4916,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/chaldean", body, params=params or None)
 
     def calculate_dual(self, *, name: str, lang: str | None = None) -> Any:
-        """Dual numerology - Pythagorean and Chaldean name numbers in one call"""
+        """Calculate dual numerology - Pythagorean and Chaldean name number API"""
         body: dict[str, Any] = {}
         body["name"] = name
         params: dict[str, Any] = {}
@@ -4925,7 +4925,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/dual", body, params=params or None)
 
     async def calculate_dual_async(self, *, name: str, lang: str | None = None) -> Any:
-        """Dual numerology - Pythagorean and Chaldean name numbers in one call (async)"""
+        """Calculate dual numerology - Pythagorean and Chaldean name number API (async)"""
         body: dict[str, Any] = {}
         body["name"] = name
         params: dict[str, Any] = {}
@@ -4934,7 +4934,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/dual", body, params=params or None)
 
     def calculate_expression(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Calculate Expression number - Natural talents and life goals"""
+        """Calculate Expression number - Destiny number calculator API"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -4943,7 +4943,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/expression", body, params=params or None)
 
     async def calculate_expression_async(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Calculate Expression number - Natural talents and life goals (async)"""
+        """Calculate Expression number - Destiny number calculator API (async)"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -4952,7 +4952,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/expression", body, params=params or None)
 
     def calculate_life_path(self, *, year: int, month: int, day: int, lang: str | None = None) -> Any:
-        """Calculate Life Path number - Most important numerology calculation"""
+        """Calculate Life Path number - Calculator and meaning API"""
         body: dict[str, Any] = {}
         body["year"] = year
         body["month"] = month
@@ -4963,7 +4963,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/life-path", body, params=params or None)
 
     async def calculate_life_path_async(self, *, year: int, month: int, day: int, lang: str | None = None) -> Any:
-        """Calculate Life Path number - Most important numerology calculation (async)"""
+        """Calculate Life Path number - Calculator and meaning API (async)"""
         body: dict[str, Any] = {}
         body["year"] = year
         body["month"] = month
@@ -4974,7 +4974,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/life-path", body, params=params or None)
 
     def calculate_maturity(self, *, life_path: int | None = None, expression: int | None = None, full_name: str | None = None, year: int | None = None, month: int | None = None, day: int | None = None, lang: str | None = None) -> Any:
-        """Calculate Maturity number - Who you become in later life"""
+        """Calculate Maturity number - Realization number numerology API"""
         body: dict[str, Any] = {}
         if life_path is not None:
             body["lifePath"] = life_path
@@ -4994,7 +4994,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/maturity", body, params=params or None)
 
     async def calculate_maturity_async(self, *, life_path: int | None = None, expression: int | None = None, full_name: str | None = None, year: int | None = None, month: int | None = None, day: int | None = None, lang: str | None = None) -> Any:
-        """Calculate Maturity number - Who you become in later life (async)"""
+        """Calculate Maturity number - Realization number numerology API (async)"""
         body: dict[str, Any] = {}
         if life_path is not None:
             body["lifePath"] = life_path
@@ -5014,7 +5014,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/maturity", body, params=params or None)
 
     def calculate_num_compatibility(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
-        """Calculate Compatibility - Relationship dynamics between two people"""
+        """Calculate numerology compatibility - Love match scoring API"""
         body: dict[str, Any] = {}
         body["person1"] = person1
         body["person2"] = person2
@@ -5024,7 +5024,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/compatibility", body, params=params or None)
 
     async def calculate_num_compatibility_async(self, *, person1: dict[str, Any], person2: dict[str, Any], lang: str | None = None) -> Any:
-        """Calculate Compatibility - Relationship dynamics between two people (async)"""
+        """Calculate numerology compatibility - Love match scoring API (async)"""
         body: dict[str, Any] = {}
         body["person1"] = person1
         body["person2"] = person2
@@ -5034,7 +5034,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/compatibility", body, params=params or None)
 
     def calculate_personal_day(self, *, month: int, day: int, target_date: str | None = None, lang: str | None = None) -> Any:
-        """Calculate Personal Day - Daily personalized numerology forecast"""
+        """Calculate Personal Day - Daily numerology forecast API"""
         body: dict[str, Any] = {}
         body["month"] = month
         body["day"] = day
@@ -5046,7 +5046,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/personal-day", body, params=params or None)
 
     async def calculate_personal_day_async(self, *, month: int, day: int, target_date: str | None = None, lang: str | None = None) -> Any:
-        """Calculate Personal Day - Daily personalized numerology forecast (async)"""
+        """Calculate Personal Day - Daily numerology forecast API (async)"""
         body: dict[str, Any] = {}
         body["month"] = month
         body["day"] = day
@@ -5058,7 +5058,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/personal-day", body, params=params or None)
 
     def calculate_personal_month(self, *, month: int, day: int, year: int | None = None, target_month: int | None = None, lang: str | None = None) -> Any:
-        """Calculate Personal Month - Monthly numerology forecast"""
+        """Calculate Personal Month - Monthly numerology forecast API"""
         body: dict[str, Any] = {}
         body["month"] = month
         body["day"] = day
@@ -5072,7 +5072,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/personal-month", body, params=params or None)
 
     async def calculate_personal_month_async(self, *, month: int, day: int, year: int | None = None, target_month: int | None = None, lang: str | None = None) -> Any:
-        """Calculate Personal Month - Monthly numerology forecast (async)"""
+        """Calculate Personal Month - Monthly numerology forecast API (async)"""
         body: dict[str, Any] = {}
         body["month"] = month
         body["day"] = day
@@ -5086,7 +5086,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/personal-month", body, params=params or None)
 
     def calculate_personal_year(self, *, month: int, day: int, year: int | None = None, lang: str | None = None) -> Any:
-        """Calculate Personal Year - Annual cycle and forecast for current year"""
+        """Calculate Personal Year - Personal Year number forecast API"""
         body: dict[str, Any] = {}
         body["month"] = month
         body["day"] = day
@@ -5098,7 +5098,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/personal-year", body, params=params or None)
 
     async def calculate_personal_year_async(self, *, month: int, day: int, year: int | None = None, lang: str | None = None) -> Any:
-        """Calculate Personal Year - Annual cycle and forecast for current year (async)"""
+        """Calculate Personal Year - Personal Year number forecast API (async)"""
         body: dict[str, Any] = {}
         body["month"] = month
         body["day"] = day
@@ -5110,7 +5110,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/personal-year", body, params=params or None)
 
     def calculate_personality(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Calculate Personality number - How others perceive you"""
+        """Calculate Personality number - Outer personality numerology API"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -5119,7 +5119,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/personality", body, params=params or None)
 
     async def calculate_personality_async(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Calculate Personality number - How others perceive you (async)"""
+        """Calculate Personality number - Outer personality numerology API (async)"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -5128,7 +5128,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/personality", body, params=params or None)
 
     def calculate_soul_urge(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Calculate Soul Urge number - Inner motivations and desires"""
+        """Calculate Soul Urge number - Heart Desire number calculator API"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -5137,7 +5137,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/soul-urge", body, params=params or None)
 
     async def calculate_soul_urge_async(self, *, full_name: str, lang: str | None = None) -> Any:
-        """Calculate Soul Urge number - Inner motivations and desires (async)"""
+        """Calculate Soul Urge number - Heart Desire number calculator API (async)"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         params: dict[str, Any] = {}
@@ -5146,7 +5146,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/soul-urge", body, params=params or None)
 
     def check_karmic_debt(self, *, year: int | None = None, month: int | None = None, day: int | None = None, full_name: str | None = None, lang: str | None = None) -> Any:
-        """Detect Karmic Debt numbers - Past life challenges (13, 14, 16, 19)"""
+        """Detect Karmic Debt numbers - Karmic debt 13, 14, 16, 19 API"""
         body: dict[str, Any] = {}
         if year is not None:
             body["year"] = year
@@ -5162,7 +5162,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/karmic-debt", body, params=params or None)
 
     async def check_karmic_debt_async(self, *, year: int | None = None, month: int | None = None, day: int | None = None, full_name: str | None = None, lang: str | None = None) -> Any:
-        """Detect Karmic Debt numbers - Past life challenges (13, 14, 16, 19) (async)"""
+        """Detect Karmic Debt numbers - Karmic debt 13, 14, 16, 19 API (async)"""
         body: dict[str, Any] = {}
         if year is not None:
             body["year"] = year
@@ -5178,7 +5178,7 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/karmic-debt", body, params=params or None)
 
     def generate_numerology_chart(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, lang: str | None = None) -> Any:
-        """Generate Complete Numerology Chart - Full profile analysis"""
+        """Generate numerology chart - Complete numerology reading API"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         body["year"] = year
@@ -5192,7 +5192,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/chart", body, params=params or None)
 
     async def generate_numerology_chart_async(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, lang: str | None = None) -> Any:
-        """Generate Complete Numerology Chart - Full profile analysis (async)"""
+        """Generate numerology chart - Complete numerology reading API (async)"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
         body["year"] = year
@@ -5206,21 +5206,21 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/chart", body, params=params or None)
 
     def get_compound_number(self, *, number: str, lang: str | None = None) -> Any:
-        """Compound number meaning - Cheiro Chaldean interpretation 10 to 52"""
+        """Get compound number meaning - Chaldean compound numbers 10 to 52 API"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._get(f"/numerology/compound-number/{number}", params=params or None)
 
     async def get_compound_number_async(self, *, number: str, lang: str | None = None) -> Any:
-        """Compound number meaning - Cheiro Chaldean interpretation 10 to 52 (async)"""
+        """Get compound number meaning - Chaldean compound numbers 10 to 52 API (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return await self._get_async(f"/numerology/compound-number/{number}", params=params or None)
 
     def get_daily_number(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
-        """Get daily numerology number - Number of the Day with interpretation"""
+        """Get daily numerology number - Number of the Day API"""
         body: dict[str, Any] = {}
         if seed is not None:
             body["seed"] = seed
@@ -5232,7 +5232,7 @@ class NumerologyDomain(_BaseDomain):
         return self._post(f"/numerology/daily", body, params=params or None)
 
     async def get_daily_number_async(self, *, seed: str | None = None, date: str | None = None, lang: str | None = None) -> Any:
-        """Get daily numerology number - Number of the Day with interpretation (async)"""
+        """Get daily numerology number - Number of the Day API (async)"""
         body: dict[str, Any] = {}
         if seed is not None:
             body["seed"] = seed
@@ -5244,14 +5244,14 @@ class NumerologyDomain(_BaseDomain):
         return await self._post_async(f"/numerology/daily", body, params=params or None)
 
     def get_number_meaning(self, *, number: str, lang: str | None = None) -> Any:
-        """Get Number Meaning - Interpretation for any number 1-9, 11, 22, 33"""
+        """Get number meaning - Numerology number meanings API"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._get(f"/numerology/meanings/{number}", params=params or None)
 
     async def get_number_meaning_async(self, *, number: str, lang: str | None = None) -> Any:
-        """Get Number Meaning - Interpretation for any number 1-9, 11, 22, 33 (async)"""
+        """Get number meaning - Numerology number meanings API (async)"""
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang

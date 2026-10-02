@@ -86,7 +86,7 @@ Get your API key at [roxyapi.com/pricing](https://roxyapi.com/pricing). Free tes
 | Feng Shui | `roxy.feng_shui` | 11 | Compute classical feng shui from one API: Xuan Kong flying star natal charts for any of the nine periods and 24 mount... |
 | Mesoamerican Astrology | `roxy.mesoamerican_astrology` | 18 | Calculate Mayan astrology day signs, the Tzolkin sacred round, the Haab year, the full Long Count and the Aztec tonal... |
 | Vastu | `roxy.vastu` | 10 | Vastu Shastra API for directional home and plot analysis: entrance padas with the classical effect of each of the 32... |
-| Numerology | `roxy.numerology` | 20 | Numerology API to calculate life path, expression, soul urge, personality, and maturity numbers, with Pinnacle and Ch... |
+| Numerology | `roxy.numerology` | 20 | Numerology API for life path numbers, complete numerology charts and compatibility, in both Pythagorean and Chaldean... |
 | Kabbalah | `roxy.kabbalah` | 12 | Kabbalah API for gematria, the 72 names, the Tree of Life and the Hebrew birthday, from one key |
 | Tarot | `roxy.tarot` | 10 | Tarot reading API with the complete 78-card Rider-Waite-Smith deck and card meanings for love, career, health, and sp... |
 | Biorhythm | `roxy.biorhythm` | 6 | The most complete biorhythm API: 10 cycle types across 3 primary (physical, emotional, intellectual), 4 secondary (in... |
