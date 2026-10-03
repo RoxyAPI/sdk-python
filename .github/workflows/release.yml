@@ -11,6 +11,10 @@ on:
         description: 'patch | minor | major'
         required: false
         default: 'patch'
+      version:
+        description: 'Exact X.Y.Z to release instead of a bump; must be greater than the last release'
+        required: false
+        default: ''
 
 jobs:
   release:
@@ -27,6 +31,24 @@ jobs:
           # checkout fetches none of them, which would make every run look like a
           # first release.
           fetch-depth: 0
+
+      # An exact version is a deliberate jump the bump cannot express (0.1.x to 1.1.1).
+      # Refused before any build when malformed or not above the last release tag.
+      - name: Validate the requested version
+        if: inputs.version != ''
+        env:
+          EXACT_VERSION: ${{ inputs.version }}
+        run: |
+          LAST=$(git tag --list 'v*' --sort=-v:refname | head -1)
+          LAST=${LAST#v}
+          if ! [[ "$EXACT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::version must be MAJOR.MINOR.PATCH, got $EXACT_VERSION"
+            exit 1
+          fi
+          if [ "$EXACT_VERSION" = "$LAST" ] || [ "$(printf '%s\n' "$LAST" "$EXACT_VERSION" | sort -V | tail -1)" != "$EXACT_VERSION" ]; then
+            echo "::error::version $EXACT_VERSION must be greater than the last release $LAST"
+            exit 1
+          fi
 
       - uses: astral-sh/setup-uv@v10.1.0
         with:
@@ -80,9 +102,11 @@ jobs:
       - name: Bump version in pyproject.toml and version.py
         id: bump
         if: steps.diff.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        env:
+          EXACT_VERSION: ${{ inputs.version }}
         run: |
           python3 - <<'PY'
-          import re
+          import os, re
           bump = "${{ github.event.inputs.version_bump || 'patch' }}"
           pp = open("pyproject.toml").read()
           ver = re.search(r'^version = "(.+?)"', pp, re.M).group(1)
@@ -90,7 +114,7 @@ jobs:
           if bump == "major":   parts = [parts[0] + 1, 0, 0]
           elif bump == "minor": parts = [parts[0], parts[1] + 1, 0]
           else:                 parts = [parts[0], parts[1], parts[2] + 1]
-          new_ver = ".".join(str(x) for x in parts)
+          new_ver = os.environ["EXACT_VERSION"] or ".".join(str(x) for x in parts)
           open("pyproject.toml", "w").write(
               re.sub(r'^version = ".+?"', f'version = "{new_ver}"', pp, count=1, flags=re.M)
           )
