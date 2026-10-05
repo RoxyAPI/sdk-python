@@ -87,9 +87,9 @@ Get your API key at [roxyapi.com/pricing](https://roxyapi.com/pricing). Free tes
 | Mesoamerican Astrology | `roxy.mesoamerican_astrology` | 18 | Calculate Mayan astrology day signs, the Tzolkin sacred round, the Haab year, the full Long Count and the Aztec tonal... |
 | Vastu | `roxy.vastu` | 10 | Vastu Shastra API for directional home and plot analysis: entrance padas with the classical effect of each of the 32... |
 | Numerology | `roxy.numerology` | 20 | Numerology API for life path numbers, complete numerology charts and compatibility, in both Pythagorean and Chaldean... |
-| Kabbalah | `roxy.kabbalah` | 12 | Kabbalah API for gematria, the 72 names, the Tree of Life and the Hebrew birthday, from one key |
+| Kabbalah | `roxy.kabbalah` | 12 | Kabbalah API for gematria, the 72 names, the Tree of Life and the Hebrew birthday |
 | Tarot | `roxy.tarot` | 10 | Tarot reading API with the complete 78-card Rider-Waite-Smith deck and card meanings for love, career, health, and sp... |
-| Biorhythm | `roxy.biorhythm` | 6 | The most complete biorhythm API: 10 cycle types across 3 primary (physical, emotional, intellectual), 4 secondary (in... |
+| Biorhythm | `roxy.biorhythm` | 6 | Biorhythm API for entertainment and reflection, with 10 model cycle types across 3 primary (physical, emotional, inte... |
 | Ayurveda | `roxy.ayurveda` | 8 | Ayurveda API for dosha profiles, the dinacharya daily routine and the ritucharya seasonal regimen, with a verse cited... |
 | I-Ching | `roxy.iching` | 9 | I-Ching oracle API with all 64 hexagrams, 384 changing lines, 8 trigrams, and modern interpretations for love, career... |
 | Crystals and Healing Stones | `roxy.crystals` | 12 | Crystal healing API covering the most popular and widely-searched healing crystals and gemstones, from Amethyst and R... |

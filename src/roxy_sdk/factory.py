@@ -5259,7 +5259,7 @@ class NumerologyDomain(_BaseDomain):
 
 
 class KabbalahDomain(_BaseDomain):
-    """Kabbalah API for gematria, the 72 names, the Tree of Life and the Hebrew birthday, from one key"""
+    """Kabbalah API for gematria, the 72 names, the Tree of Life and the Hebrew birthday"""
 
     def calculate_gematria(self, *, text: str | None = None, text_hebrew: str | None = None, transliteration: str | None = None, ciphers: list[str] | None = None, mispar_gadol: str | None = None, atbash_output: str | None = None, include_matches: bool | None = None, latin_ciphers: bool | None = None, lang: str | None = None) -> Any:
         """Calculate gematria - Hebrew gematria calculator API with every spelling shown"""
@@ -5843,7 +5843,7 @@ class TarotDomain(_BaseDomain):
 
 
 class BiorhythmDomain(_BaseDomain):
-    """The most complete biorhythm API: 10 cycle types across 3 primary (physical, emotional, intellectual), 4 secondary (in..."""
+    """Biorhythm API for entertainment and reflection, with 10 model cycle types across 3 primary (physical, emotional, inte..."""
 
     def calculate_bio_compatibility(self, *, person1: dict[str, Any], person2: dict[str, Any], target_date: str | None = None, lang: str | None = None) -> Any:
         """Calculate compatibility - Biorhythm alignment between two people"""
