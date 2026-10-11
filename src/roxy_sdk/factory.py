@@ -6617,7 +6617,7 @@ class CrystalsDomain(_BaseDomain):
 
 
 class DreamsDomain(_BaseDomain):
-    """Dream interpretation API with a 2,000+ symbol dream dictionary and psychological meanings covering animals, objects,..."""
+    """Dream interpretation API with a 2,200+ symbol dream dictionary and psychological meanings covering animals, objects,..."""
 
     def get_daily_dream_symbol(self, *, seed: str | None = None, date: str | None = None) -> Any:
         """Daily dream symbol - Dream symbol of the day API"""
