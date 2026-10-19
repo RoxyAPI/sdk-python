@@ -17,6 +17,7 @@ and the README title column is the tag name of the spec. Fails loudly only if:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from codegen import ROOT, Domain, domains, fail, load_spec
@@ -55,8 +56,11 @@ def render_domains_table(all_domains: list[Domain], *, with_title: bool) -> str:
     rows = [f"| {' | '.join(header)} |", f"|{'|'.join(sep)}|"]
     for domain in all_domains:
         cells = [f"`roxy.{domain.attr}`", str(len(domain.operations)), domain.summary]
+        reference = "https://roxyapi.com/api-reference/" + re.sub(r"\s+", "-", domain.tag.lower())
         if with_title:
-            cells.insert(0, domain.tag)
+            cells.insert(0, f"[{domain.tag}]({reference})")
+        else:
+            cells[0] = f"[{cells[0]}]({reference})"
         rows.append(f"| {' | '.join(cells)} |")
     return "\n".join([DOMAINS_BEGIN, *rows, DOMAINS_END])
 
