@@ -586,3 +586,4 @@ with create_roxy("your-api-key") as roxy:
 - [MCP for AI Agents](https://roxyapi.com/docs/mcp)
 - [Templates](https://roxyapi.com/templates)
 - [TypeScript SDK](https://www.npmjs.com/package/@roxyapi/sdk)
+- [Rust SDK](https://crates.io/crates/roxyapi)
