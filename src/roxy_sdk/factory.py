@@ -4,6 +4,13 @@ Regenerate with: python generate.py
 """
 from __future__ import annotations
 
+import asyncio
+import math
+import random
+import time
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+from enum import Enum
 from typing import Any
 
 import httpx
@@ -14,17 +21,107 @@ from roxy_sdk.version import VERSION
 _BASE_URL = "https://roxyapi.com/api/v2"
 
 
-class RoxyAPIError(Exception):
-    """Error returned by the RoxyAPI."""
+class ErrorCode(str, Enum):
+    """Every `code` the API returns. Compare with `RoxyAPIError.code`."""
 
-    def __init__(self, error: str, code: str, status_code: int) -> None:
+    VALIDATION_ERROR = "validation_error"
+    '400. A field is missing or invalid. The body lists every failing field at once in issues, each with its path and the expected shape.'
+    BAD_REQUEST = "bad_request"
+    '400. The request was rejected as a whole, for example a body that is not valid JSON or a date range that ends before it starts.'
+    DATE_OUT_OF_RANGE = "date_out_of_range"
+    '400. A date lies outside the span the planetary positions are served for. The error names the supported dates.'
+    API_KEY_REQUIRED = "api_key_required"
+    '401. No API key was sent.'
+    INVALID_API_KEY = "invalid_api_key"
+    '401. The key sent is malformed or cannot be verified.'
+    API_KEY_REVOKED = "api_key_revoked"
+    '401. The key was valid once and has since been revoked from the account page.'
+    SUBSCRIPTION_NOT_FOUND = "subscription_not_found"
+    '401. The key verifies, but the subscription behind it no longer exists.'
+    SUBSCRIPTION_INACTIVE = "subscription_inactive"
+    '401. The subscription behind the key is cancelled, expired or suspended, or a trial is past its end date.'
+    PUBLISHABLE_KEY_NOT_ALLOWED_ON_MCP = "publishable_key_not_allowed_on_mcp"
+    '401. A publishable key was used on a Remote MCP server, which takes a secret key.'
+    INVALID_CLIENT_IP = "invalid_client_ip"
+    '401. A keyless request could not be attributed to a caller.'
+    UNAUTHORIZED = "unauthorized"
+    '401. Authentication failed with no more specific reason to give.'
+    FORBIDDEN = "forbidden"
+    '403. The key is valid, but this request is not permitted.'
+    ORIGIN_REQUIRED = "origin_required"
+    '403. A publishable key with an origin allowlist was used with no Origin header, as from a server or a native app.'
+    ORIGIN_NOT_ALLOWED = "origin_not_allowed"
+    '403. The calling site is not on the origin allowlist of this publishable key.'
+    NOT_FOUND = "not_found"
+    '404. Nothing is served at this path, or the identifier in it does not exist. A path miss adds suggestions, the closest real endpoints.'
+    METHOD_NOT_ALLOWED = "method_not_allowed"
+    '405. The path exists for a different HTTP method. The body lists the accepted methods in allow, as does the Allow header.'
+    CONFLICT = "conflict"
+    '409. The request cannot be applied in the current state.'
+    GONE = "gone"
+    '410. The path was removed permanently.'
+    PAYLOAD_TOO_LARGE = "payload_too_large"
+    '413. The request body is larger than the API accepts. A body far over the cap is refused before it reaches the API and returns a bare 413 with no JSON body.'
+    UNSUPPORTED_MEDIA_TYPE = "unsupported_media_type"
+    '415. A request with a body was sent without Content-Type: application/json.'
+    UNPROCESSABLE_ENTITY = "unprocessable_entity"
+    '422. Every field is valid, but the combination cannot be computed.'
+    RATE_LIMIT_EXCEEDED = "rate_limit_exceeded"
+    '429. The monthly request allowance is used up. Retry-After gives the seconds to the reset.'
+    RATE_LIMIT_PER_MINUTE = "rate_limit_per_minute"
+    '429. The per-minute limit of the plan was reached. Retry-After gives the seconds to the next minute, and the monthly allowance is not charged.'
+    RATE_LIMITED = "rate_limited"
+    '429. A rate limit was reached, reported without the plan detail.'
+    FREE_TIER_EXHAUSTED = "free_tier_exhausted"
+    '429. A keyless request has used up its trial allowance.'
+    INTERNAL_ERROR = "internal_error"
+    '500. The request failed inside our service. Retry with exponential backoff.'
+    COMPUTE_SATURATED = "compute_saturated"
+    '503. Heavy calculations are briefly at capacity. Send the same request again after Retry-After seconds.'
+    ERROR = "error"
+    'Any. A fallback for a status with no more specific code. The status and the error field carry the signal.'
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+class RoxyAPIError(Exception):
+    """Error returned by the RoxyAPI.
+
+    Switch on `code`. `doc_url` links the documentation for that code. `retry_after` is the
+    wait in seconds the server asked for, or None when the response sent no Retry-After.
+    On a validation_error, `issues` lists every failing field, each with `path`, `message`
+    and `code`; it is None for any other error.
+    """
+
+    def __init__(
+        self,
+        error: str,
+        code: str,
+        status_code: int,
+        *,
+        doc_url: str | None = None,
+        retry_after: float | None = None,
+        issues: list[dict[str, Any]] | None = None,
+    ) -> None:
         self.error = error
         self.code = code
         self.status_code = status_code
+        self.doc_url = doc_url
+        self.retry_after = retry_after
+        self.issues = issues
         super().__init__(f"[{status_code}] {code}: {error}")
 
     def __repr__(self) -> str:
-        return f"RoxyAPIError(error={self.error!r}, code={self.code!r}, status_code={self.status_code})"
+        return (
+            f"RoxyAPIError(error={self.error!r}, code={self.code!r}, "
+            f"status_code={self.status_code}, doc_url={self.doc_url!r}, "
+            f"retry_after={self.retry_after!r}, issues={self.issues!r})"
+        )
+
+
+_RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+_NEVER_SENT = (httpx.ConnectError, httpx.ConnectTimeout)
 
 
 def _default_headers(api_key: str) -> dict[str, str]:
@@ -35,6 +132,49 @@ def _default_headers(api_key: str) -> dict[str, str]:
     }
 
 
+def _parse_retry_after(value: str | None) -> float | None:
+    """Retry-After as seconds, from either delta-seconds or an HTTP-date."""
+    if value is None:
+        return None
+    try:
+        seconds = float(value)
+    except ValueError:
+        try:
+            when = parsedate_to_datetime(value)
+        except (TypeError, ValueError):
+            return None
+        if when.tzinfo is None:
+            when = when.replace(tzinfo=timezone.utc)
+        seconds = (when - datetime.now(timezone.utc)).total_seconds()
+    return None if math.isnan(seconds) else max(seconds, 0.0)
+
+
+class _Retry:
+    """Retry policy: HTTP 429, 500, 502, 503, 504 and connection failures only."""
+
+    def __init__(self, max_retries: int, initial_delay: float, max_delay: float, timeout: float) -> None:
+        if max_retries < 0:
+            raise ValueError("max_retries must be 0 or greater")
+        self.max_retries = max_retries
+        self.initial_delay = initial_delay
+        self.max_delay = max_delay
+        self.timeout = timeout
+
+    def delay(self, retry_after: float | None, attempt: int, started: float) -> float | None:
+        """Seconds to sleep before the next attempt, or None to surface the error now."""
+        if attempt >= self.max_retries:
+            return None
+        if retry_after is not None:
+            if retry_after > self.max_delay:
+                return None
+            wait = min(self.max_delay, retry_after + random.uniform(0, self.initial_delay))
+        else:
+            wait = random.uniform(0, min(self.max_delay, self.initial_delay * 2**attempt))
+        if time.monotonic() - started + wait >= self.timeout:
+            return None
+        return wait
+
+
 def _handle_response(resp: httpx.Response) -> Any:
     """Parse response, raising RoxyAPIError on 4xx/5xx."""
     if resp.status_code >= 400:
@@ -42,10 +182,15 @@ def _handle_response(resp: httpx.Response) -> Any:
             body = resp.json()
         except Exception:
             body = {}
+        if not isinstance(body, dict):
+            body = {}
         raise RoxyAPIError(
             error=body.get("error", resp.text or "Unknown error"),
             code=body.get("code", "unknown"),
             status_code=resp.status_code,
+            doc_url=body.get("doc_url"),
+            retry_after=_parse_retry_after(resp.headers.get("Retry-After")),
+            issues=body.get("issues") if isinstance(body.get("issues"), list) else None,
         )
     return resp.json()
 
@@ -53,21 +198,60 @@ def _handle_response(resp: httpx.Response) -> Any:
 class _BaseDomain:
     """Base class for all domain namespaces."""
 
-    def __init__(self, client: httpx.Client, async_client: httpx.AsyncClient) -> None:
+    def __init__(self, client: httpx.Client, async_client: httpx.AsyncClient, retry: _Retry) -> None:
         self._client = client
         self._async_client = async_client
+        self._retry = retry
+
+    def _request(self, method: str, path: str, body: dict[str, Any] | None, params: dict[str, Any] | None) -> Any:
+        started = time.monotonic()
+        attempt = 0
+        while True:
+            try:
+                resp = self._client.request(method, path, json=body, params=params)
+            except _NEVER_SENT:
+                wait = self._retry.delay(None, attempt, started)
+                if wait is None:
+                    raise
+            else:
+                if resp.status_code not in _RETRY_STATUSES:
+                    return _handle_response(resp)
+                wait = self._retry.delay(_parse_retry_after(resp.headers.get("Retry-After")), attempt, started)
+                if wait is None:
+                    return _handle_response(resp)
+            time.sleep(wait)
+            attempt += 1
+
+    async def _request_async(self, method: str, path: str, body: dict[str, Any] | None, params: dict[str, Any] | None) -> Any:
+        started = time.monotonic()
+        attempt = 0
+        while True:
+            try:
+                resp = await self._async_client.request(method, path, json=body, params=params)
+            except _NEVER_SENT:
+                wait = self._retry.delay(None, attempt, started)
+                if wait is None:
+                    raise
+            else:
+                if resp.status_code not in _RETRY_STATUSES:
+                    return _handle_response(resp)
+                wait = self._retry.delay(_parse_retry_after(resp.headers.get("Retry-After")), attempt, started)
+                if wait is None:
+                    return _handle_response(resp)
+            await asyncio.sleep(wait)
+            attempt += 1
 
     def _get(self, path: str, params: dict[str, Any] | None = None) -> Any:
-        return _handle_response(self._client.get(path, params=params))
+        return self._request("GET", path, None, params)
 
     async def _get_async(self, path: str, params: dict[str, Any] | None = None) -> Any:
-        return _handle_response(await self._async_client.get(path, params=params))
+        return await self._request_async("GET", path, None, params)
 
     def _post(self, path: str, body: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> Any:
-        return _handle_response(self._client.post(path, json=body, params=params))
+        return self._request("POST", path, body, params)
 
     async def _post_async(self, path: str, body: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> Any:
-        return _handle_response(await self._async_client.post(path, json=body, params=params))
+        return await self._request_async("POST", path, body, params)
 
 
 class AstrologyDomain(_BaseDomain):
@@ -6895,32 +7079,42 @@ class Roxy:
         horoscope = roxy.astrology.get_daily_horoscope(sign="aries")
     """
 
-    def __init__(self, api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> None:
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str = _BASE_URL,
+        timeout: float = 30.0,
+        *,
+        max_retries: int = 2,
+        initial_delay: float = 0.5,
+        max_delay: float = 30.0,
+    ) -> None:
         if not api_key:
             raise ValueError("API key is required. Get one at https://roxyapi.com/pricing")
+        retry = _Retry(max_retries, initial_delay, max_delay, timeout)
         headers = _default_headers(api_key)
         self._client = httpx.Client(base_url=base_url, headers=headers, timeout=timeout)
         self._async_client = httpx.AsyncClient(base_url=base_url, headers=headers, timeout=timeout)
-        self.astrology = AstrologyDomain(self._client, self._async_client)
-        self.vedic_astrology = VedicAstrologyDomain(self._client, self._async_client)
-        self.forecast = ForecastDomain(self._client, self._async_client)
-        self.human_design = HumanDesignDomain(self._client, self._async_client)
-        self.chinese_astrology = ChineseAstrologyDomain(self._client, self._async_client)
-        self.feng_shui = FengShuiDomain(self._client, self._async_client)
-        self.mesoamerican_astrology = MesoamericanAstrologyDomain(self._client, self._async_client)
-        self.vastu = VastuDomain(self._client, self._async_client)
-        self.numerology = NumerologyDomain(self._client, self._async_client)
-        self.kabbalah = KabbalahDomain(self._client, self._async_client)
-        self.tarot = TarotDomain(self._client, self._async_client)
-        self.biorhythm = BiorhythmDomain(self._client, self._async_client)
-        self.ayurveda = AyurvedaDomain(self._client, self._async_client)
-        self.iching = IchingDomain(self._client, self._async_client)
-        self.crystals = CrystalsDomain(self._client, self._async_client)
-        self.dreams = DreamsDomain(self._client, self._async_client)
-        self.angel_numbers = AngelNumbersDomain(self._client, self._async_client)
-        self.location = LocationDomain(self._client, self._async_client)
-        self.usage = UsageDomain(self._client, self._async_client)
-        self.languages = LanguagesDomain(self._client, self._async_client)
+        self.astrology = AstrologyDomain(self._client, self._async_client, retry)
+        self.vedic_astrology = VedicAstrologyDomain(self._client, self._async_client, retry)
+        self.forecast = ForecastDomain(self._client, self._async_client, retry)
+        self.human_design = HumanDesignDomain(self._client, self._async_client, retry)
+        self.chinese_astrology = ChineseAstrologyDomain(self._client, self._async_client, retry)
+        self.feng_shui = FengShuiDomain(self._client, self._async_client, retry)
+        self.mesoamerican_astrology = MesoamericanAstrologyDomain(self._client, self._async_client, retry)
+        self.vastu = VastuDomain(self._client, self._async_client, retry)
+        self.numerology = NumerologyDomain(self._client, self._async_client, retry)
+        self.kabbalah = KabbalahDomain(self._client, self._async_client, retry)
+        self.tarot = TarotDomain(self._client, self._async_client, retry)
+        self.biorhythm = BiorhythmDomain(self._client, self._async_client, retry)
+        self.ayurveda = AyurvedaDomain(self._client, self._async_client, retry)
+        self.iching = IchingDomain(self._client, self._async_client, retry)
+        self.crystals = CrystalsDomain(self._client, self._async_client, retry)
+        self.dreams = DreamsDomain(self._client, self._async_client, retry)
+        self.angel_numbers = AngelNumbersDomain(self._client, self._async_client, retry)
+        self.location = LocationDomain(self._client, self._async_client, retry)
+        self.usage = UsageDomain(self._client, self._async_client, retry)
+        self.languages = LanguagesDomain(self._client, self._async_client, retry)
 
     def close(self) -> None:
         """Close sync HTTP connections."""
@@ -6947,13 +7141,31 @@ class Roxy:
         return f"Roxy(base_url={self._client.base_url!r})"
 
 
-def create_roxy(api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> Roxy:
+def create_roxy(
+    api_key: str,
+    base_url: str = _BASE_URL,
+    timeout: float = 30.0,
+    *,
+    max_retries: int = 2,
+    initial_delay: float = 0.5,
+    max_delay: float = 30.0,
+) -> Roxy:
     """
     Create a configured Roxy instance.
 
     Args:
         api_key: Your RoxyAPI key. Get one at https://roxyapi.com/pricing
         base_url: Override the default API base URL. Default: https://roxyapi.com/api/v2
-        timeout: Request timeout in seconds. Default: 30.
+        timeout: Request timeout in seconds, also the budget a retry never sleeps past. Default: 30.
+        max_retries: Retries on 429, 500, 502, 503, 504 and connection failures. Default: 2; 0 turns retries off.
+        initial_delay: Base backoff in seconds. Default: 0.5.
+        max_delay: Longest wait in seconds; a longer Retry-After is surfaced, not waited. Default: 30.
     """
-    return Roxy(api_key=api_key, base_url=base_url, timeout=timeout)
+    return Roxy(
+        api_key=api_key,
+        base_url=base_url,
+        timeout=timeout,
+        max_retries=max_retries,
+        initial_delay=initial_delay,
+        max_delay=max_delay,
+    )

@@ -39,11 +39,13 @@ print(horoscope["overview"], horoscope["love"], horoscope["luckyNumber"])
 
 Then expand into charts, compatibility, tarot, numerology, and more.
 
-## Quickstart
+## Quick start
 
 ```python
 from roxy_sdk import create_roxy
 
+# Retries 429, 500, 502, 503 and 504 by default. Optional settings, shown with their defaults:
+# create_roxy(key, timeout=30.0, max_retries=2, initial_delay=0.5, max_delay=30.0)
 roxy = create_roxy("your-api-key")
 
 # Step 1: geocode the birth city (required for any chart endpoint)
@@ -71,9 +73,7 @@ kundli = roxy.vedic_astrology.generate_birth_chart(
 )
 ```
 
-Get your API key at [roxyapi.com/pricing](https://roxyapi.com/pricing). Free test keys available on the [interactive docs](https://roxyapi.com/api-reference).
-
-## Domain reference
+## Domains
 
 <!-- BEGIN:DOMAINS -->
 | Domain | Property | Methods | What it covers |
@@ -153,7 +153,7 @@ Kundli generators, matrimonial matching, muhurta and panchang apps, and KP pract
 ```python
 # Vedic kundli. The same birth read sidereally: `birth` reuses the location lookup above.
 kundli = roxy.vedic_astrology.generate_birth_chart(**birth)
-# kundli["meta"]["Moon"]["rashi"], kundli["meta"]["Moon"]["nakshatra"], kundli["houses"], kundli["combustion"]
+# kundli["meta"]["Moon"]["rashi"] (a string), kundli["meta"]["Moon"]["nakshatra"]["name"] (nakshatra is an object with name, pada, lord), kundli["houses"], kundli["combustion"]
 
 # Detailed panchang. Tithi, nakshatra, yoga, karana, rahu kaal and the muhurtas for a date and place.
 panchang = roxy.vedic_astrology.get_detailed_panchang(date="2026-10-01", latitude=latitude, longitude=longitude, timezone=timezone)
@@ -424,7 +424,7 @@ sequence = roxy.angel_numbers.analyze_number_sequence(number="4242")
 # sequence["digitRoot"], sequence["isRepeating"], sequence["knownMeaning"] (None when not curated), sequence["digitRootMeaning"]["title"]
 ```
 
-## Built for AI agents (Claude Code, Cursor, Copilot, Codex, Gemini CLI)
+## Built for AI agents (Cursor, Claude Code, Copilot, Codex, Gemini CLI)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/RoxyAPI/sdk-python/main/assets/agents.png" alt="Your coding agent already knows the API. Built for AI agents, Remote MCP, no local setup." width="100%">
@@ -437,6 +437,106 @@ Prefer MCP? Every domain has a [Remote MCP server](https://roxyapi.com/docs/mcp)
 ```bash
 claude mcp add-json --scope user roxy-astrology \
   '{"type":"http","url":"https://roxyapi.com/mcp/astrology","headers":{"X-API-Key":"YOUR_KEY"}}'
+```
+
+## Authentication
+
+Get your API key at [roxyapi.com/pricing](https://roxyapi.com/pricing). Instant delivery after checkout. Free test keys available on the [interactive docs](https://roxyapi.com/api-reference).
+
+Store your API key in an environment variable for production:
+
+```python
+import os
+from roxy_sdk import create_roxy
+
+roxy = create_roxy(os.environ["ROXY_API_KEY"])
+```
+
+Never expose your API key client-side. Call Roxy from server code only.
+
+## Multi-language responses
+
+<!-- BEGIN:LANGS -->
+Interpretations and editorial text are available in 10 languages: `en`, `tr`, `de`, `es`, `hi`, `pt`, `fr`, `ru`, `zh-Hans`, `zh-Hant`. Pass `lang` as a keyword argument on any supported method. Defaults to `en`. Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `mesoamerican_astrology`, `vastu`, `numerology`, `kabbalah`, `tarot`, `biorhythm`, `ayurveda`, `iching`, `crystals`, `angel_numbers`, `languages`. English-only: `dreams`, `location`, `usage`. Languages without translations yet fall back to English.
+<!-- END:LANGS -->
+
+```python
+card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
+life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
+```
+
+The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field.
+
+## Error handling
+
+All API errors raise `RoxyAPIError` with `error` (human-readable message), `code` (machine-readable, stable), `status_code`, `doc_url`, `retry_after` and `issues` attributes. `issues` lists every failing field of a `validation_error`, each with `path`, `message` and `code`, and is `None` for any other error. `ErrorCode` is a string enum of every code below, so `e.code == ErrorCode.RATE_LIMIT_PER_MINUTE` works:
+
+```python
+from roxy_sdk import create_roxy, ErrorCode, RoxyAPIError
+
+roxy = create_roxy("your-api-key")
+
+try:
+    result = roxy.astrology.get_daily_horoscope(sign="invalid")
+except RoxyAPIError as e:
+    if e.code == ErrorCode.VALIDATION_ERROR:
+        for issue in e.issues or []:
+            print(issue["path"], issue["message"], issue["code"])
+    print(f"Code: {e.code}")
+    print(f"Error: {e.error}")
+    print(f"Status: {e.status_code}")
+```
+
+<!-- BEGIN:ERRORS -->
+Every error returns `{ error, code, doc_url }`. Switch on `code`; `error` is readable text and may change. Each meaning below says whether and when to retry, and `Retry-After` carries the wait when the response sends it. Every code is documented at https://roxyapi.com/docs/errors.
+
+| Status | Code | Meaning |
+|--------|------|---------|
+| 400 | `validation_error` | A field is missing or invalid. The body lists every failing field at once in issues, each with its path and the expected shape. |
+| 400 | `bad_request` | The request was rejected as a whole, for example a body that is not valid JSON or a date range that ends before it starts. |
+| 400 | `date_out_of_range` | A date lies outside the span the planetary positions are served for. The error names the supported dates. |
+| 401 | `api_key_required` | No API key was sent. |
+| 401 | `invalid_api_key` | The key sent is malformed or cannot be verified. |
+| 401 | `api_key_revoked` | The key was valid once and has since been revoked from the account page. |
+| 401 | `subscription_not_found` | The key verifies, but the subscription behind it no longer exists. |
+| 401 | `subscription_inactive` | The subscription behind the key is cancelled, expired or suspended, or a trial is past its end date. |
+| 401 | `publishable_key_not_allowed_on_mcp` | A publishable key was used on a Remote MCP server, which takes a secret key. |
+| 401 | `invalid_client_ip` | A keyless request could not be attributed to a caller. |
+| 401 | `unauthorized` | Authentication failed with no more specific reason to give. |
+| 403 | `forbidden` | The key is valid, but this request is not permitted. |
+| 403 | `origin_required` | A publishable key with an origin allowlist was used with no Origin header, as from a server or a native app. |
+| 403 | `origin_not_allowed` | The calling site is not on the origin allowlist of this publishable key. |
+| 404 | `not_found` | Nothing is served at this path, or the identifier in it does not exist. A path miss adds suggestions, the closest real endpoints. |
+| 405 | `method_not_allowed` | The path exists for a different HTTP method. The body lists the accepted methods in allow, as does the Allow header. |
+| 409 | `conflict` | The request cannot be applied in the current state. |
+| 410 | `gone` | The path was removed permanently. |
+| 413 | `payload_too_large` | The request body is larger than the API accepts. A body far over the cap is refused before it reaches the API and returns a bare 413 with no JSON body. |
+| 415 | `unsupported_media_type` | A request with a body was sent without Content-Type: application/json. |
+| 422 | `unprocessable_entity` | Every field is valid, but the combination cannot be computed. |
+| 429 | `rate_limit_exceeded` | The monthly request allowance is used up. Retry-After gives the seconds to the reset. |
+| 429 | `rate_limit_per_minute` | The per-minute limit of the plan was reached. Retry-After gives the seconds to the next minute, and the monthly allowance is not charged. |
+| 429 | `rate_limited` | A rate limit was reached, reported without the plan detail. |
+| 429 | `free_tier_exhausted` | A keyless request has used up its trial allowance. |
+| 500 | `internal_error` | The request failed inside our service. Retry with exponential backoff. |
+| 503 | `compute_saturated` | Heavy calculations are briefly at capacity. Send the same request again after Retry-After seconds. |
+| Any | `error` | A fallback for a status with no more specific code. The status and the error field carry the signal. |
+<!-- END:ERRORS -->
+
+### Retries
+
+The client retries twice by default: HTTP 429, 500, 502, 503 and 504, plus connection failures where the request was never sent. Pass `max_retries` to change the count, or `max_retries=0` to turn retries off. Waits use the `Retry-After` header when present, otherwise jittered exponential backoff from `initial_delay` (default 0.5 seconds) up to `max_delay` (default 30 seconds). A `Retry-After` longer than `max_delay`, such as the one on `rate_limit_exceeded`, is not waited out: the error is raised with `retry_after` set. A retry never sleeps past `timeout`. Read timeouts are never retried.
+
+```python
+from roxy_sdk import create_roxy, RoxyAPIError
+
+roxy = create_roxy("your-api-key", max_retries=4)
+
+try:
+    result = roxy.astrology.get_daily_horoscope(sign="aries")
+except RoxyAPIError as e:
+    print(e.code)  # "rate_limit_per_minute", "compute_saturated", "validation_error", ...
+    print(e.doc_url)  # documentation page for that code
+    print(e.retry_after)  # seconds the server asked you to wait, or None
 ```
 
 ## Async support
@@ -455,19 +555,6 @@ async def main():
 
 asyncio.run(main())
 ```
-
-## Multi-language responses
-
-<!-- BEGIN:LANGS -->
-Interpretations and editorial text are available in 10 languages: `en`, `tr`, `de`, `es`, `hi`, `pt`, `fr`, `ru`, `zh-Hans`, `zh-Hant`. Pass `lang` as a keyword argument on any supported method. Defaults to `en`. Supported: `astrology`, `vedic_astrology`, `forecast`, `human_design`, `chinese_astrology`, `feng_shui`, `mesoamerican_astrology`, `vastu`, `numerology`, `kabbalah`, `tarot`, `biorhythm`, `ayurveda`, `iching`, `crystals`, `angel_numbers`, `languages`. English-only: `dreams`, `location`, `usage`. Languages without translations yet fall back to English.
-<!-- END:LANGS -->
-
-```python
-card = roxy.tarot.get_daily_card(date="2026-04-22", lang="es")
-life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang="hi")
-```
-
-The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field.
 
 ## Framework examples
 
@@ -513,51 +600,6 @@ def horoscope(request, sign):
     return JsonResponse(roxy.astrology.get_daily_horoscope(sign=sign))
 ```
 
-## Error handling
-
-All API errors raise `RoxyAPIError` with `error` (human-readable message), `code` (machine-readable, stable), and `status_code` attributes:
-
-```python
-from roxy_sdk import create_roxy, RoxyAPIError
-
-roxy = create_roxy("your-api-key")
-
-try:
-    result = roxy.astrology.get_daily_horoscope(sign="invalid")
-except RoxyAPIError as e:
-    print(f"Code: {e.code}")
-    print(f"Error: {e.error}")
-    print(f"Status: {e.status_code}")
-```
-
-| Status | Code | When |
-|--------|------|------|
-| 400 | `validation_error` | Missing or invalid parameters |
-| 401 | `api_key_required` | No API key provided |
-| 401 | `invalid_api_key` | Key format invalid or tampered |
-| 401 | `subscription_not_found` | Key references non-existent subscription |
-| 401 | `subscription_inactive` | Subscription cancelled, expired, or suspended |
-| 401 | `api_key_revoked` | Key was deleted from the account |
-| 404 | `not_found` | Resource not found |
-| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a date window whose `endDate` precedes `startDate` |
-| 429 | `rate_limit_exceeded` | Monthly quota reached |
-| 500 | `internal_error` | Server error |
-
-Switch on `code`, not `error`. Messages may be reworded; codes are stable.
-
-## Authentication
-
-Store your API key in an environment variable for production:
-
-```python
-import os
-from roxy_sdk import create_roxy
-
-roxy = create_roxy(os.environ["ROXY_API_KEY"])
-```
-
-Never expose your API key client-side. Call Roxy from server code only.
-
 ## Configuration
 
 `create_roxy` accepts optional parameters for advanced usage:
@@ -566,7 +608,10 @@ Never expose your API key client-side. Call Roxy from server code only.
 roxy = create_roxy(
     api_key="your-api-key",
     base_url="https://roxyapi.com/api/v2",  # default
-    timeout=30.0,                            # request timeout in seconds
+    timeout=30.0,                            # request timeout in seconds, also the budget a retry never sleeps past
+    max_retries=2,                           # default; 0 turns retries off
+    initial_delay=0.5,                       # default backoff base in seconds
+    max_delay=30.0,                          # default longest wait in seconds
 )
 ```
 
@@ -580,10 +625,14 @@ with create_roxy("your-api-key") as roxy:
 
 ## Links
 
-- [API Documentation](https://roxyapi.com/docs)
-- [Interactive API Reference](https://roxyapi.com/api-reference)
+- [Documentation](https://roxyapi.com/docs)
+- [API Reference](https://roxyapi.com/api-reference)
 - [Pricing](https://roxyapi.com/pricing)
-- [MCP for AI Agents](https://roxyapi.com/docs/mcp)
+- [MCP setup for AI agents](https://roxyapi.com/docs/mcp)
 - [Templates](https://roxyapi.com/templates)
-- [TypeScript SDK](https://www.npmjs.com/package/@roxyapi/sdk)
-- [Rust SDK](https://crates.io/crates/roxyapi)
+- [Issues](https://github.com/RoxyAPI/sdk-python/issues)
+- Other SDKs: [TypeScript](https://www.npmjs.com/package/@roxyapi/sdk), [PHP](https://packagist.org/packages/roxyapi/sdk), [.NET](https://www.nuget.org/packages/RoxyApi.Sdk), [Go](https://pkg.go.dev/github.com/RoxyAPI/sdk-go), [Rust](https://crates.io/crates/roxyapi)
+
+## License
+
+MIT

@@ -5,6 +5,8 @@ Regenerate the spec-derived docs in README.md and AGENTS.md:
     tag order, showing the `roxy.<namespace>` property and its method count.
   - The multi-language note (`<!-- BEGIN:LANGS -->` markers): the `lang` enum values and
     which domains take a `lang` query param, replacing hand-typed language lists.
+  - The error table (`<!-- BEGIN:ERRORS -->` markers): every entry of the spec's
+    `info["x-error-codes"]`, in spec order.
 
 Run with: python sync_docs.py (also runs automatically at the end of generate.py)
 
@@ -19,8 +21,9 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import Any
 
-from codegen import ROOT, Domain, domains, fail, load_spec
+from codegen import ROOT, Domain, domains, error_codes, fail, load_spec
 
 README_PATH = ROOT / "README.md"
 AGENTS_PATH = ROOT / "AGENTS.md"
@@ -29,6 +32,8 @@ DOMAINS_BEGIN = "<!-- BEGIN:DOMAINS -->"
 DOMAINS_END = "<!-- END:DOMAINS -->"
 LANGS_BEGIN = "<!-- BEGIN:LANGS -->"
 LANGS_END = "<!-- END:LANGS -->"
+ERRORS_BEGIN = "<!-- BEGIN:ERRORS -->"
+ERRORS_END = "<!-- END:ERRORS -->"
 
 
 def replace_region(path: Path, begin: str, end: str, block: str) -> bool:
@@ -112,8 +117,25 @@ def render_langs_block(all_domains: list[Domain], *, terse: bool) -> str:
     return f"{LANGS_BEGIN}\n{note}\n{LANGS_END}"
 
 
+def render_errors_block(codes: list[dict[str, Any]]) -> str:
+    intro = (
+        "Every error returns `{ error, code, doc_url }`. Switch on `code`; `error` is readable "
+        "text and may change. Each meaning below says whether and when to retry, and "
+        "`Retry-After` carries the wait when the response sends it. Every code is documented "
+        "at https://roxyapi.com/docs/errors."
+    )
+    rows = ["| Status | Code | Meaning |", "|--------|------|---------|"]
+    rows += [f"| {c['status'] or 'Any'} | `{c['code']}` | {c['meaning']} |" for c in codes]
+    return "\n".join([ERRORS_BEGIN, intro, "", *rows, ERRORS_END])
+
+
 def sync_file(
-    path: Path, all_domains: list[Domain], *, with_title: bool, terse_langs: bool
+    path: Path,
+    all_domains: list[Domain],
+    codes: list[dict[str, Any]],
+    *,
+    with_title: bool,
+    terse_langs: bool,
 ) -> bool:
     table_changed = replace_region(
         path, DOMAINS_BEGIN, DOMAINS_END, render_domains_table(all_domains, with_title=with_title)
@@ -121,14 +143,17 @@ def sync_file(
     langs_changed = replace_region(
         path, LANGS_BEGIN, LANGS_END, render_langs_block(all_domains, terse=terse_langs)
     )
-    return table_changed or langs_changed
+    errors_changed = replace_region(path, ERRORS_BEGIN, ERRORS_END, render_errors_block(codes))
+    return table_changed or langs_changed or errors_changed
 
 
 def main() -> None:
-    all_domains = domains(load_spec())
+    spec = load_spec()
+    all_domains = domains(spec)
+    codes = error_codes(spec)
 
-    readme_changed = sync_file(README_PATH, all_domains, with_title=True, terse_langs=False)
-    agents_changed = sync_file(AGENTS_PATH, all_domains, with_title=False, terse_langs=True)
+    readme_changed = sync_file(README_PATH, all_domains, codes, with_title=True, terse_langs=False)
+    agents_changed = sync_file(AGENTS_PATH, all_domains, codes, with_title=False, terse_langs=True)
 
     total_endpoints = sum(len(d.operations) for d in all_domains)
     print(

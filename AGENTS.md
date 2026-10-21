@@ -11,21 +11,12 @@ pip install roxy-sdk
 ```python
 from roxy_sdk import create_roxy
 
+# Retries 429, 500, 502, 503 and 504 by default. Optional settings, shown with their defaults:
+# create_roxy(key, timeout=30.0, max_retries=2, initial_delay=0.5, max_delay=30.0)
 roxy = create_roxy("your-api-key")
 ```
 
 `create_roxy` sets the base URL (`https://roxyapi.com/api/v2`) and auth header automatically. Returns a `Roxy` instance with namespaced domain properties.
-
-## Quality guidelines for agents
-
-- Every method returns `dict[str, Any]`. Access fields with `result["key"]["subkey"]`, never `result.key.subkey` (Python will raise `AttributeError: 'dict' object has no attribute ...`).
-- Method names are snake_case versions of the OpenAPI operationId (e.g. `castThreeCard` -> `cast_three_card`, `analyzeNumberSequence` -> `analyze_number_sequence`). Every sync method has an `_async` variant; use `await` with the async variants.
-- Param names are snake_case versions of the spec param names (`fullName` -> `full_name`, `birthDate` -> `birth_date`, `houseSystem` -> `house_system`). All params are keyword-only.
-- When in doubt about a method or kwarg, check `roxy_sdk.factory` directly or run `python -c "from roxy_sdk import Roxy; help(Roxy)"` - the generated signatures are the contract.
-- Response field names match the response schema of the OpenAPI spec exactly. Never invent or pluralize. If a field is not in the spec, it is not in the response.
-- To look up any operation or field beyond this guide, query the combined OpenAPI spec at `https://roxyapi.com/api/v2/openapi.json` with the jq recipe in `https://roxyapi.com/AGENTS.md`, or search the keyless Docs MCP server at `https://roxyapi.com/mcp/docs` (one tool, `search_docs`).
-- Strings everywhere: `date` is `"YYYY-MM-DD"`, `time` is `"HH:MM:SS"`, `timezone` is an IANA name (`"Asia/Kolkata"`, `"America/New_York"`) - the server resolves DST for the chart date. `number` (angel) is `"1111"`, `month` (birthstone) is `"1"`, `number` (hexagram) is `"1"`. Numeric kwargs are only `latitude`, `longitude`, `year`, `month` (numerology), `day`, `count` (tarot draw).
-- Inside `person1` / `person2` dicts any value type works because the kwarg is typed `dict[str, Any]`; only the top-level `timezone` kwarg needs string form.
 
 ## Critical rule: geocode before any chart endpoint
 
@@ -36,9 +27,9 @@ result = roxy.location.search_cities(q="New York")
 city = result["cities"][0]
 lat, lng, tz = city["latitude"], city["longitude"], city["timezone"]
 # `timezone` is the IANA string ("America/New_York"). Pass it directly to any chart endpoint.
-# The server resolves it to the DST-correct decimal offset using the date of the request itself,
+# The server resolves it to the DST-correct decimal offset using the date of the chart itself,
 # so a January 1990 New York chart gets EST (-5) even when you looked the city up in July.
-# If you prefer numbers, city["utcOffset"] (decimal: 5.5, -5, ...) also works.
+# city["utcOffset"] is the offset in force today, not on the birth date, so pass the IANA `timezone` string.
 ```
 
 `q` accepts bare city (`"Paris"`), city + country (`"Berlin Germany"`), or comma-qualified (`"Springfield, Illinois"`). Use the qualified form to disambiguate same-named cities.
@@ -72,6 +63,20 @@ Type `roxy.` to see all available namespaces. Type `roxy.{domain}.` in an IDE wi
 | [`roxy.languages`](https://roxyapi.com/api-reference/languages) | 2 | List the response languages accepted by the `lang` query parameter on every i18n-aware endpoint |
 <!-- END:DOMAINS -->
 
+## Quality guidelines for agents
+
+The rules to follow when writing any call with this SDK. Get these right and the generated signatures do the rest.
+
+- **Responses are dicts.** Every method returns `dict[str, Any]`. Access fields with `result["key"]["subkey"]`, never `result.key.subkey` (Python will raise `AttributeError: 'dict' object has no attribute ...`).
+- **Method names are snake_case versions of the OpenAPI operationId** (e.g. `castThreeCard` -> `cast_three_card`, `analyzeNumberSequence` -> `analyze_number_sequence`). Every sync method has an `_async` variant; use `await` with the async variants.
+- **Param names are snake_case versions of the spec param names** (`fullName` -> `full_name`, `birthDate` -> `birth_date`, `houseSystem` -> `house_system`). All params are keyword-only.
+- **When in doubt about a method or kwarg, read the generated signatures.** Check `roxy_sdk.factory` directly or run `python -c "from roxy_sdk import Roxy; help(Roxy)"` - the generated signatures are the contract.
+- **Response field names come from the response schema of the spec.** They match it exactly. Never invent or pluralize. If a field is not in the spec, it is not in the response.
+- **Look up any operation or field beyond this guide.** Query the combined OpenAPI spec at `https://roxyapi.com/api/v2/openapi.json` with the jq recipe in `https://roxyapi.com/AGENTS.md`, or search the keyless Docs MCP server at `https://roxyapi.com/mcp/docs` (one tool, `search_docs`).
+- **Strings everywhere.** `date` is `"YYYY-MM-DD"`, `time` is `"HH:MM:SS"`, `timezone` is an IANA name (`"Asia/Kolkata"`, `"America/New_York"`) - the server resolves DST for the chart date. `number` (angel) is `"1111"`, `month` (birthstone) is `"1"`, `number` (hexagram) is `"1"`. Numeric kwargs are only `latitude`, `longitude`, `year`, `month` (numerology), `day`, `count` (tarot draw).
+- **Nested dicts accept any value type.** Inside `person1` / `person2` dicts any value type works because the kwarg is typed `dict[str, Any]`; only the top-level `timezone` kwarg needs string form.
+- **Do not hand-roll requests.** No raw HTTP calls. The SDK injects auth, the base URL and the error type; it retries 429, 500, 502, 503 and 504 up to twice by default (see Retries; `create_roxy(key, max_retries=0)` turns that off).
+
 ## Critical patterns
 
 ### Two-step pattern for coordinate-dependent endpoints
@@ -81,8 +86,10 @@ result = roxy.location.search_cities(q="London")
 city = result["cities"][0]
 
 chart = roxy.astrology.generate_natal_chart(
-    date="1990-01-15", time="14:30:00",
-    latitude=city["latitude"], longitude=city["longitude"],
+    date="1990-01-15",
+    time="14:30:00",
+    latitude=city["latitude"],
+    longitude=city["longitude"],
     timezone=city["timezone"],  # IANA string, server resolves DST for the date
 )
 ```
@@ -112,19 +119,27 @@ Most valuable endpoints are POST:
 
 ```python
 natal = roxy.astrology.generate_natal_chart(
-    date="1990-01-15", time="14:30:00",
-    latitude=40.7128, longitude=-74.006, timezone="America/New_York",
+    date="1990-01-15",
+    time="14:30:00",
+    latitude=40.7128,
+    longitude=-74.006,
+    timezone="America/New_York",
 )
 
 kundli = roxy.vedic_astrology.generate_birth_chart(
-    date="1990-01-15", time="14:30:00",
-    latitude=28.6139, longitude=77.209,
+    date="1990-01-15",
+    time="14:30:00",
+    latitude=28.6139,
+    longitude=77.209,
 )
 
 celtic = roxy.tarot.cast_celtic_cross(question="What should I focus on?")
 
 numerology = roxy.numerology.generate_numerology_chart(
-    full_name="John Doe", year=1990, month=1, day=15,
+    full_name="John Doe",
+    year=1990,
+    month=1,
+    day=15,
 )
 ```
 
@@ -140,34 +155,6 @@ life_path = roxy.numerology.calculate_life_path(year=1990, month=1, day=15, lang
 ```
 
 The two Chinese scripts (`zh-Hans`, `zh-Hant`) currently ship on Chinese astrology and feng shui; every other domain answers those codes in English per field. To list supported codes at runtime, call `roxy.languages.list_languages()`.
-
-### Error handling
-
-Errors raise `RoxyAPIError` with `error` (message), `code` (machine-readable), and `status_code`:
-
-```python
-from roxy_sdk import create_roxy, RoxyAPIError
-
-try:
-    result = roxy.astrology.get_daily_horoscope(sign="invalid")
-except RoxyAPIError as e:
-    print(e.code)         # "validation_error"
-    print(e.error)        # "Invalid sign"
-    print(e.status_code)  # 400
-```
-
-| Status | Code | When |
-|--------|------|------|
-| 400 | `validation_error` | Missing or invalid parameters |
-| 401 | `api_key_required` | No API key provided |
-| 401 | `invalid_api_key` | Key format invalid or tampered |
-| 401 | `subscription_not_found` | Key references non-existent subscription |
-| 401 | `subscription_inactive` | Subscription cancelled, expired, or suspended |
-| 401 | `api_key_revoked` | Key was deleted from the account |
-| 404 | `not_found` | Resource not found |
-| 4xx | `bad_request` and other status-derived codes | A client error the endpoint itself detected, such as a date window whose `endDate` precedes `startDate` |
-| 429 | `rate_limit_exceeded` | Monthly quota reached |
-| 500 | `internal_error` | Server error |
 
 ## Common tasks
 
@@ -207,7 +194,7 @@ In the catalog order (Western astrology, Vedic astrology, forecast, Human Design
 | Vastu room compliance | `roxy.vastu.calculate_room_compliance(plot=plot, facing=facing, rooms=rooms)` |
 | Life path number | `roxy.numerology.calculate_life_path(year=year, month=month, day=day)` |
 | Full numerology chart | `roxy.numerology.generate_numerology_chart(full_name=full_name, year=year, month=month, day=day)` |
-| Personal year | `roxy.numerology.calculate_personal_year(month=month, day=day)` |
+| Personal year | `roxy.numerology.calculate_personal_year(month=month, day=day)` (`year` is optional, 100 to 2100, and defaults to the current UTC year) |
 | Gematria | `roxy.kabbalah.calculate_gematria(text=text)` |
 | Kabbalah birth profile | `roxy.kabbalah.generate_birth_profile(date=date, time=time, timezone=timezone)` |
 | Daily tarot card | `roxy.tarot.get_daily_card(seed=seed)` |
@@ -242,7 +229,7 @@ These are the fields AI agents most often get wrong. Copy the format column exac
 | `time` | 24-hour string | `"14:30:00"`, `"09:00:00"` | `"2:30 PM"`, `"14:30"` (no seconds), `"9:0:0"` (no leading zeros) |
 | `latitude` | Decimal degrees (float) | `51.5074` (London), `-33.8688` (Sydney), `40.7128` (NYC) | `"28°36'N"`, `"28 36 50"`, strings |
 | `longitude` | Decimal degrees (float) | `-0.1278` (London), `-74.006` (NYC), `139.6917` (Tokyo) | Same as latitude - no DMS strings |
-| `sign` (horoscope kwarg) | Lowercase zodiac name | `"aries"`, `"taurus"`, `"gemini"`, ... `"pisces"` | `"Aries"`, `"♈"`, `"1"`, `"ARIES"` (case-insensitive but prefer lowercase) |
+| `sign` (horoscope kwarg) | Lowercase zodiac name | `"aries"`, `"taurus"`, `"gemini"`, ... `"pisces"` | `"♈"`, `"1"` (the server matches case-insensitively, so `"Aries"` and `"ARIES"` work, but lowercase is canonical) |
 | `full_name` (numerology) | Birth-certificate name | `"John William Smith"`, `"Priya Rajesh Sharma"` | Nickname, married name, partial name - affects all letter-based calcs |
 | `seed` | Any string (deterministic) | `"user-42"`, `"session-abc-123"`, email hash | Numbers, objects - must be string |
 | `number` (angel numbers) | String | `"1111"`, `"777"`, `"1234"` | `1111` (int) fails path validation |
@@ -283,13 +270,82 @@ LLMs hallucinate confidently in this category. These are the specific traps you 
 
 - **Ayanamsa is server-side in Vedic.** LLMs default to tropical / Western math. Vedic endpoints apply sidereal Lahiri ayanamsa server-side. KP endpoints accept `ayanamsa` of `kp-newcomb` (default), `kp-old`, `lahiri`, or `custom`. Do not try to "correct" server output by subtracting ayanamsa in client code.
 - **Tithi count is 30, not 2.** 15 Shukla (waxing) plus 15 Krishna (waning). Older LLM training data conflates Purnima and Amavasya as single tithis. Our panchang response carries a `paksha` field (`"Shukla"` or `"Krishna"`) plus a tithi number, so there are 30 distinct tithis in a lunar month.
-- **Rahu and Ketu are shadow points, not planets.** They do not appear in a real ephemeris. Endpoints accept `node_type` of `"mean"` (smoothed mean node, traditional Vedic default) or `"true"` (osculating node with perturbation corrections) to select which calculation to use.
+- **Rahu and Ketu are shadow points, not planets.** They do not appear in a real ephemeris. Endpoints accept `node_type` of `"mean"` (smooth mean node, traditional Vedic default) or `"true"` (osculating node with perturbation corrections) to select which calculation to use.
 - **Nakshatra count is 27.** Abhijit is sometimes treated as a 28th in some schools, but this API uses the standard 27. `roxy.vedic_astrology.list_nakshatras()` returns a list of length 27.
 - **Retrograde is per-planet, not global.** Natal chart planets and Vedic `meta` include `isRetrograde: bool` per planet. KP planet lists use `retrograde`. Never generate "Mercury retrograde globally" UI copy, check the specific planet in the response.
 - **Tarot reversals are a product choice.** `allow_reversals=False` on a tarot draw means no reversed cards in that draw, period. It is not cosmically meaningful, it is a config flag.
 - **Angel number lookup works for any positive integer.** Digit-root fallback covers non-canonical numbers. Do not generate validation logic that rejects anything other than `111` / `222` / `333`.
 - **Seed-based daily endpoints are DETERMINISTIC per `(seed, date)` pair.** Same seed plus same date returns the same reading. This is by design for push-notification consistency. Do not describe it as "cached" or retry on stale responses.
-- **Timezone affects Western calculations more than Vedic.** Western natal charts must respect DST at time of birth. Vedic endpoints default to IST (`5.5`) which is DST-free. Use `utcOffset` from the Location API response as your `timezone` kwarg, not whatever clock the user is in right now.
+- **Timezone affects Western calculations more than Vedic.** Western natal charts must respect DST at the time of birth. Vedic endpoints default to IST (`5.5`) which is DST-free. Pass the IANA `timezone` string from the location lookup (`"America/New_York"`, `"Asia/Kolkata"`) directly to chart calls and the server resolves the DST-correct offset for the chart `date`. Never pass the `utcOffset` of the city record (the offset in force today) or the clock of the user right now.
+
+## Error handling
+
+Errors raise `RoxyAPIError` with `error` (message), `code` (machine-readable), `status_code`, `doc_url` (documentation for the code), `retry_after` (seconds from the `Retry-After` header, or `None`) and `issues` (the failing fields of a `validation_error`, otherwise `None`). `ErrorCode` is a string enum of every code below, so `e.code == ErrorCode.RATE_LIMIT_PER_MINUTE` works:
+
+```python
+from roxy_sdk import create_roxy, ErrorCode, RoxyAPIError
+
+try:
+    result = roxy.astrology.get_daily_horoscope(sign="invalid")
+except RoxyAPIError as e:
+    if e.code == ErrorCode.VALIDATION_ERROR:
+        for issue in e.issues or []:
+            print(issue["path"], issue["message"], issue["code"])  # path is the dot-separated field, e.g. "time" or "person1.date"
+    print(e.code)  # "validation_error"
+    print(e.status_code)  # 400
+```
+
+<!-- BEGIN:ERRORS -->
+Every error returns `{ error, code, doc_url }`. Switch on `code`; `error` is readable text and may change. Each meaning below says whether and when to retry, and `Retry-After` carries the wait when the response sends it. Every code is documented at https://roxyapi.com/docs/errors.
+
+| Status | Code | Meaning |
+|--------|------|---------|
+| 400 | `validation_error` | A field is missing or invalid. The body lists every failing field at once in issues, each with its path and the expected shape. |
+| 400 | `bad_request` | The request was rejected as a whole, for example a body that is not valid JSON or a date range that ends before it starts. |
+| 400 | `date_out_of_range` | A date lies outside the span the planetary positions are served for. The error names the supported dates. |
+| 401 | `api_key_required` | No API key was sent. |
+| 401 | `invalid_api_key` | The key sent is malformed or cannot be verified. |
+| 401 | `api_key_revoked` | The key was valid once and has since been revoked from the account page. |
+| 401 | `subscription_not_found` | The key verifies, but the subscription behind it no longer exists. |
+| 401 | `subscription_inactive` | The subscription behind the key is cancelled, expired or suspended, or a trial is past its end date. |
+| 401 | `publishable_key_not_allowed_on_mcp` | A publishable key was used on a Remote MCP server, which takes a secret key. |
+| 401 | `invalid_client_ip` | A keyless request could not be attributed to a caller. |
+| 401 | `unauthorized` | Authentication failed with no more specific reason to give. |
+| 403 | `forbidden` | The key is valid, but this request is not permitted. |
+| 403 | `origin_required` | A publishable key with an origin allowlist was used with no Origin header, as from a server or a native app. |
+| 403 | `origin_not_allowed` | The calling site is not on the origin allowlist of this publishable key. |
+| 404 | `not_found` | Nothing is served at this path, or the identifier in it does not exist. A path miss adds suggestions, the closest real endpoints. |
+| 405 | `method_not_allowed` | The path exists for a different HTTP method. The body lists the accepted methods in allow, as does the Allow header. |
+| 409 | `conflict` | The request cannot be applied in the current state. |
+| 410 | `gone` | The path was removed permanently. |
+| 413 | `payload_too_large` | The request body is larger than the API accepts. A body far over the cap is refused before it reaches the API and returns a bare 413 with no JSON body. |
+| 415 | `unsupported_media_type` | A request with a body was sent without Content-Type: application/json. |
+| 422 | `unprocessable_entity` | Every field is valid, but the combination cannot be computed. |
+| 429 | `rate_limit_exceeded` | The monthly request allowance is used up. Retry-After gives the seconds to the reset. |
+| 429 | `rate_limit_per_minute` | The per-minute limit of the plan was reached. Retry-After gives the seconds to the next minute, and the monthly allowance is not charged. |
+| 429 | `rate_limited` | A rate limit was reached, reported without the plan detail. |
+| 429 | `free_tier_exhausted` | A keyless request has used up its trial allowance. |
+| 500 | `internal_error` | The request failed inside our service. Retry with exponential backoff. |
+| 503 | `compute_saturated` | Heavy calculations are briefly at capacity. Send the same request again after Retry-After seconds. |
+| Any | `error` | A fallback for a status with no more specific code. The status and the error field carry the signal. |
+<!-- END:ERRORS -->
+
+### Retries
+
+The client retries twice by default: HTTP 429, 500, 502, 503 and 504, plus connection failures where the request was never sent. Pass `max_retries` to change the count, or `max_retries=0` to turn retries off. Waits use the `Retry-After` header when present, otherwise jittered exponential backoff from `initial_delay` (default 0.5 seconds) up to `max_delay` (default 30 seconds). A `Retry-After` longer than `max_delay`, such as the one on `rate_limit_exceeded`, is not waited out: the error is raised with `retry_after` set. A retry never sleeps past `timeout`. Read timeouts are never retried.
+
+```python
+from roxy_sdk import create_roxy, RoxyAPIError
+
+roxy = create_roxy("your-api-key", max_retries=4)
+
+try:
+    result = roxy.astrology.get_daily_horoscope(sign="aries")
+except RoxyAPIError as e:
+    print(e.code)  # "rate_limit_per_minute", "compute_saturated", "validation_error", ...
+    print(e.doc_url)  # documentation page for that code
+    print(e.retry_after)  # seconds the server asked you to wait, or None
+```
 
 ## MCP equivalents
 
@@ -311,12 +367,27 @@ Use the SDK for typed Python apps. Use MCP for AI agents (Claude Desktop, Cursor
 - **Date format is `YYYY-MM-DD`, time is `HH:MM:SS`.** Both are strings.
 - **Western `timezone` is required** as an IANA string (`"Asia/Kolkata"`, `"America/New_York"`, `"Europe/London"`, `"UTC"`); the server resolves it to the DST-correct offset for the chart date. Vedic endpoints accept an optional `timezone` (same form) that defaults to IST when omitted. The decimal-number form (`5.5`) is also accepted by the API, but only inside `person1`/`person2` dicts - the top-level `timezone=` kwarg is typed `str`.
 - **Errors raise `RoxyAPIError`.** Catch it and check `e.code`, `e.error`, and `e.status_code`.
-- **Switch on `code`, not `error`.** Codes are stable. Messages may change.
+- **A `validation_error` carries `issues`, each with `path` (the dot-separated field, such as `time` or `person1.date`), `message` and `code`.** Loop over them to show every failing field:
+  ```python
+  except RoxyAPIError as e:
+      for issue in e.issues or []:
+          print(issue["path"], issue["message"], issue["code"])
+  ```
+- **Switch on `e.code`, not `e.error`.** The message may change; the code is stable.
+- **A city record has `city`, `province`, `country`, `iso2`, `latitude`, `longitude`, `timezone`, `utcOffset` and `population`.** The name is `city`, never `name`.
+- **`utcOffset` on a city record is the offset in force today.** Pass the IANA `timezone` string to chart calls so the server resolves the offset for the birth date.
+- **A natal chart `planets` is a list of objects.** Find a body by `name`: `next(p for p in chart["planets"] if p["name"] == "Moon")`.
+- **In a Vedic chart `meta.Moon.rashi` is a string and `meta.Moon.nakshatra` is an object** (`name`, `pada`, `lord`). Display `kundli["meta"]["Moon"]["nakshatra"]["name"]`.
+- **`sign` is matched case-insensitively.** Lowercase is canonical.
+- **Total requests on a persistent failure = 1 + retries.** The default `max_retries` of 2 makes 3 requests; `max_retries=0` makes exactly one.
 - **List endpoints return a paginated envelope**, `{"total": ..., "limit": ..., "offset": ...}` plus a named list (`cities`, `crystals`, `hexagrams`, `symbols`), never a bare list. Pass `limit=` to widen a page; `list_hexagrams` defaults to 20 of 64.
 
 ## Links
 
+- Documentation: https://roxyapi.com/docs
 - Interactive API docs: https://roxyapi.com/api-reference
 - Pricing and API keys: https://roxyapi.com/pricing
 - MCP for AI agents: https://roxyapi.com/docs/mcp
-- TypeScript SDK: https://www.npmjs.com/package/@roxyapi/sdk
+- Templates: https://roxyapi.com/templates
+- Source and issues: https://github.com/RoxyAPI/sdk-python
+- Other SDKs: TypeScript https://www.npmjs.com/package/@roxyapi/sdk, PHP https://packagist.org/packages/roxyapi/sdk, .NET https://www.nuget.org/packages/RoxyApi.Sdk, Go https://pkg.go.dev/github.com/RoxyAPI/sdk-go, Rust https://crates.io/crates/roxyapi

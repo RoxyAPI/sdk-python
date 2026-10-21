@@ -260,6 +260,202 @@ def build_method(op: dict[str, Any]) -> str:
 """
 
 
+RUNTIME = """\
+class RoxyAPIError(Exception):
+    \"\"\"Error returned by the RoxyAPI.
+
+    Switch on `code`. `doc_url` links the documentation for that code. `retry_after` is the
+    wait in seconds the server asked for, or None when the response sent no Retry-After.
+    On a validation_error, `issues` lists every failing field, each with `path`, `message`
+    and `code`; it is None for any other error.
+    \"\"\"
+
+    def __init__(
+        self,
+        error: str,
+        code: str,
+        status_code: int,
+        *,
+        doc_url: str | None = None,
+        retry_after: float | None = None,
+        issues: list[dict[str, Any]] | None = None,
+    ) -> None:
+        self.error = error
+        self.code = code
+        self.status_code = status_code
+        self.doc_url = doc_url
+        self.retry_after = retry_after
+        self.issues = issues
+        super().__init__(f"[{status_code}] {code}: {error}")
+
+    def __repr__(self) -> str:
+        return (
+            f"RoxyAPIError(error={self.error!r}, code={self.code!r}, "
+            f"status_code={self.status_code}, doc_url={self.doc_url!r}, "
+            f"retry_after={self.retry_after!r}, issues={self.issues!r})"
+        )
+
+
+_RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+_NEVER_SENT = (httpx.ConnectError, httpx.ConnectTimeout)
+
+
+def _default_headers(api_key: str) -> dict[str, str]:
+    return {
+        "X-API-Key": api_key,
+        "X-SDK-Client": f"roxy-sdk-python/{VERSION}",
+        "Accept": "application/json",
+    }
+
+
+def _parse_retry_after(value: str | None) -> float | None:
+    \"\"\"Retry-After as seconds, from either delta-seconds or an HTTP-date.\"\"\"
+    if value is None:
+        return None
+    try:
+        seconds = float(value)
+    except ValueError:
+        try:
+            when = parsedate_to_datetime(value)
+        except (TypeError, ValueError):
+            return None
+        if when.tzinfo is None:
+            when = when.replace(tzinfo=timezone.utc)
+        seconds = (when - datetime.now(timezone.utc)).total_seconds()
+    return None if math.isnan(seconds) else max(seconds, 0.0)
+
+
+class _Retry:
+    \"\"\"Retry policy: HTTP 429, 500, 502, 503, 504 and connection failures only.\"\"\"
+
+    def __init__(self, max_retries: int, initial_delay: float, max_delay: float, timeout: float) -> None:
+        if max_retries < 0:
+            raise ValueError("max_retries must be 0 or greater")
+        self.max_retries = max_retries
+        self.initial_delay = initial_delay
+        self.max_delay = max_delay
+        self.timeout = timeout
+
+    def delay(self, retry_after: float | None, attempt: int, started: float) -> float | None:
+        \"\"\"Seconds to sleep before the next attempt, or None to surface the error now.\"\"\"
+        if attempt >= self.max_retries:
+            return None
+        if retry_after is not None:
+            if retry_after > self.max_delay:
+                return None
+            wait = min(self.max_delay, retry_after + random.uniform(0, self.initial_delay))
+        else:
+            wait = random.uniform(0, min(self.max_delay, self.initial_delay * 2**attempt))
+        if time.monotonic() - started + wait >= self.timeout:
+            return None
+        return wait
+
+
+def _handle_response(resp: httpx.Response) -> Any:
+    \"\"\"Parse response, raising RoxyAPIError on 4xx/5xx.\"\"\"
+    if resp.status_code >= 400:
+        try:
+            body = resp.json()
+        except Exception:
+            body = {}
+        if not isinstance(body, dict):
+            body = {}
+        raise RoxyAPIError(
+            error=body.get("error", resp.text or "Unknown error"),
+            code=body.get("code", "unknown"),
+            status_code=resp.status_code,
+            doc_url=body.get("doc_url"),
+            retry_after=_parse_retry_after(resp.headers.get("Retry-After")),
+            issues=body.get("issues") if isinstance(body.get("issues"), list) else None,
+        )
+    return resp.json()
+
+
+class _BaseDomain:
+    \"\"\"Base class for all domain namespaces.\"\"\"
+
+    def __init__(self, client: httpx.Client, async_client: httpx.AsyncClient, retry: _Retry) -> None:
+        self._client = client
+        self._async_client = async_client
+        self._retry = retry
+
+    def _request(self, method: str, path: str, body: dict[str, Any] | None, params: dict[str, Any] | None) -> Any:
+        started = time.monotonic()
+        attempt = 0
+        while True:
+            try:
+                resp = self._client.request(method, path, json=body, params=params)
+            except _NEVER_SENT:
+                wait = self._retry.delay(None, attempt, started)
+                if wait is None:
+                    raise
+            else:
+                if resp.status_code not in _RETRY_STATUSES:
+                    return _handle_response(resp)
+                wait = self._retry.delay(_parse_retry_after(resp.headers.get("Retry-After")), attempt, started)
+                if wait is None:
+                    return _handle_response(resp)
+            time.sleep(wait)
+            attempt += 1
+
+    async def _request_async(self, method: str, path: str, body: dict[str, Any] | None, params: dict[str, Any] | None) -> Any:
+        started = time.monotonic()
+        attempt = 0
+        while True:
+            try:
+                resp = await self._async_client.request(method, path, json=body, params=params)
+            except _NEVER_SENT:
+                wait = self._retry.delay(None, attempt, started)
+                if wait is None:
+                    raise
+            else:
+                if resp.status_code not in _RETRY_STATUSES:
+                    return _handle_response(resp)
+                wait = self._retry.delay(_parse_retry_after(resp.headers.get("Retry-After")), attempt, started)
+                if wait is None:
+                    return _handle_response(resp)
+            await asyncio.sleep(wait)
+            attempt += 1
+
+    def _get(self, path: str, params: dict[str, Any] | None = None) -> Any:
+        return self._request("GET", path, None, params)
+
+    async def _get_async(self, path: str, params: dict[str, Any] | None = None) -> Any:
+        return await self._request_async("GET", path, None, params)
+
+    def _post(self, path: str, body: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> Any:
+        return self._request("POST", path, body, params)
+
+    async def _post_async(self, path: str, body: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> Any:
+        return await self._request_async("POST", path, body, params)
+"""
+
+
+def error_codes(spec: dict[str, Any]) -> list[dict[str, Any]]:
+    """The spec's `info["x-error-codes"]`, the one source for the enum and the docs table."""
+    codes = spec.get("info", {}).get("x-error-codes")
+    if not codes:
+        fail('spec has no info["x-error-codes"]')
+    return list(codes)
+
+
+def error_code_enum(spec: dict[str, Any]) -> str:
+    """The `ErrorCode` enum, one member per error code.
+    A `str, Enum` mix-in because the package minimum predates `StrEnum` (3.11)."""
+    lines = [
+        "class ErrorCode(str, Enum):",
+        '    """Every `code` the API returns. Compare with `RoxyAPIError.code`."""',
+        "",
+    ]
+    for c in error_codes(spec):
+        status = c["status"] or "Any"
+        lines.append(f'    {c["code"].upper()} = "{c["code"]}"')
+        doc = f"{status}. {c['meaning']}"
+        lines.append(f"    {doc!r}")
+    lines += ["", "    def __str__(self) -> str:", "        return str(self.value)", "", ""]
+    return "\n".join(lines)
+
+
 def main() -> None:
     spec = load_spec()
 
@@ -271,6 +467,13 @@ def main() -> None:
         '"""',
         "from __future__ import annotations",
         "",
+        "import asyncio",
+        "import math",
+        "import random",
+        "import time",
+        "from datetime import datetime, timezone",
+        "from email.utils import parsedate_to_datetime",
+        "from enum import Enum",
         "from typing import Any",
         "",
         "import httpx",
@@ -281,61 +484,8 @@ def main() -> None:
         '_BASE_URL = "https://roxyapi.com/api/v2"',
         "",
         "",
-        "class RoxyAPIError(Exception):",
-        '    """Error returned by the RoxyAPI."""',
-        "",
-        "    def __init__(self, error: str, code: str, status_code: int) -> None:",
-        "        self.error = error",
-        "        self.code = code",
-        "        self.status_code = status_code",
-        '        super().__init__(f"[{status_code}] {code}: {error}")',
-        "",
-        "    def __repr__(self) -> str:",
-        '        return f"RoxyAPIError(error={self.error!r}, code={self.code!r}, status_code={self.status_code})"',
-        "",
-        "",
-        "def _default_headers(api_key: str) -> dict[str, str]:",
-        "    return {",
-        '        "X-API-Key": api_key,',
-        '        "X-SDK-Client": f"roxy-sdk-python/{VERSION}",',
-        '        "Accept": "application/json",',
-        "    }",
-        "",
-        "",
-        "def _handle_response(resp: httpx.Response) -> Any:",
-        '    """Parse response, raising RoxyAPIError on 4xx/5xx."""',
-        "    if resp.status_code >= 400:",
-        "        try:",
-        "            body = resp.json()",
-        "        except Exception:",
-        "            body = {}",
-        "        raise RoxyAPIError(",
-        '            error=body.get("error", resp.text or "Unknown error"),',
-        '            code=body.get("code", "unknown"),',
-        "            status_code=resp.status_code,",
-        "        )",
-        "    return resp.json()",
-        "",
-        "",
-        "class _BaseDomain:",
-        '    """Base class for all domain namespaces."""',
-        "",
-        "    def __init__(self, client: httpx.Client, async_client: httpx.AsyncClient) -> None:",
-        "        self._client = client",
-        "        self._async_client = async_client",
-        "",
-        "    def _get(self, path: str, params: dict[str, Any] | None = None) -> Any:",
-        "        return _handle_response(self._client.get(path, params=params))",
-        "",
-        "    async def _get_async(self, path: str, params: dict[str, Any] | None = None) -> Any:",
-        "        return _handle_response(await self._async_client.get(path, params=params))",
-        "",
-        "    def _post(self, path: str, body: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> Any:",
-        "        return _handle_response(self._client.post(path, json=body, params=params))",
-        "",
-        "    async def _post_async(self, path: str, body: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> Any:",
-        "        return _handle_response(await self._async_client.post(path, json=body, params=params))",
-        "",
+        error_code_enum(spec),
+        RUNTIME,
     ]
 
     all_domains = domains(spec)
@@ -361,12 +511,22 @@ def main() -> None:
     out.append('    """')
     out.append("")
     out.append(
-        "    def __init__(self, api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> None:"
+        "    def __init__(\n"
+        "        self,\n"
+        "        api_key: str,\n"
+        "        base_url: str = _BASE_URL,\n"
+        "        timeout: float = 30.0,\n"
+        "        *,\n"
+        "        max_retries: int = 2,\n"
+        "        initial_delay: float = 0.5,\n"
+        "        max_delay: float = 30.0,\n"
+        "    ) -> None:"
     )
     out.append("        if not api_key:")
     out.append(
         '            raise ValueError("API key is required. Get one at https://roxyapi.com/pricing")'
     )
+    out.append("        retry = _Retry(max_retries, initial_delay, max_delay, timeout)")
     out.append("        headers = _default_headers(api_key)")
     out.append(
         "        self._client = httpx.Client(base_url=base_url, headers=headers, timeout=timeout)"
@@ -376,7 +536,7 @@ def main() -> None:
     )
     for domain in all_domains:
         out.append(
-            f"        self.{domain.attr} = {domain.class_name}(self._client, self._async_client)"
+            f"        self.{domain.attr} = {domain.class_name}(self._client, self._async_client, retry)"
         )
     out.append("")
     out.append("    def close(self) -> None:")
@@ -407,7 +567,15 @@ def main() -> None:
 
     # create_roxy
     out.append(
-        "def create_roxy(api_key: str, base_url: str = _BASE_URL, timeout: float = 30.0) -> Roxy:"
+        "def create_roxy(\n"
+        "    api_key: str,\n"
+        "    base_url: str = _BASE_URL,\n"
+        "    timeout: float = 30.0,\n"
+        "    *,\n"
+        "    max_retries: int = 2,\n"
+        "    initial_delay: float = 0.5,\n"
+        "    max_delay: float = 30.0,\n"
+        ") -> Roxy:"
     )
     out.append('    """')
     out.append("    Create a configured Roxy instance.")
@@ -417,9 +585,25 @@ def main() -> None:
     out.append(
         "        base_url: Override the default API base URL. Default: https://roxyapi.com/api/v2"
     )
-    out.append("        timeout: Request timeout in seconds. Default: 30.")
+    out.append(
+        "        timeout: Request timeout in seconds, also the budget a retry never sleeps past. Default: 30."
+    )
+    out.append(
+        "        max_retries: Retries on 429, 500, 502, 503, 504 and connection failures. Default: 2; 0 turns retries off."
+    )
+    out.append("        initial_delay: Base backoff in seconds. Default: 0.5.")
+    out.append(
+        "        max_delay: Longest wait in seconds; a longer Retry-After is surfaced, not waited. Default: 30."
+    )
     out.append('    """')
-    out.append("    return Roxy(api_key=api_key, base_url=base_url, timeout=timeout)")
+    out.append("    return Roxy(")
+    out.append("        api_key=api_key,")
+    out.append("        base_url=base_url,")
+    out.append("        timeout=timeout,")
+    out.append("        max_retries=max_retries,")
+    out.append("        initial_delay=initial_delay,")
+    out.append("        max_delay=max_delay,")
+    out.append("    )")
     out.append("")
 
     OUTPUT_PATH.write_text("\n".join(out))
