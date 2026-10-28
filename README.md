@@ -95,7 +95,7 @@ kundli = roxy.vedic_astrology.generate_birth_chart(
 | [Crystals and Healing Stones](https://roxyapi.com/api-reference/crystals-and-healing-stones) | `roxy.crystals` | 12 | Crystal healing API covering the most popular and widely-searched healing crystals and gemstones, from Amethyst and R... |
 | [Dreams](https://roxyapi.com/api-reference/dreams) | `roxy.dreams` | 5 | Dream interpretation API with a 2,200+ symbol dream dictionary and psychological meanings covering animals, objects,... |
 | [Angel Numbers](https://roxyapi.com/api-reference/angel-numbers) | `roxy.angel_numbers` | 4 | Angel numbers API with meanings for 111, 222, 333, 444, 555, 666, 777, 888, 999, 1111, and 75+ sequences covering eve... |
-| [Location and Timezone](https://roxyapi.com/api-reference/location-and-timezone) | `roxy.location` | 3 | Timezone and location API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude... |
+| [Location and Timezone](https://roxyapi.com/api-reference/location-and-timezone) | `roxy.location` | 3 | Timezone and location API with city search and geocoding across 5,180,000+ cities, towns and villages in 240+ countri... |
 | [Usage](https://roxyapi.com/api-reference/usage) | `roxy.usage` | 1 | Monitor your API usage, check rate limits, and track request consumption |
 | [Languages](https://roxyapi.com/api-reference/languages) | `roxy.languages` | 2 | List the response languages accepted by the `lang` query parameter on every i18n-aware endpoint |
 <!-- END:DOMAINS -->

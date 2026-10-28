@@ -6969,7 +6969,7 @@ class AngelNumbersDomain(_BaseDomain):
 
 
 class LocationDomain(_BaseDomain):
-    """Timezone and location API with city search and geocoding across 235,000+ cities in 240+ countries, returning latitude..."""
+    """Timezone and location API with city search and geocoding across 5,180,000+ cities, towns and villages in 240+ countri..."""
 
     def get_cities_by_country(self, *, iso2: str, limit: int | None = None, offset: int | None = None) -> Any:
         """Get cities in a country - Geocoding directory sorted by population"""
