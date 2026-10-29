@@ -817,7 +817,7 @@ class AstrologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/astrology/profections", body, params=params or None)
 
-    def generate_progressions(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, lang: str | None = None) -> Any:
+    def generate_progressions(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, house_system: str | None = None, lang: str | None = None) -> Any:
         """Secondary progressions calculator - progressed chart, progressed Sun and Moon"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -828,12 +828,14 @@ class AstrologyDomain(_BaseDomain):
         if node_type is not None:
             body["nodeType"] = node_type
         body["targetDate"] = target_date
+        if house_system is not None:
+            body["houseSystem"] = house_system
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/astrology/progressions", body, params=params or None)
 
-    async def generate_progressions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, lang: str | None = None) -> Any:
+    async def generate_progressions_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, target_date: str, house_system: str | None = None, lang: str | None = None) -> Any:
         """Secondary progressions calculator - progressed chart, progressed Sun and Moon (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -844,6 +846,8 @@ class AstrologyDomain(_BaseDomain):
         if node_type is not None:
             body["nodeType"] = node_type
         body["targetDate"] = target_date
+        if house_system is not None:
+            body["houseSystem"] = house_system
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -5361,7 +5365,7 @@ class NumerologyDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/numerology/karmic-debt", body, params=params or None)
 
-    def generate_numerology_chart(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, lang: str | None = None) -> Any:
+    def generate_numerology_chart(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, target_date: str | None = None, lang: str | None = None) -> Any:
         """Generate numerology chart - Complete numerology reading API"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
@@ -5370,12 +5374,14 @@ class NumerologyDomain(_BaseDomain):
         body["day"] = day
         if current_year is not None:
             body["currentYear"] = current_year
+        if target_date is not None:
+            body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/numerology/chart", body, params=params or None)
 
-    async def generate_numerology_chart_async(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, lang: str | None = None) -> Any:
+    async def generate_numerology_chart_async(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, target_date: str | None = None, lang: str | None = None) -> Any:
         """Generate numerology chart - Complete numerology reading API (async)"""
         body: dict[str, Any] = {}
         body["fullName"] = full_name
@@ -5384,6 +5390,8 @@ class NumerologyDomain(_BaseDomain):
         body["day"] = day
         if current_year is not None:
             body["currentYear"] = current_year
+        if target_date is not None:
+            body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
@@ -5533,7 +5541,7 @@ class KabbalahDomain(_BaseDomain):
             params["lang"] = lang
         return await self._post_async(f"/kabbalah/compatibility", body, params=params or None)
 
-    def generate_birth_profile(self, *, date: str, time: str | None = None, timezone: str, angel_dating: str | None = None, year_start: str | None = None, leap_day_policy: str | None = None, after_sunset: bool | None = None, lang: str | None = None) -> Any:
+    def generate_birth_profile(self, *, date: str, time: str | None = None, timezone: str, angel_dating: str | None = None, year_start: str | None = None, leap_day_policy: str | None = None, after_sunset: bool | None = None, target_date: str | None = None, lang: str | None = None) -> Any:
         """Generate a birth profile - Hebrew birthday and birth angel API"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -5548,12 +5556,14 @@ class KabbalahDomain(_BaseDomain):
             body["leapDayPolicy"] = leap_day_policy
         if after_sunset is not None:
             body["afterSunset"] = after_sunset
+        if target_date is not None:
+            body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
         return self._post(f"/kabbalah/birth-profile", body, params=params or None)
 
-    async def generate_birth_profile_async(self, *, date: str, time: str | None = None, timezone: str, angel_dating: str | None = None, year_start: str | None = None, leap_day_policy: str | None = None, after_sunset: bool | None = None, lang: str | None = None) -> Any:
+    async def generate_birth_profile_async(self, *, date: str, time: str | None = None, timezone: str, angel_dating: str | None = None, year_start: str | None = None, leap_day_policy: str | None = None, after_sunset: bool | None = None, target_date: str | None = None, lang: str | None = None) -> Any:
         """Generate a birth profile - Hebrew birthday and birth angel API (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
@@ -5568,6 +5578,8 @@ class KabbalahDomain(_BaseDomain):
             body["leapDayPolicy"] = leap_day_policy
         if after_sunset is not None:
             body["afterSunset"] = after_sunset
+        if target_date is not None:
+            body["targetDate"] = target_date
         params: dict[str, Any] = {}
         if lang is not None:
             params["lang"] = lang
