@@ -20,8 +20,9 @@ import httpx
 import pytest
 
 import roxy_sdk
-from codegen import ROOT, camel_to_snake, domains, load_spec
+from codegen import ROOT, Domain, camel_to_snake, domains, load_spec
 from roxy_sdk import Roxy, RoxyAPIError, __version__, create_roxy, factory
+from sync_docs import lang_facts
 
 DOMAINS = domains(load_spec())
 OPERATIONS = [(domain, op) for domain in DOMAINS for op in domain.operations]
@@ -416,3 +417,30 @@ def test_validation_error_exposes_issues(stub: Callable[[httpx.Response], Record
 
 def test_issues_is_none_when_the_body_has_none() -> None:
     assert RoxyAPIError("m", "c", 400).issues is None
+
+
+def _lang_domain(attr: str, *codes: str) -> Domain:
+    params = (
+        [{"name": "lang", "in": "query", "schema": {"enum": list(codes), "default": "en"}}]
+        if codes
+        else []
+    )
+    return Domain(tag=attr, attr=attr, summary="", operations=[{"parameters": params}])
+
+
+def test_lang_facts_states_the_widest_list_when_others_are_subsets() -> None:
+    facts = lang_facts(
+        [
+            _lang_domain("reports", "en", "hi"),
+            _lang_domain("astrology", "en", "hi", "zh-Hans"),
+            _lang_domain("location"),
+        ]
+    )
+    assert facts == (["en", "hi", "zh-Hans"], "en", ["reports", "astrology"], ["location"])
+
+
+def test_lang_facts_refuses_a_list_outside_the_widest() -> None:
+    with pytest.raises(SystemExit):
+        lang_facts(
+            [_lang_domain("reports", "en", "ja"), _lang_domain("astrology", "en", "hi", "zh-Hans")]
+        )

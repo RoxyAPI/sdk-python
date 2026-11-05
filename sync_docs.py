@@ -71,8 +71,9 @@ def render_domains_table(all_domains: list[Domain], *, with_title: bool) -> str:
 
 
 def lang_facts(all_domains: list[Domain]) -> tuple[list[str], str | None, list[str], list[str]]:
-    """The `lang` enum, its default, and which domains take it. The spec declares the
-    parameter once per operation, so every declaration must agree."""
+    """The widest `lang` enum, its default, and which domains take it. A composite
+    operation such as a report accepts only the codes all of its domains write, so
+    every declaration must be a subset of the widest one, with one default."""
     enums: set[tuple[str, ...]] = set()
     defaults: set[str] = set()
     supports_lang: set[str] = set()
@@ -86,11 +87,12 @@ def lang_facts(all_domains: list[Domain]) -> tuple[list[str], str | None, list[s
                 enums.add(tuple(schema.get("enum", [])))
                 if schema.get("default") is not None:
                     defaults.add(str(schema["default"]))
-    if len(enums) != 1 or len(defaults) > 1:
+    widest = max(enums, key=len, default=())
+    if not widest or any(not set(e) <= set(widest) for e in enums) or len(defaults) > 1:
         fail(f"sync_docs: lang declared inconsistently: {sorted(enums)} / {sorted(defaults)}")
     supported = [d.attr for d in all_domains if d.attr in supports_lang]
     english_only = [d.attr for d in all_domains if d.attr not in supports_lang]
-    return list(enums.pop()), next(iter(defaults), None), supported, english_only
+    return list(widest), next(iter(defaults), None), supported, english_only
 
 
 def render_langs_block(all_domains: list[Domain], *, terse: bool) -> str:
