@@ -30,6 +30,12 @@ class ErrorCode(str, Enum):
     '400. The request was rejected as a whole, for example a body that is not valid JSON or a date range that ends before it starts.'
     DATE_OUT_OF_RANGE = "date_out_of_range"
     '400. A date lies outside the span the planetary positions are served for. The error names the supported dates.'
+    INVALID_BRANDING = "invalid_branding"
+    '400. The report branding cannot be used, for example a logo that is not a PNG, JPEG, WebP or SVG image.'
+    LOGO_FETCH_FAILED = "logo_fetch_failed"
+    '400. The report logo could not be fetched: it must be an HTTPS URL on a public host that answers within the size limit.'
+    UNSUPPORTED_CHARACTER = "unsupported_character"
+    '400. The report text holds a character no report font draws. The error names it: remove or replace it.'
     API_KEY_REQUIRED = "api_key_required"
     '401. No API key was sent.'
     INVALID_API_KEY = "invalid_api_key"
@@ -74,10 +80,16 @@ class ErrorCode(str, Enum):
     '429. A rate limit was reached, reported without the plan detail.'
     FREE_TIER_EXHAUSTED = "free_tier_exhausted"
     '429. A keyless request has used up its trial allowance.'
+    REPORTS_RATE_LIMITED = "reports_rate_limited"
+    '429. Too many reports were requested this minute. Retry-After gives the seconds to the next minute.'
     INTERNAL_ERROR = "internal_error"
     '500. The request failed inside our service. Retry with exponential backoff.'
     COMPUTE_SATURATED = "compute_saturated"
     '503. Heavy calculations are briefly at capacity. Send the same request again after Retry-After seconds.'
+    REPORTS_BUSY = "reports_busy"
+    '503. Report rendering is briefly at capacity. Send the same request again after Retry-After seconds.'
+    REPORT_RENDER_TIMEOUT = "report_render_timeout"
+    '503. The report took too long to render. Send the same request again.'
     ERROR = "error"
     'Any. A fallback for a status with no more specific code. The status and the error field carry the signal.'
 
@@ -7054,6 +7066,448 @@ class UsageDomain(_BaseDomain):
         return await self._get_async(f"/usage")
 
 
+class ReportsDomain(_BaseDomain):
+    """Branded reports built from the API: a natal chart and more as a print-ready PDF, self-contained HTML or Markdown, whi..."""
+
+    def generate_bazi_report(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, gender: str, year: int, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """BaZi report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        body["gender"] = gender
+        body["year"] = year
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/bazi", body, params=params or None)
+
+    async def generate_bazi_report_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, day_boundary: str | None = None, year_boundary: str | None = None, hour_clock: str | None = None, gender: str, year: int, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """BaZi report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if day_boundary is not None:
+            body["dayBoundary"] = day_boundary
+        if year_boundary is not None:
+            body["yearBoundary"] = year_boundary
+        if hour_clock is not None:
+            body["hourClock"] = hour_clock
+        body["gender"] = gender
+        body["year"] = year
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/bazi", body, params=params or None)
+
+    def generate_human_design_report(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Human Design report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/human-design", body, params=params or None)
+
+    async def generate_human_design_report_async(self, *, date: str, time: str, timezone: str, latitude: float | None = None, longitude: float | None = None, node_type: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Human Design report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["timezone"] = timezone
+        if latitude is not None:
+            body["latitude"] = latitude
+        if longitude is not None:
+            body["longitude"] = longitude
+        if node_type is not None:
+            body["nodeType"] = node_type
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/human-design", body, params=params or None)
+
+    def generate_kundli_report(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Kundli report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/kundli", body, params=params or None)
+
+    async def generate_kundli_report_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Kundli report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        if timezone is not None:
+            body["timezone"] = timezone
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/kundli", body, params=params or None)
+
+    def generate_matchmaking_report(self, *, person1: dict[str, Any], person2: dict[str, Any], ayanamsa: str | None = None, ayanamsa_value: float | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Kundli matching report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/matchmaking", body, params=params or None)
+
+    async def generate_matchmaking_report_async(self, *, person1: dict[str, Any], person2: dict[str, Any], ayanamsa: str | None = None, ayanamsa_value: float | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Kundli matching report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if ayanamsa is not None:
+            body["ayanamsa"] = ayanamsa
+        if ayanamsa_value is not None:
+            body["ayanamsaValue"] = ayanamsa_value
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/matchmaking", body, params=params or None)
+
+    def generate_natal_report(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Natal chart report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/natal", body, params=params or None)
+
+    async def generate_natal_report_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Natal chart report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if node_type is not None:
+            body["nodeType"] = node_type
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/natal", body, params=params or None)
+
+    def generate_numerology_report(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, target_date: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Numerology report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["fullName"] = full_name
+        body["year"] = year
+        body["month"] = month
+        body["day"] = day
+        if current_year is not None:
+            body["currentYear"] = current_year
+        if target_date is not None:
+            body["targetDate"] = target_date
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/numerology", body, params=params or None)
+
+    async def generate_numerology_report_async(self, *, full_name: str, year: int, month: int, day: int, current_year: int | None = None, target_date: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Numerology report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["fullName"] = full_name
+        body["year"] = year
+        body["month"] = month
+        body["day"] = day
+        if current_year is not None:
+            body["currentYear"] = current_year
+        if target_date is not None:
+            body["targetDate"] = target_date
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/numerology", body, params=params or None)
+
+    def generate_synastry_report(self, *, person1: dict[str, Any], person2: dict[str, Any], house_system: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Synastry report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/synastry", body, params=params or None)
+
+    async def generate_synastry_report_async(self, *, person1: dict[str, Any], person2: dict[str, Any], house_system: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Synastry report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["person1"] = person1
+        body["person2"] = person2
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/synastry", body, params=params or None)
+
+    def generate_tarot_report(self, *, spread: str | None = None, question: str | None = None, seed: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Tarot reading report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        if spread is not None:
+            body["spread"] = spread
+        if question is not None:
+            body["question"] = question
+        if seed is not None:
+            body["seed"] = seed
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/tarot", body, params=params or None)
+
+    async def generate_tarot_report_async(self, *, spread: str | None = None, question: str | None = None, seed: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Tarot reading report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        if spread is not None:
+            body["spread"] = spread
+        if question is not None:
+            body["question"] = question
+        if seed is not None:
+            body["seed"] = seed
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/tarot", body, params=params or None)
+
+    def generate_yearly_forecast_report(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Yearly forecast report - Branded PDF report API"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["year"] = year
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return self._post(f"/reports/yearly-forecast", body, params=params or None)
+
+    async def generate_yearly_forecast_report_async(self, *, date: str, time: str, year: int, latitude: float, longitude: float, timezone: str, house_system: str | None = None, format: str | None = None, branding: dict[str, Any] | None = None, page: dict[str, Any] | None = None, readings: bool | None = None, lang: str | None = None) -> Any:
+        """Yearly forecast report - Branded PDF report API (async)"""
+        body: dict[str, Any] = {}
+        body["date"] = date
+        body["time"] = time
+        body["year"] = year
+        body["latitude"] = latitude
+        body["longitude"] = longitude
+        body["timezone"] = timezone
+        if house_system is not None:
+            body["houseSystem"] = house_system
+        if format is not None:
+            body["format"] = format
+        if branding is not None:
+            body["branding"] = branding
+        if page is not None:
+            body["page"] = page
+        if readings is not None:
+            body["readings"] = readings
+        params: dict[str, Any] = {}
+        if lang is not None:
+            params["lang"] = lang
+        return await self._post_async(f"/reports/yearly-forecast", body, params=params or None)
+
+
 class LanguagesDomain(_BaseDomain):
     """List the response languages accepted by the `lang` query parameter on every i18n-aware endpoint"""
 
@@ -7126,6 +7580,7 @@ class Roxy:
         self.angel_numbers = AngelNumbersDomain(self._client, self._async_client, retry)
         self.location = LocationDomain(self._client, self._async_client, retry)
         self.usage = UsageDomain(self._client, self._async_client, retry)
+        self.reports = ReportsDomain(self._client, self._async_client, retry)
         self.languages = LanguagesDomain(self._client, self._async_client, retry)
 
     def close(self) -> None:
