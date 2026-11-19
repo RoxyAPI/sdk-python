@@ -267,7 +267,7 @@ class _BaseDomain:
 
 
 class AstrologyDomain(_BaseDomain):
-    """Western astrology API for natal birth charts, daily, weekly, monthly, and yearly horoscopes with unique content per s..."""
+    """Western astrology API for natal birth charts with an editorial reading of the whole chart, daily, weekly, monthly, an..."""
 
     def calculate_arabic_lots(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
         """Arabic lots calculator - seven Hermetic parts including Part of Fortune and Spirit"""
@@ -726,7 +726,7 @@ class AstrologyDomain(_BaseDomain):
         return await self._post_async(f"/astrology/lunar-return", body, params=params or None)
 
     def generate_natal_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
-        """Generate natal chart - Birth chart calculator API with houses and aspects"""
+        """Generate natal chart - Birth chart API with houses, aspects and a written reading"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time
@@ -743,7 +743,7 @@ class AstrologyDomain(_BaseDomain):
         return self._post(f"/astrology/natal-chart", body, params=params or None)
 
     async def generate_natal_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str, node_type: str | None = None, house_system: str | None = None, lang: str | None = None) -> Any:
-        """Generate natal chart - Birth chart calculator API with houses and aspects (async)"""
+        """Generate natal chart - Birth chart API with houses, aspects and a written reading (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time
