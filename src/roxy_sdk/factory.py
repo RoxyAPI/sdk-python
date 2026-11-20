@@ -1347,7 +1347,7 @@ class AstrologyDomain(_BaseDomain):
 
 
 class VedicAstrologyDomain(_BaseDomain):
-    """Vedic astrology (Jyotish) and KP API for kundli generation with the sixteen Shodasavarga divisional charts (D1 to D60..."""
+    """Vedic astrology (Jyotish) and KP API for kundli generation with an editorial reading of the whole chart, the sixteen..."""
 
     def calculate_arudha_padas(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, lang: str | None = None) -> Any:
         """Get the twelve Arudha padas - Arudha Lagna Calculator API"""
@@ -1918,7 +1918,7 @@ class VedicAstrologyDomain(_BaseDomain):
         return await self._post_async(f"/vedic-astrology/yoga/detect", body, params=params or None)
 
     def generate_birth_chart(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, avastha_info: bool | None = None, modern_planets: bool | None = None, focus: str | None = None, lang: str | None = None) -> Any:
-        """Get birth chart (D1 Rashi chart) - Kundli Calculator API"""
+        """Get birth chart (D1 Rashi chart) - Kundli API with a written chart reading"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time
@@ -1940,7 +1940,7 @@ class VedicAstrologyDomain(_BaseDomain):
         return self._post(f"/vedic-astrology/birth-chart", body, params=params or None)
 
     async def generate_birth_chart_async(self, *, date: str, time: str, latitude: float, longitude: float, timezone: str | None = None, ayanamsa: str | None = None, ayanamsa_value: float | None = None, avastha_info: bool | None = None, modern_planets: bool | None = None, focus: str | None = None, lang: str | None = None) -> Any:
-        """Get birth chart (D1 Rashi chart) - Kundli Calculator API (async)"""
+        """Get birth chart (D1 Rashi chart) - Kundli API with a written chart reading (async)"""
         body: dict[str, Any] = {}
         body["date"] = date
         body["time"] = time

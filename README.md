@@ -79,7 +79,7 @@ kundli = roxy.vedic_astrology.generate_birth_chart(
 | Domain | Property | Methods | What it covers |
 |--------|----------|---------|----------------|
 | [Western Astrology](https://roxyapi.com/api-reference/western-astrology) | `roxy.astrology` | 39 | Western astrology API for natal birth charts with an editorial reading of the whole chart, daily, weekly, monthly, an... |
-| [Vedic Astrology](https://roxyapi.com/api-reference/vedic-astrology) | `roxy.vedic_astrology` | 58 | Vedic astrology (Jyotish) and KP API for kundli generation with the sixteen Shodasavarga divisional charts (D1 to D60... |
+| [Vedic Astrology](https://roxyapi.com/api-reference/vedic-astrology) | `roxy.vedic_astrology` | 58 | Vedic astrology (Jyotish) and KP API for kundli generation with an editorial reading of the whole chart, the sixteen... |
 | [Forecast](https://roxyapi.com/api-reference/forecast) | `roxy.forecast` | 5 | Astrology forecast API that merges upcoming transit aspects, sign ingresses, retrograde stations, new and full moons,... |
 | [Human Design](https://roxyapi.com/api-reference/human-design) | `roxy.human_design` | 12 | Human Design API that generates the full bodygraph from a birth moment: type, strategy, inner authority, profile, def... |
 | [Chinese Astrology](https://roxyapi.com/api-reference/chinese-astrology) | `roxy.chinese_astrology` | 16 | Chinese zodiac and BaZi astrology API: Four Pillars charts, Chinese zodiac signs and the Chinese lunisolar calendar f... |
